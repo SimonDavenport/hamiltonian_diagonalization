@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 31/10/2014
-//!                                                                             
 //!	 \file
 //!     This file declares program options associated with the interacting 
 //!     optical flux model Hamiltonian
 //!                                                                             
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -28,19 +26,15 @@
 #ifndef _OPTICAL_FLUX_LATTICE_HAMILTONIAN_OPTIONS_HPP_INCLUDED_
 #define _OPTICAL_FLUX_LATTICE_HAMILTONIAN_OPTIONS_HPP_INCLUDED_
 
-//  For command line options parsing
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <boost/program_options.hpp>
-
-//  For iSize_t definition
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 
 namespace diagonalization
 {
-
 namespace myOptions
 {
     namespace po = boost::program_options;
-
     inline po::options_description GetCommonInteractingModelOptions()
     {
         po::options_description modelOpt("Interacting model options");
@@ -55,7 +49,6 @@ namespace myOptions
 	      "Specify the shift in the kx value when constructing the k-space grid")
 	    ("ky-shift",po::value<double>()->default_value(0.0),
 	      "Specify the shift in the ky value when constructing the k-space grid");
-        
         return modelOpt;
     };
     
@@ -98,9 +91,6 @@ namespace myOptions
 	    ("coefficient-hash",po::value<bool>()->default_value(false),
 	     "Set to 1 in order to use multi-key hash tables to store Hamiltonian coefficient tables Vkkkk, Ekk and momentum conserving lists. This option is automatically selected for the Wannier basis case.\n");
     }
-
 }   //  End namespace myOptions
-
 }   //  End namespace diagonalization
-
 #endif

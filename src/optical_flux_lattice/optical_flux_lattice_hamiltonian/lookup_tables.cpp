@@ -1,14 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //!                                                                             
-//!                        \author Simon C. Davenport                           
-//!                                                                             
-//!                      \date Last Modified: 02/02/2015                        
+//!                        \author Simon C. Davenport                                                
 //!                                                                             
 //!	 \file
 //!     This file defines a class to store data structures describing 
 //!     matrix elements of a Hamiltonian	           
 //!                                                        
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -30,18 +28,11 @@
 
 namespace diagonalization
 {
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
     //////  QuadraticLookUpTables IMPLEMENTATION        ////////////////////////
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Update the stored dimension of the quadratic term look-up table
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Update the stored dimension of the quadratic term look-up table
+    //!
     iSize_t QuadraticLookUpTables::CalculateDim(
         const kState_t kMax)    //!<    Number of k states
         const
@@ -49,13 +40,9 @@ namespace diagonalization
         return kMax;
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Find the k1 value corresponding to a given k2.
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Find the k1 value corresponding to a given k2.
+    //!
     void QuadraticLookUpTables::GetK1(
         kState_t* kRetrieveBuffer,  //!<    Buffer to store retrieved k values
         iSize_t& nbrK1,             //!<    Set the number of returned values 
@@ -63,19 +50,12 @@ namespace diagonalization
         const
     {
         nbrK1 = 1;
-
-        //  In this case the quadratic terms are diagonal
-
         kRetrieveBuffer[0] =  k2;
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Return a quadratic term coefficient for a given k1,k2
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Return a quadratic term coefficient for a given k1,k2
+    //!
     dcmplx QuadraticLookUpTables::GetEkk(
         const kState_t k1,         //!<    k1 index
         const kState_t k2)         //!<    k2 index
@@ -84,35 +64,24 @@ namespace diagonalization
         return m_vTable[k1];
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
     //////  QuarticLookUpTables IMPLEMENTATION        //////////////////////////
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Update the stored dimension of the quadratic term look-up table
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Update the stored dimension of the quadratic term look-up table
+    //!
     iSize_t QuarticLookUpTables::CalculateDim(
         const kState_t kMax)    //!<    Number of k states
         const
     {
         //  In the quartic term table we store V_{k1,k2,k3,k4}, but with one of
         //  the k indices completely fixed by quantum number conservation
-
         return (kMax+1)*std::pow(kMax,2)/2;
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    //////////////////////////////////////////////////////////////////////////////////
-    //! \brief Get the k1 value corresponding to a given k2,k3,k4 (where each k 
+    //!
+    //! Get the k1 value corresponding to a given k2,k3,k4 (where each k 
     //! represents a k1,ky pair).
-    //! 
-    //////////////////////////////////////////////////////////////////////////////////
-
+    //!
     void QuarticLookUpTables::GetK1(
         kState_t* kRetrieveBuffer,  //!<    Buffer to store retrieved k values
         iSize_t& nbrK1,             //!<    Set the number of returned values 
@@ -121,26 +90,17 @@ namespace diagonalization
         const kState_t k4)          //!<    k4 index
         const
     {
-        //std::cout<<"INPUT: "<<k4<<" "<<k3<<" "<<k2<<std::endl;
-
         kState_t temp1 = k4;
         kState_t temp2 = k3;
-
         if(k4>k3)
         {
             //  Swap and refer to the k3, k4 term in the table
             temp1 = k3;
             temp2 = k4;
         }
-        
         nbrK1 = 1;
-
-        //std::cout<<"VALUE: "<<m_kTable[(temp1*(m_kMax) + temp2 - (temp1*(temp1+1))/2 )*m_kMax + k2]<<std::endl;
-
         kRetrieveBuffer[0] =  m_kTable[(temp1*(m_kMax) + temp2 - (temp1*(temp1+1))/2 )*m_kMax + k2];
     }
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Return a quartic term coefficient specified by a given k1,k2,k3,k4
@@ -152,7 +112,6 @@ namespace diagonalization
     //! , and that result will be incorrect!
     //!
     ////////////////////////////////////////////////////////////////////////////////
-
     dcmplx QuarticLookUpTables::GetVkkkk(
         const kState_t k1,         //!<    k1 index
         const kState_t k2,         //!<    k2 index
@@ -160,12 +119,9 @@ namespace diagonalization
         const kState_t k4)         //!<    k4 index
         const
     {
-        //std::cout<<"INPUT: "<<k4<<" "<<k3<<" "<<k2<<std::endl;
-        
         kState_t temp1 = k4;
         kState_t temp2 = k3;
         kState_t temp3 = k2;
-        
         if(k4>k3)
         {
             //  Swap and refer to the k3, k4 term in the table (also requires swapping k1 and k2)
@@ -173,44 +129,30 @@ namespace diagonalization
             temp2 = k4;
             temp3 = k1;
         }
-
-        //std::cout<<"VALUE: "<<m_vTable[(temp1*(m_kMax) + temp2 - (temp1*(temp1+1))/2 )*m_kMax + temp3]<<std::endl;
-
         return m_vTable[(temp1*(m_kMax) + temp2 - (temp1*(temp1+1))/2 )*m_kMax + temp3];
     }
-    
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
     //////  QuadraticLookUpHashTables IMPLEMENTATION        ////////////////////
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Get the highest number of k1 values that will be returned
+    //!
+    //! Get the highest number of k1 values that will be returned
     //! for a given k2. This allows us to pre-allocate a memory buffer
     //! to store the return values statically
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    
     iSize_t QuadraticLookUpHashTables::GetMaxKCount() const
     {
         iSize_t maxCount = 1;
-
-        for(kState_t k2=0;k2<m_kMax;k2++)
+        for(kState_t k2=0; k2<m_kMax; ++k2)
         {
-            maxCount = std::max(maxCount,(iSize_t)m_kTable.Count(k2));
+            maxCount = std::max(maxCount, (iSize_t)m_kTable.Count(k2));
         }
-        
         return maxCount;
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Get the k1 value for a given k2, with a 2 value conservation law
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Get the k1 value for a given k2, with a 2 value conservation law
+    //!
     void QuadraticLookUpHashTables::GetK1(
         kState_t* kRetrieveBuffer,  //!<    Buffer to store retrieved k values
         iSize_t& nbrK1,             //!<    Set the number of returned values             
@@ -218,51 +160,36 @@ namespace diagonalization
         const
     {
         //  Get the corresponding list of k1 values
-
-        m_kTable.Value(kRetrieveBuffer,nbrK1,k2);
+        m_kTable.Value(kRetrieveBuffer, nbrK1, k2);
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Return a specified coefficient of the quadratic term
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Return a specified coefficient of the quadratic term
+    //!
     dcmplx QuadraticLookUpHashTables::GetEkk(
         const kState_t k1,  //!<    k1 value
         const kState_t k2)  //!<    k2 value
         const
     {
-        return m_vTable.Value(utilities::Key(k1,k2));
+        return m_vTable.Value(utilities::Key(k1, k2));
     }
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
     //////  QuarticLookUpHashTables IMPLEMENTATION        //////////////////////
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Get the highest number of k1 values that will be returned
+    //!
+    //! Get the highest number of k1 values that will be returned
     //! for a given k2,k3,k4. This allows us to pre-allocate a memory buffer
     //! to store the return values statically
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
     iSize_t QuarticLookUpHashTables::GetMaxKCount() const
     {
         return m_kTable.GetMaxCount();
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Get the k1 value for a given k2,k3,k4 with a 4 momentum conservation 
+    //!
+    //! Get the k1 value for a given k2,k3,k4 with a 4 momentum conservation 
     //! law
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
     void QuarticLookUpHashTables::GetK1(
         kState_t* kRetrieveBuffer,  //!<    Buffer to store retrieved k values
         iSize_t& nbrK1,             //!<    Set the number of returned values             
@@ -272,17 +199,12 @@ namespace diagonalization
         const
     {
         //  Get the corresponding list of k1 values
-
-        m_kTable.Value(kRetrieveBuffer,nbrK1,utilities::Key(k2,k3,k4));
+        m_kTable.Value(kRetrieveBuffer,nbrK1,utilities::Key(k2, k3, k4));
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Return a specified coefficient of the quartic term
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Return a specified coefficient of the quartic term
+    //!
     dcmplx QuarticLookUpHashTables::GetVkkkk(
         const kState_t k1,  //!<    Given k1 value
         const kState_t k2,  //!<    Given k2 value
@@ -292,8 +214,4 @@ namespace diagonalization
     {
         return m_vTable.Value(utilities::Key(k1,k2,k3,k4)); 
     }
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
 }   //  End namespace diagonalization
-

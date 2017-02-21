@@ -42,9 +42,9 @@ std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(boost::p
 ///////		START OF MAIN FUNCTION      ////////////////////////////////////////
 int main(int argc, char *argv[])
 {
-	mpi.Init(argc,argv);
+	mpi.Init(argc, argv);
     boost::program_options::variables_map optionList;
-    optionList = ParseCommandLine(argc,argv,mpi);
+    optionList = ParseCommandLine(argc, argv, mpi);
     //  Import and synchronize top-level command line options over all nodes
     bool diagonalizeFlag;
     bool eigenvaluesFlag;

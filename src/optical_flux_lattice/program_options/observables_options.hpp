@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport 
 //!                                                                             
-//!                      \date Last Modified: 26/11/2014 
-//!                                                                             
 //!	 \file
 //!     This file declares program options associated with observables that
 //!     can be calculated/plotted for the interacting optical flux lattice
 //!     model                                                     
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -28,19 +26,15 @@
 #ifndef _OBSERVABLES_OPTIONS_HPP_INCLUDED_
 #define _OBSERVABLES_OPTIONS_HPP_INCLUDED_
 
-//  For command line options parsing
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <boost/program_options.hpp>
-
-//  For iSize_t definition
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 
 namespace diagonalization
 {
-
 namespace myOptions
 {
     namespace po = boost::program_options;
-    
     inline po::options_description GetObservablesOptions()
     {
         po::options_description obsOpt("Observables Options");
@@ -57,19 +51,10 @@ namespace myOptions
 	     "Set to 1 to generate a list of the most probable eigenstates\n")
 	    ("nbr-most-probable",po::value<iSize_t>()->default_value(1),
 	     "Set the number of most probable eigenstates to store when the most-probable-list option is enabled.\n")
-	    //("calculate-oes",po::value<bool>()->default_value(0),
-	    // "Set to 1 to generate the orbital entanglement spectrum for the current wave function store it in a file.\n")
-	    //("orbital-cut",po::value<iSize_t>()->default_value(0),
-	    // "Specify the combined 2D orbital index (=i*kx+j) where the orbitals are to be cut for the OES. Setting 0 automatically chooses a half cut.\n")
-	    //("calculate-pes",po::value<bool>()->default_value(0),
-	    // "Set to 1 to generate the particle entanglement spectrum for the current wave function store it in a file.\n")
-	    //("particle-cut",po::value<iSize_t>()->default_value(0),
-	    // "Specify the cut in particle space i.e. nbrA for the PES. Setting 0 automatically chooses a half cut.\n")
 	    ("calculate-translational-density-density",po::value<bool>()->default_value(0),
 	     "Set to 1 to calculate the translational density-density function sum_{k1,k2} <c^+_{k2-G}c_k2c^+_{k1+G}c_k1> as a function of G.\n")
         ("calculate-rotational-density-density",po::value<bool>()->default_value(0),
 	     "Set to 1 to calculate the rotational density-density function sum_{k1,k2} <c^+_{~R60 k2}c_k2c^+_{R60 k1}c_k1> as a function of the 6-fold rotation.\n");
-	     
 	    return obsOpt;
     };
     
@@ -81,12 +66,9 @@ namespace myOptions
 	     "Set to 1 to generate matrix plots of the interacting Hamiltonian (if it has been diagonalized).\n")
 	    ("plot-occupations",po::value<bool>()->default_value(0),
 	     "Set to 1 to generate a plot of the probability of orbital occupations.\n");
-	     
 	    return plotOpt;
     };
-    
 }   //  End namespace myOptions
-
 }   //  End namespace diagonalization
 
 #endif

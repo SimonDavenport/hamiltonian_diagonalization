@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 31/10/2014
-//!                                                                             
 //!	 \file
 //!     This file declares program options associated with the single 
 //!     particle optical flux model Hamiltonian
 //!                                                                             
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -28,10 +26,8 @@
 #ifndef _SINGLE_PARTICLE_HAMILTONIAN_OPTIONS_HPP_INCLUDED_
 #define _SINGLE_PARTICLE_HAMILTONIAN_OPTIONS_HPP_INCLUDED_
 
-//  For command line options parsing
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <boost/program_options.hpp>
-
-//  For iSize_t definition
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 
 namespace diagonalization
@@ -40,14 +36,12 @@ namespace diagonalization
 namespace myOptions
 {
     namespace po = boost::program_options;
-
     inline po::options_description GetCommonSingleParticleOptions()
     {
         po::options_description singleParticleOpt("Single particle Hamiltonian options");
         singleParticleOpt.add_options()
         ("params-file",po::value<std::string>()->default_value("parameters.dat"),
          "Specify the name of the file where the single particle model data are stored\nDefault behaviour is to look for this file.\n");
-        
         return singleParticleOpt;
     };
     
@@ -94,12 +88,8 @@ namespace myOptions
 	      "Specify the shift in the kx value when constructing the k-space grid for the plot")
 	    ("y-grid-shift",po::value<double>()->default_value(0.0),
 	      "Specify the shift in the ky value when constructing the k-space grid for the plot");
-	     
 	    return plotOpt;
     }
-
 }   //  End namespace myOptions
-
 }   //  End namespace diagonalization
-
 #endif
