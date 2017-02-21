@@ -2,14 +2,12 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 06/11/2014
-//!
 //!  \file
 //!		This file defines some types that are generically used to represent
 //!     fermion orbital labales and binary representations of a fermion
 //!     Fock space
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!
 //!		This program is free software: you can redistribute it and/or modify
 //!		it under the terms of the GNU General Public License as published by
@@ -30,24 +28,18 @@
 #define _ORBITAL_AND_STATE_DEFS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-#include <cstdint>  //  for "uint" types
-#include <limits>   //  for std::numeric_limits
+#include <cstdint>
+#include <limits>
 
 namespace diagonalization
 {
-
-///////     VARIABLE TYPE DECLARATIONS     /////////////////////////////////////
-
 typedef uint64_t fock_t;
 //!<    Define a Fock occupation basis for fermions, simply a bitwise encoding
 //!     of the set of orbital occupations (up to 64 orbitals can be addressed)   
-
 typedef uint16_t kState_t;
 //!<    Define an unsigned quantum number index type (a 16 bit unsigned int)
-
 typedef int16_t mState_t;
 //!<    Define a signed quantum number index type (a 16 bit signed int)
-
 typedef uint32_t iSize_t;
 //!<    Define a size type to store parameters such as particle number and 
 //!     total orbital number, and general unsigned ints (a 32 bit int)
@@ -60,18 +52,11 @@ typedef uint32_t iSize_t;
 //!
 //! NOTE 2: When used during FORTRAN matrix-vector routine, only int type
 //! can be passed.
-//!
 ////////////////////////////////////////////////////////////////////////////////
 typedef int crsIndex_t;
 
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Error code to return if a Fock state is found beyond a certian limit
-//!
-////////////////////////////////////////////////////////////////////////////////
-
 static const fock_t _SEARCH_ERROR_CODE_ = std::numeric_limits<fock_t>::max();
+//!<    Error code to return if a Fock state is found beyond a certian limit
 
 }   //  End namespace diagonalization 
-
 #endif
-

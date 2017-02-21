@@ -2,15 +2,13 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 05/04/2014
-//!
 //!  \file
 //!		This file contains some efficient algorithms for evaluating the Hamming
 //!     weight of a binary number - i.e. the number of bits that are set to 1.
 //!     Also, there are algorithms to generate a list of binary numbers with
 //!		the same Hamming weight
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -31,12 +29,8 @@
 
 namespace utilities
 {
-
 namespace binary
 {
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-	
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Hamming weight algorithm with minimal number of arithmetic operations
     //!
@@ -98,21 +92,16 @@ namespace binary
     //! \return Hamming weight (number of 1 bits in the number)
     //!
     ////////////////////////////////////////////////////////////////////////////////
-
     int HammingWeight64(
         uint64_t x)        //!<    Number to find the Hamming weight of
     {
         if(0==x) return 0;
-
         x -= (x >> 1) & m1;             //  Put count of each 2 bits into those 2 bits
         x = (x & m2) + ((x >> 2) & m2); //  Put count of each 4 bits into those 4 bits 
         x = (x + (x >> 4)) & m4;        //  Put count of each 8 bits into those 8 bits 
-  
         return (x * h01)>>56;  //returns left 8 bits of x + (x<<8) + (x<<16) + (x<<24) + ... 
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-	
 	////////////////////////////////////////////////////////////////////////////////
     //! \brief Iterative Hamming weight algorithm.
     //!
@@ -144,22 +133,15 @@ namespace binary
     //! is the number of set bits
     //!
     //! \return Hamming weight (number of 1 bits in the number)
-    //!
     ////////////////////////////////////////////////////////////////////////////////
- 
     int HammingWeight64Iterative(
         uint64_t x)        //!<    Number to find the Hamming weight of
     {
         if(0==x) return 0;
-    
         unsigned int i=1;
-		
 		while (x &= (x-binary::number1)) ++i;
-		
         return i;  
     }
-    
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 	////////////////////////////////////////////////////////////////////////////////
     //! \brief Round down to the nearest power of 2 or in other words isolate the
@@ -182,9 +164,7 @@ namespace binary
     //! left-most bit    
     //!
     //! \return Input rounded down to the nearest power of 2
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-	
 	uint64_t IsolateLeftMostSetBit(
 	    uint64_t  x)     //!<    A number to find the left-most set bit of
 	{
@@ -195,11 +175,8 @@ namespace binary
         x |= x >> 16;
         x |= x >> 32;
         ++x;
-
         return x >> binary::number1;
     }
- 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 	////////////////////////////////////////////////////////////////////////////////
     //! \brief Calculate the base-2 log of a number (assuming that the input is 
@@ -209,17 +186,13 @@ namespace binary
     //! x86 implementation requires 5 instructions
     //!
     //! \return The log_2 of the input
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-        
     unsigned int Base2Log(
 	    uint64_t  x)     //!<    A number to find log of that is a power of 2
     {
         //  deBruijnBitSequence has a static definition in binary_number_tools.h
         return deBruijnBitSequence[(uint64_t)(x * (uint64_t)deBruijnMultiply) >> deBruijnShift];
 	}
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 	////////////////////////////////////////////////////////////////////////////////
     //! \brief Generate the "first" binary number of with a given Hamming weight
@@ -229,17 +202,12 @@ namespace binary
     //! x86 implementation requires 5 instructions
     //!
     //! \return The uint64_t corresponding to the binary ...0001...1111
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-	
 	uint64_t FirstBinaryHammingNumber64(
 	    const unsigned int hammingWeight)     //!<    Hamming weight of the number (i.e no. 1s in it)
 	{
 		return ((binary::number1 << hammingWeight) - binary::number1);
 	}
-	
-    
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 	////////////////////////////////////////////////////////////////////////////////
     //! \brief Generate the next lexicographic permutation of numbers with the
@@ -283,21 +251,14 @@ namespace binary
     //! final output is 00 00 00 00 00 00 00 00 00 00 00 00 00 10 10 00 11
     //!
     //! \return The lexicographically next binary number of the same Hamming weight
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
 	uint64_t NextHammingNumber64(
 	    const uint64_t x)	//!<    A number with some bitwise representation
 	{   
 	    if(0==x)    return x;
-	
 		uint64_t temp = (x & -x);  //  Isolates the right-most bit
-		
-		//return ((x ^ (x + temp)) >> (2+utilities::binary::Base2Log(temp))) | (x + temp);
 		return ((x ^ (x + temp)) / temp) >> 2 | (x + temp);
 	}
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 	////////////////////////////////////////////////////////////////////////////////
     //! \brief Generate the index in the list of lexicographically ordered Hamming
@@ -305,53 +266,25 @@ namespace binary
     //!
     //! \return The position of the input in a lexicographically ordered list of 
     //! hamming numbers
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
 	uint64_t IndexHammingNumber64(
 	    const unsigned int hammingWeight,     //!<    Hamming weight of the set
 	    const uint64_t x)	                  //!<    A number that we want to find the index of
 	{
 		uint64_t output = 0;
 		uint64_t temp = x;
-		
 		for(int p = hammingWeight; p>0; --p)
 		{
     		uint64_t leftMostBit = IsolateLeftMostSetBit(temp);         
-    		//  Isolates the left-most bit
-
-            //  Find the index of the left-most set bit
 		    int m = Base2Log(leftMostBit);
-		    
-		    //std::cout<<"\t\ttemp="<<temp<<" IsolateLeftMostSetBit(temp) = "<<leftMostBit<<" power = "<<m<<std::endl;
-		    //getchar();
-		    
 		    if(p<=m)
 		    {
-                //  Add binomial(m,p) from a look-up table with additional conditions
-
-                //output += boost::math::binomial_coefficient<double>(m,p);
-                
-                output += utilities::BinomialFromTable(m,p);
-                
-                //if(boost::math::binomial_coefficient<double>(m,p) != utilities::BinomialFromTable(m,p))
-                //{
-                //    std::cerr<<" ERROR on node "<<utilities::mpi.m_id<<" with m = "<<m<<" p= "<<p<<std::endl;
-                //}
-
-                //std::cout<<"\t\tm="<<m<<" p="<<p<<" output = "<<output<<std::endl;
-
+                output += utilities::BinomialFromTable(m, p);
 		    }
-            
-            //  Remove the current left-most bit
-            
 		    temp ^= leftMostBit;
 		}
-
 		return output;
 	}
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 	////////////////////////////////////////////////////////////////////////////////
     //! \brief Generate the Hamming number with the given hamming weight and at
@@ -360,9 +293,7 @@ namespace binary
     //! of numbers is going to be indexed
     //!
     //! \return The Hamming number at the index returnIndex
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-	
     uint64_t GenerateHammingNumber(
         const unsigned int hammingWeight,   //!<    Hamming weight of the set
         const uint64_t index)               //!<    Index to return the Hamming number for
@@ -375,56 +306,28 @@ namespace binary
         {           
             //  Determine the exact binary Hamming number corresponding to this
             //  index (assuming lexicographic ordering)
-
             uint64_t returnVal = 0;
             uint64_t currIndex = 0;
-            
-            //std::cout<<"\t\t index = "<<index<<std::endl;
-            
-            for(int p = hammingWeight-1;p>=0;--p)
+            for(int p = hammingWeight-1; p>=0; --p)
             {
                 //  Determine the position of the left-most bit
                 //  then next left most bit etc.
-                
                 int m = p;
                 uint64_t incrementIndex;
-
                 do
                 {
-                    //incrementIndex = boost::math::binomial_coefficient<double>(m,p);
-                
-                    incrementIndex = utilities::BinomialFromTable(m,p);
-                
-                    //if(boost::math::binomial_coefficient<double>(m,p) != utilities::BinomialFromTable(m,p))
-                    //{
-                    //    std::cerr<<" ERROR on node "<<utilities::mpi.m_id<<" with m = "<<m<<" p= "<<p<<std::endl;
-                    //}
-                    
+                    incrementIndex = utilities::BinomialFromTable(m, p);
                     currIndex += incrementIndex;
                     ++m;
-                    
-                    //std::cout<<"\t\tm="<<m<<" p="<<p<<" currIndex = "<<currIndex<<std::endl;
-                    //getchar();
                 }
                 while(index >= currIndex);
-                
                 //  We've gone one step too far here, so go back one step
-                
                 currIndex -= incrementIndex;
-                
-                //std::cout<<"\t\tm="<<m<<" p="<<p<<" currIndex= "<<currIndex<<std::endl;
-                
                 //  Set the next left-most bit in the return value
-                
                 returnVal |= (binary::number1 << (m-1));
             }
-
             return returnVal;
         }
     }
-  
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
 }   // End namespace binary
-
 }   // End namespace utilities

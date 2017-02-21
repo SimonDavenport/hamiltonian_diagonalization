@@ -2,12 +2,10 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 05/04/2014
-//!
 //!  \file
 //!		Header file for binary number tools
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -27,26 +25,19 @@
 #ifndef _BINARY_NUMBER_TOOLS_HPP_INCLUDED_
 #define _BINARY_NUMBER_TOOLS_HPP_INCLUDED_
 
-#include "binomial_table.hpp"//  For Binomial coefficients
-#include <bitset>            //  For arbitrary length bit lists
-#include <cstdint>           //  For uint64_t
-
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
+#include "binomial_table.hpp"
+#include <bitset>
+#include <cstdint>
 #if _DEBUG_
 #include "../general/debug.hpp"
 #endif
 
 namespace utilities
 {
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief A namespace to contain functions and variables for performing
-    //! binary number-based manipulations
-    //!
-    ////////////////////////////////////////////////////////////////////////////////
-
     namespace binary
     {
         ///////     STATIC CONST DECLARATIONS     //////////////////////////////////////
-
         static const uint64_t  m1  = 0x5555555555555555; //!<	Binary: 0101...
         static const uint64_t  m2  = 0x3333333333333333; //!<	Binary: 00110011..
         static const uint64_t  m4  = 0x0f0f0f0f0f0f0f0f; //!<	Binary:  4 zeros, 4 ones ...
@@ -71,7 +62,6 @@ namespace utilities
         //!<    Required to address the B(2,6) De Bruijn squence
         
         //////      FUNCTION DECLARATIONS       ////////////////////////////////////////
-
         int HammingWeight64(uint64_t x);
         int HammingWeight64Iterative(uint64_t x);
         uint64_t FirstBinaryHammingNumber64(const unsigned int hammingWeight);
@@ -80,39 +70,26 @@ namespace utilities
         uint64_t NextHammingNumber64(const uint64_t x);
         uint64_t IndexHammingNumber64(const unsigned int hammingWeight,const uint64_t x);
         uint64_t GenerateHammingNumber(const unsigned int hammingWeight,const uint64_t index);   
-            
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 	    ////////////////////////////////////////////////////////////////////////////////
         //! \brief Round down to the nearest power of 2 or in other words isolate the
         //! left-most bit
         //!
         //! \return Input rounded down to the nearest power of 2
-        //!
         ////////////////////////////////////////////////////////////////////////////////
-	
 	    template <int N>
 	    std::bitset<N> IsolateLeftMostSetBit(
 	        std::bitset<N>  x)     //!<    A number to find the left-most set bit of
 	    {
             int shift = 1;
-            
             while(shift<=N/2)
             {
                 x |= x >> shift;
-                
                 shift*=2;
             }
-            
             ++x;
-
             return x >> number1;
         }
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-   
     }   //  End namespace binary
-
 }   // End namespace utilities
-
 #endif

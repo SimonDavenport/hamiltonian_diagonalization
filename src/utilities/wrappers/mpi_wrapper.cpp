@@ -2,13 +2,11 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 05/04/2014
-//!
 //!  \file 
 //!		This file contains a bunch of functions used for MPI programming
 //!     Examples at https://computing.llnl.gov/tutorials/mpi/
 //!
-//!                    Copyright (C) 2013 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!
 //!		This program is free software: you can redistribute it and/or modify
 //!		it under the terms of the GNU General Public License as published by
@@ -40,20 +38,13 @@ namespace utilities
     //!	running process. Also it will set the exit function to be Terminate
     //!																				
     ////////////////////////////////////////////////////////////////////////////////
-
     void MpiWrapper::Init(
         int argc,       //!<    Length of argument list      
         char *argv[])   //!<    Initialize from command line arguments
     {
-        //	Initialize MPI
-
-        //  Get the number of processors
-        MPI_Init(&argc,&argv);
-
+        MPI_Init(&argc, &argv);
         MPI_Comm_size(m_comm,&m_nbrProcs);
-
         MPI_Comm_rank(m_comm,&m_id);
-
         if(m_id==0)		// FOR THE MASTER NODE
         {
             m_cout->MainOutput()<<"\n\n\t\tPROGRAM COMMENCED ";
@@ -61,9 +52,7 @@ namespace utilities
             m_wallTime = std::chrono::high_resolution_clock::now();
             m_cout->MainOutput()<<"\t\tRUNNING ON "<<m_nbrProcs<<" NODES"<<std::endl;
         }
-        
         this->GenerateHostNameList();
-
         return;
     }
 
@@ -77,21 +66,14 @@ namespace utilities
     //!	running process. Also it will set the exit function to be Terminate
     //!																				
     ////////////////////////////////////////////////////////////////////////////////
-
     void MpiWrapper::Init(
         int argc,       //!<    Length of argument list      
         char *argv[],   //!<    Initialize from command line arguments
         bool silent)    //!<    Flag to not print any output
     {
-        //	Initialize MPI
-
-        //  Get the number of processors
-        MPI_Init(&argc,&argv);
-
+        MPI_Init(&argc, &argv);
         MPI_Comm_size(m_comm,&m_nbrProcs);
-
         MPI_Comm_rank(m_comm,&m_id);
-
         if(m_id==0)		// FOR THE MASTER NODE
         {
             if(!silent)
@@ -103,9 +85,7 @@ namespace utilities
             
             m_wallTime = std::chrono::high_resolution_clock::now();
         }
-        
         this->GenerateHostNameList();
-
         return;
     }
 
@@ -121,14 +101,10 @@ namespace utilities
         static char time_buffer[40];
         const struct tm *tm_ptr;
         time_t now;
-
         now = time(NULL);
         tm_ptr = localtime(&now);
-
-        strftime(time_buffer,40,"%d %B %Y %I:%M:%S %p",tm_ptr);
-
+        strftime(time_buffer, 40, "%d %B %Y %I:%M:%S %p", tm_ptr);
         m_cout->MainOutput()<<time_buffer<<"\n\n";
-
         return;
     }
     
@@ -139,51 +115,32 @@ namespace utilities
     //! and then combines into a single table stored on the master node
     //!
     ////////////////////////////////////////////////////////////////////////////////
-    
     void MpiWrapper::GenerateHostNameList()
     {    
         const int bufferSize = 40;
-    
-        //  First obtain the host name from each process
-
         int variableSize = bufferSize;
         char host[bufferSize];
- 
-        MPI_Get_processor_name(host,&variableSize);
-        
-        //  Then run an mpi gather on the master node
-        
+        MPI_Get_processor_name(host, &variableSize);
         char* recvBuffer=0;
-        
         if(0 == m_id)   //  For the master node
         {
             recvBuffer = new (std::nothrow) char[m_nbrProcs*bufferSize];
         }
-        
-        MPI_Gather(host,bufferSize,MPI_CHAR,recvBuffer,bufferSize,MPI_CHAR,0,m_comm);
-
-        //  Convert char buffer into string array
-        
+        MPI_Gather(host, bufferSize, MPI_CHAR, recvBuffer, bufferSize, MPI_CHAR, 0, m_comm);
         if(0 == m_id)   //  For the master node
         {
-            for(int i=0;i<m_nbrProcs;i++)
+            for(int i=0; i<m_nbrProcs; ++i)
             {
-                memcpy(host,recvBuffer+bufferSize*i,bufferSize*sizeof(char));
-
+                memcpy(host, recvBuffer+bufferSize*i, bufferSize*sizeof(char));
                 m_hosts.push_back(host);
             }
         }
-        
-        //  Clear up memory allocation
-        
         if(0 != recvBuffer)
         {
             delete[] recvBuffer;
         }
-        
         return;
     }
-    
     
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
@@ -205,9 +162,7 @@ namespace utilities
     //!		2	     pc2          113	      225	     337	
     //!		3	     pc2          112	      338	     449	
     //!	\endverbatim
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
     void MpiWrapper::DivideTasks(
         const int id,			//!<	The unique identifier of a particular processor
         const int nbrTasks,	    //!<	The number of tasks to assign
@@ -226,41 +181,31 @@ namespace utilities
                 m_cout->AdditionalInfo() << "\tProcessor      Host          Tasks          Task        Task\n"<<std::endl;
             }
         }
-     
         if(nbrTasks<nbrProcs)
         {
             nbrProcs = nbrTasks;
-            
             if(id>=nbrProcs)
             {
                 *firstTask = nbrTasks-1;
                 *lastTask  = nbrTasks-2;
             }
         }
-
         int procRemain = nbrProcs;
         int taskRemain = nbrTasks;
         int hi,lo;
-
         hi = 0;
-
-        for(int proc = 0; proc < nbrProcs; proc++ )
+        for(int proc = 0; proc < nbrProcs; ++proc)
         {
             int taskProc = (int)floor((double)taskRemain/procRemain+0.5);
-
             procRemain--;
             taskRemain-=taskProc;
-
             lo=hi+1;
             hi+=taskProc;
-
-            //	output the relevant values to the relevant node
             if(id==proc)
             {
                 *firstTask=lo-1;
                 *lastTask=hi-1;
             }
-
             if(id==0)	// FOR THE MASTER NODE	//
             {
                 if(display && (int)m_hosts.size() >= proc)
@@ -269,7 +214,6 @@ namespace utilities
                 }
             }
         }
-
         if(id==0)	// FOR THE MASTER NODE	//
         {
             if(display)
@@ -277,7 +221,6 @@ namespace utilities
                 m_cout->AdditionalInfo()<<std::endl;
             }
         }
-
         return;
     }
 
@@ -305,9 +248,7 @@ namespace utilities
     //!            3       226     224     449
     //!
     //!	\endverbatim
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
     void MpiWrapper::TriangularDivideTasks(
         const int id,			//!<	The unique identifier of a particular processor
         const int nbrTasks,		//!<	The number of tasks to assign
@@ -326,58 +267,38 @@ namespace utilities
                 m_cout->AdditionalInfo() << "\tProcessor      Host          Tasks          Task        Task\n"<<std::endl;
             }
         }
-
         if(nbrTasks<nbrProcs)
         {
             nbrProcs = nbrTasks;
-            
             if(id>=nbrProcs)
             {
                 *firstTask = nbrTasks-1;
                 *lastTask  = nbrTasks-2;
             }
         }
-
         int procRemain = nbrProcs;
         int taskRemain = nbrTasks;
-        
-        //  use a triangular weight function
-        
         double weight  = 0.5*taskRemain*(taskRemain+1.0);
         int hi,lo;
-
         hi = 0;
-
-        for(int proc = 0; proc < nbrProcs; proc++ )
-        {
-            //  Calcualte the weight assigned to the current node               
-                              
+        for(int proc = 0; proc < nbrProcs; ++proc)
+        {         
             double weightProc = floor(weight/(double)procRemain+0.5);
-        
             //  Function here comes from solving a quadratic equation for a sum
             //  of triagular numbers to find the tasks to assign to the current
             //  node
-        
             int taskProc = (int)floor(0.5 + taskRemain 
                               - 0.5*sqrt(1+4.0*(double)taskRemain*(1+(double)taskRemain)-8.0*weightProc));
-
-            //loadDistribution[proc]=taskProc;
-
             procRemain--;
             taskRemain-=taskProc;
-
             weight  = 0.5*taskRemain*(taskRemain+1.0);
-
             lo=hi+1;
             hi+=taskProc;
-
-            //	output the relevant values to the relevant node
             if(id==proc)
             {
                 *firstTask=lo-1;
                 *lastTask=hi-1;
             }
-
             if(id==0)	// FOR THE MASTER NODE	//
             {
                 if(display)
@@ -386,7 +307,6 @@ namespace utilities
                 }
             }
         }
-
         if(id==0)	// FOR THE MASTER NODE	//
         {
             if(display)
@@ -394,7 +314,6 @@ namespace utilities
                 m_cout->AdditionalInfo()<<std::endl;
             }
         }
-
         return;
     }
 
@@ -408,79 +327,52 @@ namespace utilities
     void MpiWrapper::ExitFlagTest()
     {
         MPI_Barrier(m_comm);
-    
         MPI_Bcast(&m_exitFlag,1,MPI_C_BOOL,0,m_comm);
-
         if(m_exitFlag)
         {
             exit(EXIT_FAILURE);
         }
-    
         return;
     }
     
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
         
-        ////////////////////////////////////////////////////////////////////////////////
-        //!	\brief	A function to MPI synchronize a string
-        //! 
-        ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    //!	\brief	A function to MPI synchronize a string
+    //! 
+    ////////////////////////////////////////////////////////////////////////////////
 
-        void MpiWrapper::Sync(
-            std::string& buffer, //!<  Pointer to the broadcast buffer
-            int syncNode)        //!<  Node to synchronize the buffer with
-            const
+    void MpiWrapper::Sync(
+        std::string& buffer, //!<  Pointer to the broadcast buffer
+        int syncNode)        //!<  Node to synchronize the buffer with
+        const
+    {
+        int bufferSize;
+        if(syncNode == m_id)
         {
-            int bufferSize; //  string length
-        
-            if(syncNode == m_id)     //  FOR NODE syncNode
-            {
-                //  Get the string length on the sunchronize node
-                bufferSize = buffer.length();
-            }
-            
-            //  Synchronize the buffer size
-            
-            this->Sync(&bufferSize,1,syncNode);
-
-            if(syncNode == m_id)     //  FOR NODE syncNode
+            bufferSize = buffer.length();
+        }
+        this->Sync(&bufferSize, 1, syncNode);
+        if(syncNode == m_id)     //  FOR NODE syncNode
+        {
+            char *charArray;
+            charArray = (char*)buffer.c_str();
+            for(int i=0; i<m_nbrProcs; ++i)
 	        {
-                char *charArray;
-                
-                //  Convert input string to char array
-                
-                charArray = (char*)buffer.c_str();
-
-                //  Send char array to all other nodes
-                
-                for(int i=0;i<m_nbrProcs;i++)
-		        {
-		            if(syncNode != i)
-		            {
-                        MPI_Send(charArray,bufferSize,this->GetType<char>(),i,21,m_comm);       
-                        //  21 is a number identifying the signal
-                    }
+	            if(syncNode != i)
+	            {
+                    MPI_Send(charArray, bufferSize, this->GetType<char>(), i, 21, m_comm);       
                 }
             }
-            else	// FOR ALL OHTER NODES
-	        {
-		        //	Receive communicated values
-
-                char charArray[bufferSize];
-
-                MPI_Status status;
-
-                MPI_Recv(charArray,bufferSize,this->GetType<char>(),syncNode,21,m_comm,&status);
-
-                //  Convert back to string
-                
-                buffer = charArray;
-                
-                buffer.resize(bufferSize);
-            }
         }
-        
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-        
+        else	// FOR ALL OHTER NODES
+        {
+            char charArray[bufferSize];
+            MPI_Status status;
+            MPI_Recv(charArray, bufferSize, this->GetType<char>(), syncNode, 21, m_comm, &status);
+            buffer = charArray;
+            buffer.resize(bufferSize);
+        }
+    }    
+//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//    
 }   //  End namespace utilities
-

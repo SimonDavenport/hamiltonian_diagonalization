@@ -2,13 +2,11 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 18/03/2014
-//!
 //!  \file
 //!		This file contains a function to display a loading bar on the command
 //!     line
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!
 //!		This program is free software: you can redistribute it and/or modify
 //!		it under the terms of the GNU General Public License as published by
@@ -29,27 +27,23 @@
 #define _LOAD_BAR_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////		 
-
-#include "cout_tools.hpp"          //  Functions to manipulate std::cout output
+#include "cout_tools.hpp"
 
 namespace utilities
 {
 
 //////////////////////////////////////////////////////////////////////////////////
 //! \brief A class to display a progress bar 
-//!
 //////////////////////////////////////////////////////////////////////////////////
 
 class LoadBar
 {
     private:
-
     long int m_max;                     //!<    Number corresponding to 100% completion
     long int m_onePercent;              //!<    An integer closest to 1% of the total
     static const int m_barWidth = 50;   //!<    Character width of the display bar
     
     public:
-    
     //!
     //!  Default constructor
     //!
@@ -58,7 +52,6 @@ class LoadBar
         m_max(0),
         m_onePercent(0)
     {}
-
     //!
     //!  Initialize function
     //!
@@ -68,7 +61,6 @@ class LoadBar
         m_max = max;
         m_onePercent = ceil((double)m_max/100);
     }
-    
     //!
     //! Destructor
     //!
@@ -76,7 +68,6 @@ class LoadBar
     {
         //utilities::cout.AdditionalInfo()<<std::endl;
     }
-
     //!
     //! Display current progress
     //!
@@ -84,33 +75,22 @@ class LoadBar
         const long int x) //!<   Position you've got to
         const
     {
-        // Only update 100 times
-        
         if(x % m_onePercent != 0 && (m_max-x)>m_onePercent) return;
-        
-        // Calculate the ratio of complete-to-incomplete.
         double ratio = (double)x/m_max;
         int c = round(ratio * m_barWidth);
-    
-        // Show the percentage complete.
         utilities::cout.AdditionalInfo()<<"\t"<<(int)(ratio*100)<<"% [";
-     
-        // Show the load bar.
-        for (int i=0; i<c; i++)
-           utilities::cout.AdditionalInfo()<<"=";
-     
-        for (int i=c; i<m_barWidth; i++)
-           utilities::cout.AdditionalInfo()<<" ";
-     
+        for (int i=0; i<c; ++i)
+        {
+            utilities::cout.AdditionalInfo()<<"=";
+        }
+        for (int i=c; i<m_barWidth; ++i)
+        {
+            utilities::cout.AdditionalInfo()<<" ";
+        }
         utilities::cout.AdditionalInfo()<<"]\r";
-        
         fflush(stdout);
-        
         return;
     }
-
 };      //  End LoadBar class
-
 }       //  End namespace utilities
-
 #endif

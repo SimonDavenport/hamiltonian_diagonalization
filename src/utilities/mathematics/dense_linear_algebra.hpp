@@ -2,14 +2,12 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 04/09/2014
-//!
 //!  \file
 //!		Various dense linear algebra functions. This .h file contains a number
 //!     a function templates. Several additional functions are implemented
 //!     in the file linearAlgebra.cpp.
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!
 //!		This program is free software: you can redistribute it and/or modify
 //!		it under the terms of the GNU General Public License as published by
@@ -30,40 +28,21 @@
 #define _DENSE_LINEAR_ALGEBRA_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-
-#include <string.h>                     //  For memcpy function
-#include "../general/dcmplx_type_def.hpp"//  Define double complex type as dcmplx
-#include "../general/pi_const_def.hpp"  //  Define a value for the constant PI
-#include "../general/template_tools.hpp"//  For is_same template argument checker
-
+#include <string.h>
+#include "../general/dcmplx_type_def.hpp"
+#include "../general/pi_const_def.hpp"
+#include "../general/template_tools.hpp"
 #if _DEBUG_
 #include "../general/debug.hpp"
 #endif
-
-////////////////////////////////////////////////////////////////////////////////
 #if _ENABLE_HIGH_PRECISION_
-
-//	Include high precision c-libraries (see http://gmplib.org/ , http://www.mpfr.org/ 
-//	and http://www.multiprecision.org/ )
 #include "../wrappers/high_precision_wrapper.hpp"
-
 #endif
-////////////////////////////////////////////////////////////////////////////////
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 namespace utilities
 {
-
-////////////////////////////////////////////////////////////////////////////////
-//!	\brief A function Namespace for linear algebra routines
-//!
-////////////////////////////////////////////////////////////////////////////////
-
 namespace linearAlgebra
 {
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 ////////////////////////////////////////////////////////////////////////////////
 #if _ENABLE_HIGH_PRECISION_
