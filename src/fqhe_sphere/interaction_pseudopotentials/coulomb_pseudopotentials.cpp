@@ -1,14 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //!                                                                             
-//!                        \author Simon C. Davenport
-//!                                                                             
-//!                      \date Last Modified: 27/03/2015              
+//!                        \author Simon C. Davenport           
 //!                                                              
 //!	 \file
 //!     This file generates a set of two-body pseudopotential coefficients
 //!     for the Coulomb interaction, implemented in the sphere geometry  
 //!
-//!                    Copyright (C) 2015 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -38,9 +36,7 @@ namespace diagonalization
     //! V_L = 2/R [4Q-2L]C[2Q-L] * [4Q+2L+2]C[2Q+L+1] / ([4Q+2]C[2Q+1])^2
     //!
     //! Where R is the sphere raduis, given by sqrt(Q)
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
     std::vector<double> GenCoulombPseudopotentials(
         const iSize_t nbrOrbitals,  //!<    Total number of orbitals
         const iSize_t llIndex,      //!<    Landau level index (0 is lowest)
@@ -48,7 +44,6 @@ namespace diagonalization
     {
         //  Calcualte 2*Maximum Lz value in the highest LL
         iSize_t maxLz = 0;
-    
         if(llIndex==0)
         {
             maxLz = nbrOrbitals-1;
@@ -61,20 +56,15 @@ namespace diagonalization
         //{
         //    maxLz = (nbrOrbitals-2)/2+1;
         //}
-
         //   Vector containing pseudopotential data
         std::vector<double> p(maxLz+1);       
-
         for(int L=0;L<maxLz+1;++L)
         {
-            double temp = utilities::BinomialFromTable(2*maxLz+2,maxLz+1);
-
+            double temp = utilities::BinomialFromTable(2*maxLz+2, maxLz+1);
             p[maxLz-L] = mulFactor*2.0/sqrt((double)maxLz/2.0) * 
-            utilities::BinomialFromTable(2*maxLz-2*L,maxLz-L) * 
-            utilities::BinomialFromTable(2*maxLz+2*L+2,maxLz+L+1)/(temp*temp);
+            utilities::BinomialFromTable(2*maxLz-2*L, maxLz-L) * 
+            utilities::BinomialFromTable(2*maxLz+2*L+2, maxLz+L+1)/(temp*temp);
         }
-        
         return p;
     }
-
 }   //  End namespace diagonalization 

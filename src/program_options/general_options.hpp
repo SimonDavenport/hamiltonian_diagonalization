@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 31/10/2014
-//!                                                                             
 //!	 \file
 //!     This file declares the general program options to be used by any main
 //!     program.
 //!                                                                             
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -28,16 +26,14 @@
 #ifndef _GENERAL_OPTIONS_HPP_INCLUDED_
 #define _GENERAL_OPTIONS_HPP_INCLUDED_
 
-//  For command line options parsing
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <boost/program_options.hpp>
 
 namespace diagonalization
 {
-
 namespace myOptions
 {
     namespace po = boost::program_options;
-
     inline po::options_description GetGeneralOptions()
     {
         po::options_description generalOpt("General Options");
@@ -50,12 +46,8 @@ namespace myOptions
 	     "Specify the name of the file system path where program input data are stored\n")
 	    ("out-path",po::value<std::string>()->default_value("./output/"),
 	     "Specify the name of the file system path where program output data are stored\n");
-
         return generalOpt;
     };
-
 }   //  End namespace myOptions
-
 }   //  End namespace diagonalization
-
 #endif

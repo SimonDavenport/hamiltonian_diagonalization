@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 06/10/2014
-//!                                                                             
 //!	 \file
 //!     This file declares program options associated with ARPACK's internal
 //!     options
 //!                                                                             
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -28,19 +26,15 @@
 #ifndef _ARPACK_OPTIONS_HPP_INCLUDED_
 #define _ARPACK_OPTIONS_HPP_INCLUDED_
 
-//  For command line options parsing
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <boost/program_options.hpp>
-
-//  For parameterSize_t definition
 #include "../utilities/general/orbital_and_state_defs.hpp"
 
 namespace diagonalization
 {
-
 namespace myOptions
 {
     namespace po = boost::program_options;
-
     inline boost::program_options::options_description GetArpackOptions()
     {
         po::options_description arOpt("ARPACK options");
@@ -57,12 +51,8 @@ namespace myOptions
           "Option to store the final ARPACK vector in a binary file.\n")
         ("final-file",po::value<std::string>()->default_value("finalVector"),
           "Specify the name of the final vector file (additional information and extension .bin will be added by the program).\n");
-	     
 	    return arOpt;
     };
-
 }    //  End namespace myOptions 
-
 }   //  End namespace diagonalization
-
 #endif

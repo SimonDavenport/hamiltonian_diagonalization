@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 08/01/2015
-//!                                                                             
 //!	 \file
 //!     This file declares program options associated with a FQHE
 //!     Haldane pseudopotential Hamiltonian in the sphere geometry
 //!                                                        
-//!                    Copyright (C) 2015 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -29,20 +27,14 @@
 #define _PSEUDOPOTENTIAL_HAMILTONIAN_OPTIONS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-
-//  For command line options parsing
 #include <boost/program_options.hpp>
-
-//  For iSize_t definition
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 
 namespace diagonalization
 {
-
 namespace myOptions
 {
     namespace po = boost::program_options;
-
     inline po::options_description GetPseudopotentialHamiltonianOptions()
     {
         po::options_description modelOpt("Pseudopotential Hamiltonian options");
@@ -73,12 +65,8 @@ namespace myOptions
 	     "Set to 1 to additionally store/retrieve eigenvectors in/from a file (eigenvalues also stored/retrieved if this option is set)\n")
         ("hamiltonian-to-file",po::value<bool>()->default_value(false),
          "Set to 1 to store Hamiltonian matrix in a data file\n");
-
         return modelOpt;
     };
-
 }   //  End namespace myOptions
-
 }   //  End namespace diagonalization
-
 #endif

@@ -2,13 +2,11 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 03/02/2015
-//!
 //!  \file
 //!		This file contains an underlying data structure to store variables in the
 //!     any Hamiltonian class
 //!     
-//!                    Copyright (C) 2015 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -26,72 +24,49 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-
 #include "hamiltonian_data.hpp"
 
 namespace diagonalization
 {
+    //!
+    //! Write a value to a file for double types
+    //!
+    void ValueToFile(std::ofstream& f_out, double* value)
+    {
+        f_out.precision(15);
+        f_out<<*value<<"\n";
+    }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
+    //!
+    //! Write a value to a file for dcmplx types
+    //!
+    void ValueToFile(std::ofstream& f_out, dcmplx* value)
+    {
+        f_out.precision(15);                
+        f_out<<value->real()<<" ";
+        f_out.precision(15);
+        f_out<<value->imag()<<"\n";
+    }
 
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Write a value to a file for double types
-//!
-////////////////////////////////////////////////////////////////////////////////
+    //!
+    //! Read a value from a file for double types
+    //!
+    void ValueFromFile(std::ifstream& f_in, double* value)
+    {
+        f_in >> *value;
+    }
 
-void ValueToFile(std::ofstream& f_out,double* value)
-{
-    f_out.precision(15);
-    f_out<<*value<<"\n";
-}
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Write a value to a file for dcmplx types
-//!
-////////////////////////////////////////////////////////////////////////////////
-
-void ValueToFile(std::ofstream& f_out,dcmplx* value)
-{
-    f_out.precision(15);                
-    f_out<<value->real()<<" ";
-    
-    f_out.precision(15);
-    f_out<<value->imag()<<"\n";
-}
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Read a value from a file for double types
-//!
-////////////////////////////////////////////////////////////////////////////////
-
-void ValueFromFile(std::ifstream& f_in,double* value)
-{
-    f_in >> *value;
-}
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Read a value from a file for dcmplx types
-//!
-////////////////////////////////////////////////////////////////////////////////
-
-void ValueFromFile(std::ifstream& f_in,dcmplx* value)
-{
-    double tmpReal;
-    double tmpImag;
-
-    f_in >> tmpReal;
-    f_in >> tmpImag;
-    
-    *value = dcmplx(tmpReal,tmpImag);
-}
-                                                                             
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
+    //!
+    //! Read a value from a file for dcmplx types
+    //!
+    void ValueFromFile(std::ifstream& f_in, dcmplx* value)
+    {
+        double tmpReal;
+        double tmpImag;
+        f_in >> tmpReal;
+        f_in >> tmpImag;
+        *value = dcmplx(tmpReal, tmpImag);
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Default constructor declaration
@@ -115,11 +90,9 @@ void ValueFromFile(std::ifstream& f_in,dcmplx* value)
 
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Constructor with basic arguments
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Constructor with basic arguments
+    //!
     HamiltonianData::HamiltonianData(
         const iSize_t nbrParticles,                     //!<    Number of particles
         const iSize_t nbrOrbitals,                      //!<    Number of orbitals
@@ -138,14 +111,10 @@ void ValueFromFile(std::ifstream& f_in,dcmplx* value)
     {
         m_highestOrbital = utilities::binary::number1 << (m_nbrOrbitals-1);
     }
-       
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-    
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Copy constructor declaration
-    //!
-    ////////////////////////////////////////////////////////////////////////////////
 
+    //!
+    //! Copy constructor declaration
+    //!
     HamiltonianData::HamiltonianData(const HamiltonianData& other)
     : 
     m_nbrParticles(other.m_nbrParticles),
@@ -160,13 +129,9 @@ void ValueFromFile(std::ifstream& f_in,dcmplx* value)
     m_nbrEigenvalues(other.m_nbrEigenvalues)
     {}
     
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-    
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Copy assignment operator declaration
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Copy assignment operator declaration
+    //!
     HamiltonianData& HamiltonianData::operator=(const HamiltonianData& other)
     {
         m_nbrParticles = other.m_nbrParticles;
@@ -183,24 +148,15 @@ void ValueFromFile(std::ifstream& f_in,dcmplx* value)
         return *this;
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-   
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Destructor
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-    
+    //! Destructor
+    //!
     HamiltonianData::~HamiltonianData()
-    {
-    }
+    {}
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-   
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Reset class flags
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-     
+    //! Reset class flags
+    //!
     void HamiltonianData::Clear()
     {          
         m_matrixAllocated           = false;
@@ -210,15 +166,11 @@ void ValueFromFile(std::ifstream& f_in,dcmplx* value)
         m_nodeDim                   = 0;
     }       
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-    
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Set Fock Space dimension and dimension if stored on multiple nodes
     //!
     //! Eigenvector node dimension is always distributed over all nodes
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-    
     void HamiltonianData::SetDataDimensions(
         const fock_t fockSpaceDimension,    //!<    Total Fock space dimension
         const iSize_t nbrNodes,             //!<    Specify the number of nodes
@@ -227,9 +179,7 @@ void ValueFromFile(std::ifstream& f_in,dcmplx* value)
         utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
     {
         m_fockSpaceDim = fockSpaceDimension;
-        
-        mpi.DivideTasks(mpi.m_id,m_fockSpaceDim,nbrNodes,&mpi.m_firstTask,&mpi.m_lastTask,false);
-        
+        mpi.DivideTasks(mpi.m_id, m_fockSpaceDim, nbrNodes, &mpi.m_firstTask, &mpi.m_lastTask, false);
         if(mpi.m_id < (int)nbrNodes)
         {
             m_nodeDim = mpi.m_lastTask - mpi.m_firstTask + 1;
@@ -238,13 +188,6 @@ void ValueFromFile(std::ifstream& f_in,dcmplx* value)
         {
             m_nodeDim = 0;
         }
-        
-        //mpi.DivideTasks(mpi.m_id,m_fockSpaceDim,mpi.m_nbrProcs,&mpi.m_firstTask,&mpi.m_lastTask,false);
-
         utilities::cout.DebuggingInfo()<<"\n\tON NODE "<<mpi.m_id<<" SET MATRIX NODE DIMENSION TO "<<m_nodeDim<<std::endl;
     }
-    
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
 }   //  End diagonalization namespace
-  

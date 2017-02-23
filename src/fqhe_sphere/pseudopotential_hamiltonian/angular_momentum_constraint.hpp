@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport       
 //!                                                                             
-//!                      \date Last Modified: 08/01/2015 
-//!                                                                             
 //!	 \file
 //!     This file defines a function to impose a particular angular momentum 
 //!     sector for Fock states in the FQHE sphere geometry
 //!                                                        
-//!                    Copyright (C) 2015 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -29,63 +27,38 @@
 #define _ANGULAR_MOMENTUM_CONSTRAINTS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-
 #include "../../utilities/mathematics/binary_number_tools.hpp" 
-                                                //  Include binary number tools
 
 namespace diagonalization
-{
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-    
-////////////////////////////////////////////////////////////////////////////////
-//! \brief A function to test whether a given Fock state is in a given  
-//! quantum number sector.
-//!
-//! This function defines the representation of the Fock states in terms of
-//! angular momentum quantum numbers m
-//!
-////////////////////////////////////////////////////////////////////////////////
-
-inline bool TestAngularMomentumSector(
-    const fock_t state,         //!<    Fock state to be tested
-    const mState_t lzTot,       //!<    Given angular momentum sector
-                                //!     to test against
-    const mState_t max)         //!<    Bounding angular momentum quantum number          
-{
-    //  This function assumes that the Fock states are labelled by
-    //  angular momentum quantum numbers from -m to m in steps of 2
-    
-    fock_t tempState = state;
-
-    //std::cout<<std::bitset<64>(state)<<std::endl;
-
-    //  Iterate over occupied states to find the total angular momentum value
-    
-    mState_t cumulativeLz = 0;
-    
-    while(0 != tempState)
+{ 
+    ////////////////////////////////////////////////////////////////////////////////
+    //! \brief A function to test whether a given Fock state is in a given  
+    //! quantum number sector.
+    //!
+    //! This function defines the representation of the Fock states in terms of
+    //! angular momentum quantum numbers m
+    ////////////////////////////////////////////////////////////////////////////////
+    inline bool TestAngularMomentumSector(
+        const fock_t state,         //!<    Fock state to be tested
+        const mState_t lzTot,       //!<    Given angular momentum sector
+                                    //!     to test against
+        const mState_t max)         //!<    Bounding angular momentum quantum number          
     {
-        //  Isolate right-most bit and determine its position
-        
-        fock_t rightMost = tempState & -tempState;
-
-        cumulativeLz += 2*utilities::binary::Base2Log(rightMost) - max;
-        
-        //  Mask off the current right-most bit and iterate
-        
-        tempState = tempState ^ rightMost;
+        //  This function assumes that the Fock states are labelled by
+        //  angular momentum quantum numbers from -m to m in steps of 2
+        fock_t tempState = state;
+        //  Iterate over occupied states to find the total angular momentum value
+        mState_t cumulativeLz = 0;
+        while(0 != tempState)
+        {
+            //  Isolate right-most bit and determine its position
+            fock_t rightMost = tempState & -tempState;
+            cumulativeLz += 2*utilities::binary::Base2Log(rightMost) - max;  
+            //  Mask off the current right-most bit and iterate
+            tempState = tempState ^ rightMost;
+        }
+        //  Compare with the actual lzTot sector
+        return (lzTot == cumulativeLz);
     }
-
-    //std::cout<<"cumulativeLz "<<cumulativeLz<<std::endl;
-
-    //  Compare with the actual lzTot sector
-    
-    return (lzTot == cumulativeLz);
-}
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
 }   //  End namespace diagonalization
-
 #endif

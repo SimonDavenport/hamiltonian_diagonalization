@@ -2,13 +2,11 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 02/02/2015
-//!                                                                             
 //!	 \file
 //!     This file defines a class to store data structures describing 
 //!     matrix elements of a Hamiltonian
 //!                                                        
-//!                    Copyright (C) 2015 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -30,18 +28,11 @@
 
 namespace diagonalization
 {
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
     //////  QuadraticLookUpTables IMPLEMENTATION        ////////////////////////
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Update the stored dimension of the quadratic term look-up table
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Update the stored dimension of the quadratic term look-up table
+    //!
     iSize_t QuadraticLookUpTables::CalculateDim(
         const kState_t kMax)    //!<    Number of k states
         const
@@ -49,13 +40,9 @@ namespace diagonalization
         return kMax;
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Find the k1 value corresponding to a given k2.
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Find the k1 value corresponding to a given k2.
+    //!
     void QuadraticLookUpTables::GetK1(
         kState_t* kRetrieveBuffer,  //!<    Buffer to store retrieved k values
         iSize_t& nbrK1,             //!<    Set the number of returned values 
@@ -63,19 +50,13 @@ namespace diagonalization
         const
     {
         nbrK1 = 1;
-
         //  In this case the quadratic terms are diagonal
-
         kRetrieveBuffer[0] =  k2;
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Return a quadratic term coefficient for a given k1,k2
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Return a quadratic term coefficient for a given k1,k2
+    //!
     double QuadraticLookUpTables::GetEkk(
         const kState_t k1,         //!<    k1 index
         const kState_t k2)         //!<    k2 index
@@ -84,17 +65,11 @@ namespace diagonalization
         return m_vTable[k1];
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
     //////  QuarticLookUpTables IMPLEMENTATION        //////////////////////////
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Update the stored dimension of the quadratic term look-up table
     //!
-    ////////////////////////////////////////////////////////////////////////////////
-
+    //! Update the stored dimension of the quadratic term look-up table
+    //!
     iSize_t QuarticLookUpTables::CalculateDim(
         const kState_t kMax)    //!<    Number of k states
         const
@@ -102,16 +77,12 @@ namespace diagonalization
         return std::pow(kMax,3);
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
     //////////////////////////////////////////////////////////////////////////////////
     //! \brief Get the k1 value corresponding to a given k2,k3,k4. 
     //! Where k2,k3,k4 are unsigned integer labels of the Fock states
     //!
     //! Use that in the angular momentum representation m1+m2=m3+m4
-    //! 
     //////////////////////////////////////////////////////////////////////////////////
-
     void QuarticLookUpTables::GetK1(
         kState_t* kRetrieveBuffer,  //!<    Buffer to store retrieved k values
         iSize_t& nbrK1,             //!<    Set the number of returned values 
@@ -121,27 +92,20 @@ namespace diagonalization
         const
     {   
         nbrK1 = 1;
-
         kRetrieveBuffer[0] =  m_kTable[(k4*m_kMax+k3)*m_kMax + k2];
-        
         //  Do not return a value in case of the range being exceeded
-        
         if(kRetrieveBuffer[0] >= m_kMax)
         {
             nbrK1 = 0;
         }
     }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Return a quartic term coefficient specified by a given k1,k2,k3,k4
     //!
     //! NOTE: This function is ONLY valid when the k1,k2,k3,k4 indices form
     //! a momentum conserving set - otherwise the coefficient does not exist
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
     double QuarticLookUpTables::GetVkkkk(
         const kState_t k1,         //!<    k1 index
         const kState_t k2,         //!<    k2 index
@@ -152,13 +116,7 @@ namespace diagonalization
         if(k2>=m_kMax || k3>=m_kMax || k4>=m_kMax)
         {
             std::cerr<<"\n\tERROR in GetVkkkk: k index out of range"<<std::endl;
-            //mpi.m_exitFlag=true;
         }
-        
         return m_vTable[(k4*m_kMax+k3)*m_kMax + k2];
     }
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-      
 }   //  End diagonalization namespace
-
