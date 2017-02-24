@@ -2,8 +2,6 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 28/05/2014
-//!                                                                             
 //!	 \file
 //!     This file contains common utility declarations used in sparse matrix
 //!     classes.
@@ -12,7 +10,7 @@
 //!     in order to interface with the SPARSE BLAS library. It is assumed
 //!     that the largest matrix required will not exceed 2^31 x 2^31. 
 //!                                           
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -33,8 +31,7 @@
 #define _SPARSE_MATRIX_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////		 
-
-#include <cstdint>              //  For uint64_t  
+#include <cstdint> 
 
 namespace utilities
 {
@@ -42,7 +39,6 @@ namespace utilities
     //!  Class template pre-declaration - allows MappedSparseMatrix constructor
     //!  to be called from a CrsSparseMatrixType
     //!
-    
     template <typename T>
     class CrsSparseMatrix;
     
@@ -50,7 +46,6 @@ namespace utilities
     //!  Class template pre-declaration - allows CrsSparseMatrixType constructor
     //!  to be called from a MappedSparseMatrix
     //!
-    
     template <typename T>
     class MappedSparseMatrix;
 
@@ -60,5 +55,4 @@ namespace utilities
     enum storageMethod_t {_SPARSE_MAPPED_,_SPARSE_CRS_,_DENSE_};
 
 }   //  End namespace utilities
-
 #endif

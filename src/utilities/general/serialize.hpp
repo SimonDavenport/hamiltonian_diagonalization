@@ -224,7 +224,6 @@ namespace utilities
     //! specialization. The workaround is to use a recursive set of classes,
     //! which contain the function that we wanted to use (see below)
     ////////////////////////////////////////////////////////////////////////////////
-
     template <typename I,typename... Js>
     struct SerializeImpl;
 
@@ -237,7 +236,6 @@ namespace utilities
     //! This particular "variadic" template class is called in the case where there 
     //! are no remaining arguments to be concatenated.    
     ////////////////////////////////////////////////////////////////////////////////
-    
     template<typename I>
     struct SerializeImpl<I>
     {
@@ -256,7 +254,6 @@ namespace utilities
     //! This particular "variadic" template class is called in the case where there 
     //! remain one or more arguments to be concatenated.   
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I, typename J, typename... Js>
     struct SerializeImpl<I,J,Js...>
     {
@@ -279,7 +276,6 @@ namespace utilities
     //! The variadic template argument allows for an arbitrary number of arguments, 
     //! not necessarily of the same type.   
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I,typename... Js>
     I Serialize(const Js... args)
     {
@@ -300,7 +296,6 @@ namespace utilities
     //! specialization. The workaround is to use a recursive set of classes,
     //! which contain the function that we wanted to use (see below)
     ////////////////////////////////////////////////////////////////////////////////
-
     template <typename I, typename R, typename... Js>
     struct UnserializeArrayImpl;
 
@@ -314,7 +309,6 @@ namespace utilities
     //! not necessarily of the same type, but for writing to an array, all types
     //! should be the same to avoid allocation errors.
     ////////////////////////////////////////////////////////////////////////////////
-    
     template<typename I, typename R>
     struct UnserializeArrayImpl<I, R>
     {
@@ -334,7 +328,6 @@ namespace utilities
     //! not necessarily of the same type, but for writing to an array, all types
     //! should be the same to avoid allocation errors.  
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I, typename R, typename J, typename... Js>
     struct UnserializeArrayImpl<I, R, J, Js...>
     {
@@ -372,7 +365,6 @@ namespace utilities
     //! not necessarily of the same type, but for writing to an array, all types
     //! should be the same to avoid allocation errors.     
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I, typename R, typename... Js>
     void UnserializeArray(
         R* returnArray, //!<    array of return values EQUAL in size to the number of Js
@@ -390,7 +382,6 @@ namespace utilities
     //! specialization. The workaround is to use a recursive set of classes,
     //! which contain the function that we wanted to use (see below)
     ////////////////////////////////////////////////////////////////////////////////
-
     template <typename I, typename... Js>
     struct UnserializeImpl;
 
@@ -401,10 +392,8 @@ namespace utilities
     //!  of arguments from a single I type container into a stringstream. 
     //!
     //! This particular "variadic" template class is called in the case where
-    //! there are no remaining arguments to be split.
-    //!     
+    //! there are no remaining arguments to be split.  
     ////////////////////////////////////////////////////////////////////////////////
-    
     template <typename I>
     struct UnserializeImpl<I>
     {
@@ -422,9 +411,7 @@ namespace utilities
     //!
     //! This particular "variadic" template class is called in the case where there 
     //! remain one or more arguments to be split.
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I, typename J, typename... Js>
     struct UnserializeImpl<I, J, Js...>
     {
@@ -455,7 +442,6 @@ namespace utilities
     //! The variadic template argument allows for an arbitrary number of arguments, 
     //! not necessarily of the same type.  
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I, typename... Js>
     std::string Unserialize(
         I& value)
@@ -474,7 +460,6 @@ namespace utilities
     //! specialization. The workaround is to use a recursive set of classes,
     //! which contain the function that we wanted to use (see below)
     ////////////////////////////////////////////////////////////////////////////////
-
     template <typename I, typename... Js>
     struct SerializeFromFileImpl;
         
@@ -488,7 +473,6 @@ namespace utilities
     //! This particular "variadic" template class is called in the case where there 
     //! are no remaining arguments to be concatenated.     
     ////////////////////////////////////////////////////////////////////////////////
-    
     template<typename I>
     struct SerializeFromFileImpl<I>
     {
@@ -508,7 +492,6 @@ namespace utilities
     //! This particular "variadic" template class is called in the case where there 
     //! remain one or more arguments to be concatenated.  
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I, typename J, typename... Js>
     struct SerializeFromFileImpl<I, J, Js...>
     {
@@ -532,7 +515,6 @@ namespace utilities
     //! The variadic template argument allows for an arbitrary number of arguments, 
     //! not necessarily of the same type.  
     ////////////////////////////////////////////////////////////////////////////////
-
     template<typename I, typename... Js>
     I SerializeFromFile(std::ifstream& f_in)
     {
@@ -542,5 +524,6 @@ namespace utilities
         return value;
     }
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
+
 }   //  End namespace utilities
 #endif
