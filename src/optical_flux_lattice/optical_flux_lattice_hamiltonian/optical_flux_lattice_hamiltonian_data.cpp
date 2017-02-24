@@ -323,9 +323,6 @@ namespace diagonalization
                 {
                     utilities::cout.SecondaryOutput()<<"\n\tDiagonalization method: Lanczos (ARPACK)"<<std::endl;
                 }
-                #if _ENABLE_HIGH_PRECISION_
-                    utilities::cout.SecondaryOutput()<<"\n\tUsing high precision arithmetic to calculate look-up tables."<<std::endl;
-                #endif
                 tmp = (*optionList)["basis"].as<int>();
                 if(0==tmp)      m_useWannierBasis = false;
                 else if(1==tmp) m_useWannierBasis = true;
@@ -518,14 +515,14 @@ namespace diagonalization
             {
                 utilities::SqliteVariable var;
                 var.SetValues("Completed", (int)1);
-                sql.UpdateTableEntry(m_sqlTableName, m_sqlId,v ar);
+                sql.UpdateTableEntry(m_sqlTableName, m_sqlId, var);
             }
             //  Record the PBS job id, if known
             if(getenv("PBS_JOBID")!=NULL)
             {
                 utilities::SqliteVariable var;
                 var.SetValues("jobId",(int)atoi(getenv("PBS_JOBID")));
-                sql.UpdateTableEntry(m_sqlTableName, m_sqlId,var);
+                sql.UpdateTableEntry(m_sqlTableName, m_sqlId, var);
             }
             //  Record the SLURM job id, if known
 		    if(getenv("SLURM_JOB_ID")!=NULL)
@@ -534,7 +531,7 @@ namespace diagonalization
                 var.SetValues("jobId", (int)atoi(getenv("SLURM_JOB_ID")));
                 sql.UpdateTableEntry(m_sqlTableName, m_sqlId, var);
             }
-            sql.CopyTableToTextFile(m_sqlTableName,fileName.str());
+            sql.CopyTableToTextFile(m_sqlTableName, fileName.str());
         }
     }
 }   //  End namespace diagonalization

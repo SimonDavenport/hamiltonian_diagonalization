@@ -35,8 +35,6 @@ namespace diagonalization
     ObservablesManager::ObservablesManager()
         :
         m_nbrMostProbable(0),
-        m_nbrA(0),
-        m_orbitalCut(0),
         m_calcualtedObservables(false)
     {
         m_observablesList["calculate-occupations"]      = false;
@@ -58,8 +56,6 @@ namespace diagonalization
         :
         m_observablesList(other.m_observablesList),
         m_nbrMostProbable(other.m_nbrMostProbable),
-        m_nbrA(other.m_nbrA),
-        m_orbitalCut(other.m_orbitalCut),
         m_calcualtedObservables(other.m_calcualtedObservables)
     {
     }
@@ -72,8 +68,6 @@ namespace diagonalization
         const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
     {
         mpi.Sync(&m_nbrMostProbable, 1, nodeId);
-        mpi.Sync(&m_nbrA, 1, nodeId);
-        mpi.Sync(&m_orbitalCut, 1, nodeId);
         for(const auto &pair : m_observablesList)
         {
             bool temp;

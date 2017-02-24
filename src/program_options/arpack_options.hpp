@@ -39,10 +39,6 @@ namespace myOptions
     {
         po::options_description arOpt("ARPACK options");
 	    arOpt.add_options()
-	    ("shift-invert-mode",po::value<bool>()->default_value(false),
-	     "[DISABLED!] Option to solve the shift-inverted eigenvalue problem (A-SIGMA*I)^-1 x = nu x, for potentially faster convergence to lowest lying eigenvalues of Ax = lx.\n")
-	    ("set-shift",po::value<double>()->default_value(0.0),
-	     "Set the shift value, SIGMA, to be used in shift-invert mode. Eigenvalues closest to the shift factor will converge fastest.\n\nIMPORTANT - to obtain the lowest lying eigenvalue, set the SIGMA value very close to it, or increase the number of calculated eigenvalues so that it does not get cut off. Eigenvalues closest to the SIGMA value will be included first. \n\nNOTE - it is necessary to specify the shift value in quotes e.g. '-32.1'.\n")
         ("use-initial",po::value<bool>()->default_value(false),
           "Option to read in an initial ARPACK vector from a binary file.\n")
         ("initial-file",po::value<std::string>()->default_value("initVector"),

@@ -41,20 +41,12 @@ namespace utilities
             m_eigenvalueMagnitude('S'),
             m_whatMagnitude('R'),
             m_upperOrLowerMatrix('U'),
-            m_shift(0.0),
             m_maxIterations(2000),
-            m_mode(arpack::_STANDARD_),
             m_provideInitial(0),
             m_storeFinalVector(false),
             m_initialVectorFile("initial_vector.bin"),
-            m_finalVectorFile("initial_vector.bin"),
-            m_matrixPower(1)
-        {
-            m_coefficientA.resize(m_maxMatrixPower);
-            m_coefficientB.resize(m_maxMatrixPower);
-            m_coefficientA[0] = 1.0;
-            m_coefficientB[0] = 0.0;
-        }
+            m_finalVectorFile("initial_vector.bin")
+        {}
         //!
         //! Copy constructor
         //!
@@ -64,16 +56,11 @@ namespace utilities
             m_eigenvalueMagnitude(other.m_eigenvalueMagnitude),
             m_whatMagnitude(other.m_whatMagnitude),
             m_upperOrLowerMatrix(other.m_upperOrLowerMatrix),
-            m_shift(other.m_shift),
             m_maxIterations(other.m_maxIterations),
-            m_mode(other.m_mode),
             m_provideInitial(other.m_provideInitial),
             m_storeFinalVector(other.m_storeFinalVector),
             m_initialVectorFile(other.m_initialVectorFile),
-            m_finalVectorFile(other.m_finalVectorFile),
-            m_matrixPower(other.m_matrixPower),
-            m_coefficientA(other.m_coefficientA),
-            m_coefficientB(other.m_coefficientB)
+            m_finalVectorFile(other.m_finalVectorFile)
         {}
         //!
         //! Assignment operator
@@ -84,16 +71,11 @@ namespace utilities
             m_eigenvalueMagnitude = other.m_eigenvalueMagnitude;
             m_whatMagnitude = other.m_whatMagnitude;
             m_upperOrLowerMatrix = other.m_upperOrLowerMatrix;
-            m_shift = other.m_shift;
             m_maxIterations = other.m_maxIterations;
-            m_mode = other.m_mode;
             m_provideInitial = other.m_provideInitial;
             m_storeFinalVector = other.m_storeFinalVector;
             m_initialVectorFile = other.m_initialVectorFile;
             m_finalVectorFile = other.m_finalVectorFile;
-            m_matrixPower = other.m_matrixPower;
-            m_coefficientA = other.m_coefficientA;
-            m_coefficientB = other.m_coefficientB;
             return *this;
         }
         //!
@@ -107,32 +89,13 @@ namespace utilities
             mpi.Sync(&m_eigenvalueMagnitude, 1, nodeId);
             mpi.Sync(&m_whatMagnitude, 1, nodeId);
             mpi.Sync(&m_upperOrLowerMatrix, 1, nodeId);
-            mpi.Sync(&m_shift, 1, nodeId);
             mpi.Sync(&m_maxIterations, 1, nodeId);
             mpi.Sync(&m_provideInitial, 1, nodeId);
             mpi.Sync(&m_storeFinalVector, 1, nodeId);
             mpi.Sync(m_initialVectorFile, nodeId);
             mpi.Sync(m_finalVectorFile, nodeId);
-            mpi.Sync(&m_matrixPower, 1, nodeId);
-            mpi.Sync(&m_coefficientA[0], m_coefficientA.size(), nodeId);
-            mpi.Sync(&m_coefficientB[0], m_coefficientB.size(), nodeId);
         }
-        //!
-        //! Set the ARPACK mode (_STANDARD_ or _SHIFT_INVERT_)
-        //!
-        void ArpackWrapper::SetMode(
-            const mode_t mode)      //!<    Set the new mode
-        {
-            m_mode = mode;
-        }
-        //!
-        //! Set the value of the shift (used in shift-invert mode only)
-        //!
-        void ArpackWrapper::SetShift(
-            const double shift) //!<    Set the new shift
-        {
-            m_shift = shift;
-        }
+        
         //!
         //! Set the type of problem: 'I' for standard eigenvalue problem or
         //! 'G' for generalized eigenvalue problem
@@ -151,6 +114,7 @@ namespace utilities
                 m_typeOfProblem = typeOfProblem;
             }
         }
+        
         //!
         //! Identify the part of the spectrum to investigate: 'S' sets the 
         //! smallest eigenvalues, 'L' the largest.See also "SetWhatMagnitude" function
@@ -169,6 +133,7 @@ namespace utilities
                 m_eigenvalueMagnitude = eigenvalueMagnitude;
             }
         }
+        
         //!
         //! Identify the part of the spectrum to investigate: 'I' means we look
         //! at eigenvalues with the 'S' or 'L' imaginary part, 'R' for real part
@@ -188,6 +153,7 @@ namespace utilities
                 m_whatMagnitude = whatMagnitude;
             }
         }
+        
         //!
         //! Specify whether the matrix passed to the ARPACK routine is stored in
         //! upper ('U') or lower ('L') triangular format. 
@@ -206,6 +172,7 @@ namespace utilities
                 m_upperOrLowerMatrix = upperOrLower;
             }
         }
+        
         //!
         //! Return the currently set value of the m_upperOrLowerMatrix parameter
         //!
@@ -214,6 +181,7 @@ namespace utilities
         {
            return m_upperOrLowerMatrix;
         }
+        
         //!
         //! Set the maximum number of Lanczos iterations to perform before 
         //! quitting
@@ -223,6 +191,7 @@ namespace utilities
         {
             m_maxIterations = maxIterations;
         }
+        
         //!
         //! Set option to use initial Lanczos vector by specifying a file where
         //! it is stored. ARPACK allows one to define an initial vector, but by default
@@ -232,6 +201,7 @@ namespace utilities
         {
             m_provideInitial = 1;
         }
+        
         //!
         //! \brief Set the initial vector file name
         //!
@@ -240,6 +210,7 @@ namespace utilities
         {
             m_initialVectorFile = initialVectorFile;
         }
+        
         //!
         //! Set option to store the first of the final Lanczos vectors, 
         //! potentially to be used as a new initial vector
@@ -248,6 +219,7 @@ namespace utilities
         {
             m_storeFinalVector = true;
         }
+        
         //!
         //! \brief Set the final vector file name
         //!
@@ -257,54 +229,5 @@ namespace utilities
              m_finalVectorFile = finalVectorFile;
         }
 
-        //////////////////////////////////////////////////////////////////////////////////
-        //! \brief Specify the form of a multiplicative preconditioner. The general form
-        //! is set to solve for the eigenvalues of (a1*A+b1)(a2*A+B2)...
-        //! 
-        //! The idea is to transform the eigenvalues spectrum to a form where those
-        //! eigenvalues we want to calculated are well separated from the remainder. 
-        //!
-        //! This is done at the expense of having to perform more than one matrix-vector
-        //! multiplication at each step. 
-        //!
-        //! One approach that often works when finding the lowest lying eigenvalues 
-        //! is to determine the eigenvalues of -A^2.
-        //!
-        //////////////////////////////////////////////////////////////////////////////////
-        void ArpackWrapper::SetPreconditioner(
-            const int matrixPower,      //!<    Set power of the matrix used
-            double* a,                  //!<    List of preconditioner a coefficients
-            double* b)                  //!<    List of preconditioner b coefficients
-        {
-            if(matrixPower>m_maxMatrixPower)
-            {
-                std::cerr<<"\n\tWARNING: matrix power set in ARPACK preconditioner > "<<m_maxMatrixPower<<" not allowed"<<std::endl;
-                
-                m_matrixPower = m_maxMatrixPower;
-            }
-            else
-            {
-                m_matrixPower = matrixPower;
-            }
-            for(int i=0; i<matrixPower; ++i)
-            {
-                m_coefficientA[i] = a[i];
-                m_coefficientB[i] = b[i];
-            }
-        }
-        //!
-        //! Get the current values of the preconditioner parameters:
-        //! m_matrixPower, m_coefficientA and m_coefficientB
-        //!
-        void ArpackWrapper::GetPreconditioner(
-            int& matrixPower,           //!<    Power of the matrix used
-            std::vector<double>& a,     //!<    List of preconditioner a coefficients
-            std::vector<double>& b)     //!<    List of preconditioner b coefficients
-            const
-        {
-            matrixPower = m_matrixPower;
-            a = m_coefficientA;
-            b = m_coefficientB;    
-        }
     }   //  End namespace linearAlgebra 
 }   //  End namespace utilities 

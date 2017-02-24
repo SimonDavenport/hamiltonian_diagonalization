@@ -35,9 +35,6 @@
 #if _DEBUG_
 #include "../general/debug.hpp"
 #endif
-#if _ENABLE_PARDISO_
-#include "../wrappers/pardiso_wrapper.hpp"
-#endif
 
 ///////		Import ARPACK routines to diagonalize       ////////////////////////
 //////      sparse Hermitian matrices                   ////////////////////////
@@ -172,14 +169,6 @@ void pdneupd_(int* COMM, int* RVEC, char* HOWMNY, int* SELECT, dcmplx* DR, dcmpl
               dcmplx* WORKL, int* LWORKL, int* INFO, int* LEN_HOWMNY, int* LEN_BMAT,
               int* LEN_WHICH);  
 
-namespace arpack
-{
-    enum mode_t {_STANDARD_=1,_SHIFT_INVERT_=2};
-                            //!<  Sets up to use the standard method to solve Ax = lx
-                            //! Or alternatively solves the shift-inverted problem
-                            //! (A - SIGMA I)^-1 x = nu x, where l = 1/nu + SIGMA
-}
-
 namespace utilities
 {
     namespace linearAlgebra
@@ -205,16 +194,14 @@ namespace utilities
         char m_eigenvalueMagnitude;     //!<    'S' sets smallest, 'L' sets largest
                                         //!     in set of eigenvalues to be found
         char m_whatMagnitude;           //!<    m_eigenvalueMagnitude refers to 'R'
-                                        //!     for real part, 'I' for imag part or 
+                                        //!     for real part, 'I' for imag part or
                                         //!     'M' for absolute value
         char m_upperOrLowerMatrix;      //!<    Flag to state what part of the 
                                         //!     Hermitian matrix is stored
-        //////      PROVIDE AN INTERFACE FOR THE PARAMETERS HIDDEN IN IPARAM        /////
-        double m_shift;                 //!<    Value of the shift factor used in shift-invert mode     
+        //////      PROVIDE AN INTERFACE FOR THE PARAMETERS HIDDEN IN IPARAM        /////   
         int m_maxIterations;            //!<    Max number of iterations (IPARAM[2])
         static const int m_blockSize=1; //!<    Recurrence block size (IPARAM[3])
                                         //!     Only currently allowed to be 1
-        mode_t m_mode;                  //!<    Operating mode (IPARAM[6])
         //////      PROVIDE INTERFACT TO SET THE STARTING ITERATION VECTORS        /////
         int m_provideInitial;           //!<    Flag set to > 0 if the initial vector is 
                                         //!     provided - otherwise if set to 0, the 
@@ -226,24 +213,13 @@ namespace utilities
                                         //!     is stored/retrieved
         std::string m_finalVectorFile;  //!<    File where the final vector
                                         //!     is stored/retrieved        
-        //////      Parameters used in preconditioned Lanczos       ///////////////////
-        int m_matrixPower;              //!<    Power of the matrix A to find the eigenvalues of
-                                        //!     (at the end we take the appropriate root to get
-                                        //!     back to the eigenvalues of the original matrix)                             
-        //  For matrix preconditioning of the form (a1*A+b1)(a2*A+b2)....:
-        static const int m_maxMatrixPower=2;      //!<    Maximum value of the matrix power
-        std::vector<double> m_coefficientA;
-        std::vector<double> m_coefficientB;
-
         //////      DEFINE CLASS CONSTRUCTOR AND OTHER FUNCTIONS    ///////////////////
         public:
         ArpackWrapper();
         ArpackWrapper(const ArpackWrapper& other);
         ArpackWrapper& operator=(const ArpackWrapper& other);
-        void MpiSync(const int nodeId,const MpiWrapper& mpi);
+        void MpiSync(const int nodeId, const MpiWrapper& mpi);
         //////      Public interface to edit user defined parameters    ////////
-        void SetMode(const mode_t mode);
-        void SetShift(const double shift);
         void SetProblemType(const char typeOfProblem);
         void SetEigenvalueMagnitude(const char eigenvalueMagnitude);
         void SetWhatMagnitude(const char whatMagnitude);
@@ -254,12 +230,7 @@ namespace utilities
         void SetInitialVectorFile(const std::string initialVectorFile);
         void StoreFinalVector();
         void SetFinalVectorFile(const std::string finalVectorFile);
-        void SetPreconditioner(const int matrixPower, double* a, double* b);
-        void GetPreconditioner(int& matrixPower, std::vector<double>& a, std::vector<double>& b) const;
-        //////      Declare diagonalization functions       //////
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-   
         ////////////////////////////////////////////////////////////////////////////////
         //! \brief This function calls an ARPACK diagonalization routine to obtain a
         //!	approximate eigenvalues/eigenvectors of a complex hermitian matrix
@@ -382,27 +353,6 @@ namespace utilities
             int LEN_HOWMNY = 1; //!<  HOWMNY is a length 1 character
             //////      ITERATION COUNTER VARIABLES    //////////
             int iterationCounter = 0;   //!<    Count the number of ARPACK iterations taken
-            T* tempVector = 0;  //!<    Used for intermediate matrix-vector multiplication
-            ////////////////////////////////////////////////////////////////////////////////
-            #if _ENABLE_PARDISO_
-            //////      INITIALIZE ARPACK PARAMETERS        ////////////////////////////
-            if(arpack::_SHIFT_INVERT_ == m_mode)
-            {
-                //  For the shift-invert method, we look for the largest eigenvalues
-                //  of the inverted matrix in order to obtain the smallest eigenvalues
-                //  of the original matrix, and vice versa
-                if('S' == m_eigenvalueMagnitude)
-                {
-                    m_eigenvalueMagnitude = 'L';
-                }
-                else
-                {
-                    m_eigenvalueMagnitude = 'S';
-                }
-                m_whatMagnitude = 'M';
-            }
-            #endif
-            ////////////////////////////////////////////////////////////////////////////////
             IDO         = 0;    //  Set value for initial iteration
             BMAT        = m_typeOfProblem;
             N           = nodeDim;
@@ -459,10 +409,6 @@ namespace utilities
             }
             Z       = eigenvectors;     //  Set to external memory address
             WORKEV  = new T[2*NCV];
-            if(m_matrixPower>1)
-            {
-                tempVector = new T[N];
-            }
             //////      SET RESID TO THE STARTING VECTOR, IF ONE IS PROVIDED    ////////
             if(m_provideInitial)
             {
@@ -543,11 +489,9 @@ namespace utilities
                     //  This output requests a matrix-vector multiplication
                     //  applied to the current Ritz estimates
                     //  Y = matrix * X
-                    //  In shift-invert mode, this step requires solving 
-                    //  a system of linear equations
                     MatrixVectorMultiply(WORKD+IPNTR[0]-1, WORKD+IPNTR[1]-1);
                 }
-                iterationCounter++;
+                ++iterationCounter;
             }
             while(IDO != 99);
             utilities::cout.AdditionalInfo()<<std::endl<<std::endl;
@@ -562,7 +506,7 @@ namespace utilities
                 }
                 else
                 {
-                    f_finalVector.write((char*)(V),(long int)N*sizeof(T));
+                    f_finalVector.write((char*)(V), (long int)N*sizeof(T));
                     f_finalVector.close();
                 }
             }
@@ -599,55 +543,13 @@ namespace utilities
             }
             for(int i=0; i<nbrEigenvalues; ++i)
             {
-                //  Correct for the shift-invert operation
-                if(arpack::_SHIFT_INVERT_ == m_mode)
+                if(utilities::is_same<T, dcmplx>::value)
                 {
-                    #if _ENABLE_PARDISO_
-                    if(utilities::is_same<T, dcmplx>::value)
-                    {
-                        eigenvalues[i] = 1.0/(std::real(D[i]))+m_shift;
-                    }
-                    else if(utilities::is_same<T, double>::value)
-                    {
-                        eigenvalues[i] = 1.0/(std::real(DR[i]))+m_shift;
-                    }
-                    #endif
+                    eigenvalues[i] = std::real(D[i]);
                 }
-                else
+                else if(utilities::is_same<T, double>::value)
                 {
-                    if(1 == m_matrixPower)
-                    {
-                        if(utilities::is_same<T, dcmplx>::value)
-                        {
-                            eigenvalues[i] = std::real(D[i]);
-                        }
-                        else if(utilities::is_same<T, double>::value)
-                        {
-                            eigenvalues[i] = std::real(DR[i]);
-                        }
-                    }
-                    else if(2 == m_matrixPower)
-                    {
-                        double temp = m_coefficientA[1]*m_coefficientB[0]+m_coefficientA[0]*m_coefficientB[1];;
-                        double descriminant = 0;
-                        if(utilities::is_same<T, dcmplx>::value)
-                        {
-                            descriminant = temp*temp-4.0*m_coefficientA[0]*m_coefficientA[1]*(m_coefficientB[0]*m_coefficientB[1]-std::real(D[i]));
-                        }
-                        else if(utilities::is_same<T, double>::value)
-                        {
-                            descriminant = temp*temp-4.0*m_coefficientA[0]*m_coefficientA[1]*(m_coefficientB[0]*m_coefficientB[1]-std::real(DR[i]));
-                        }
-                                                    
-                        if(descriminant<0)
-                        {
-                            eigenvalues[i] = (-temp-sqrt(-descriminant))/2.0*(m_coefficientA[0]*m_coefficientA[1]);
-                        }
-                        else
-                        {
-                            eigenvalues[i] = (-temp-sqrt(descriminant))/(2.0*m_coefficientA[0]*m_coefficientA[1]);
-                        }
-                    }
+                    eigenvalues[i] = std::real(DR[i]);
                 }
             }
             //////      CLEAR UP MEMORY     ////////////////////////////////////////////
@@ -667,19 +569,13 @@ namespace utilities
                 delete[] DI;
             }
             delete[] WORKEV;
-            if(m_matrixPower>1)
-            {
-                delete[] tempVector;
-            }
             //////      PRINT SUMMARY OF CALCULATION DATA    ///////////////////////////
             utilities::cout.SecondaryOutput()<<"\n\tARPACK NCV:\t\t\t"<<NCV<<std::endl;
             utilities::cout.SecondaryOutput()<<"\tARPACK ITERATIONS:\t\t"<<iterationCounter<<std::endl;
-            utilities::cout.SecondaryOutput()<<"\tARPACK NO. MATRIX-VECTOR CALLS:\t"<<m_matrixPower*iterationCounter<<std::endl;
+            utilities::cout.SecondaryOutput()<<"\tARPACK NO. MATRIX-VECTOR CALLS:\t"<<iterationCounter<<std::endl;
             return true;
         }
-       
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-   
+
         ////////////////////////////////////////////////////////////////////////////////
         //! \brief This function calls an PARPACK diagonalization routine to obtain a
         //!	approximate eigenvalues/eigenvectors of a complex hermitian matrix
@@ -696,7 +592,6 @@ namespace utilities
         //! not incorperated a parallel Cholesky factorization and linear solver
         //! method
         ////////////////////////////////////////////////////////////////////////////////
-        
         template <typename T>
         bool DiagonalizeSymmetricMatrix(
         const std::function<void(T* inVector, T* outVector, MpiWrapper& mpi)>& MatrixVectorMultiply,
@@ -775,9 +670,7 @@ namespace utilities
             int LWORKL;         //!<  Dimension of WORKL must be at least  3*NCV**2 + 5*NCV
             double* RWORK;      //!<  Working array of dimension NCV
             int INFO;           //!   Contains output error codes
-            
             //////      A DESCRIPTION OF ADDITIONAL p?neupd_ ARGUMENTS       //////////
-            
             int RECV;           //!<  FALSE: compute Ritz eigenvalues only; TRUE: also
                                 //!   compute Ritz vectors
             char HOWMNY;        //!<  'A': compute all NEV Ritz vectors
@@ -788,7 +681,7 @@ namespace utilities
             T* DI;              //!<  Contains the output Ritz eigenvalues
             T* Z;               //!<  If RECV = true, contains Ritz eigenvectors.
                                 //!   Must be of dimension N*NEV
-            int LDZ;            //!<  Leading dimension of the Z array 
+            int LDZ;            //!<  Leading dimension of the Z array
             T* WORKEV;          //!<  Working space of dimension 2*NCV
             T SIGMA;            //!<  If IPARAM 6: is 3 then contains the "shift value"
             T SIGMAR;           //!<  If IPARAM 6: is 3 then contains the "shift value"
@@ -799,7 +692,6 @@ namespace utilities
             int LEN_HOWMNY = 1; //!<  HOWMNY is a length 1 character
             //////      ITERATION COUNTER VARIABLES    //////////
             int iterationCounter = 0;   //!<    Count the number of ARPACK iterations taken
-            T* tempVector = 0;  //!<    Used for intermediate matrix-vector multiplication
             COMM        = MPI_Comm_c2f(mpi.m_comm); //!<  Converted MPI comm handle
             IDO         = 0;    //!<  Set value for initial iteration
             BMAT        = m_typeOfProblem;
@@ -857,10 +749,6 @@ namespace utilities
             }
             Z       = eigenvectors;     //  Set to external memory address
             WORKEV  = new T[2*NCV];
-            if(m_matrixPower>1)
-            {
-                tempVector = new T[N];
-            }
             //////      SET RESID TO THE STARTING VECTOR, IF ONE IS PROVIDED    ////////
             if(m_provideInitial)
             {
@@ -898,17 +786,17 @@ namespace utilities
                     utilities::cout.AdditionalInfo()<<"\t ARPACK ITERATION "<<iterationCounter<<"\r";
                     fflush(stdout);
                 }
-                if(utilities::is_same<T,dcmplx>::value)
+                if(utilities::is_same<T, dcmplx>::value)
                 {
-                    pznaupd_(&COMM,&IDO,&BMAT,&N,&WHICH[0],&NEV,&TOL,RESID,
-                    &NCV,V,&LDV,IPARAM,IPNTR,WORKD,WORKL,&LWORKL,RWORK,&INFO,
-                    &LEN_BMAT,&LEN_WHICH);
+                    pznaupd_(&COMM, &IDO, &BMAT, &N, &WHICH[0], &NEV, &TOL, RESID,
+                             &NCV, V, &LDV, IPARAM, IPNTR, WORKD, WORKL, &LWORKL, RWORK, &INFO,
+                             &LEN_BMAT, &LEN_WHICH);
                 }
-                else if(utilities::is_same<T,double>::value)
+                else if(utilities::is_same<T, double>::value)
                 {
-                    pdnaupd_(&COMM,&IDO,&BMAT,&N,&WHICH[0],&NEV,&TOL,RESID,
-                    &NCV,V,&LDV,IPARAM,IPNTR,WORKD,WORKL,&LWORKL,&INFO,
-                    &LEN_BMAT,&LEN_WHICH);
+                    pdnaupd_(&COMM, &IDO, &BMAT, &N, &WHICH[0], &NEV, &TOL, RESID,
+                             &NCV, V, &LDV, IPARAM, IPNTR, WORKD, WORKL, &LWORKL, &INFO,
+                             &LEN_BMAT, &LEN_WHICH);
                 }
                 if(INFO<0)
                 {
@@ -954,12 +842,9 @@ namespace utilities
                     //  This output requests a matrix-vector multiplication
                     //  applied to the current Ritz estimates
                     //  Y = matrix * X
-                    //  Calculate Y = AX
-                    //  OR additionally apply a preconditioner by performing
-                    //  further matrix-vector multiplications
-                    MatrixVectorMultiply(WORKD+IPNTR[0]-1,WORKD+IPNTR[1]-1,mpi);
+                    MatrixVectorMultiply(WORKD+IPNTR[0]-1, WORKD+IPNTR[1]-1, mpi);
                 }
-                iterationCounter++;
+                ++iterationCounter;
             }
             while(IDO != 99);
             MPI_Barrier(mpi.m_comm);
@@ -978,7 +863,7 @@ namespace utilities
                 }
                 else
                 {
-                    f_finalVector.write((char*)(V),(long int)N*sizeof(T));
+                    f_finalVector.write((char*)(V), (long int)N*sizeof(T));
                     f_finalVector.close();
                 }
             }
@@ -1015,37 +900,13 @@ namespace utilities
             }
             for(int i=0; i<nbrEigenvalues; ++i)
             {    
-                if(1 == m_matrixPower)
+                if(utilities::is_same<T, dcmplx>::value)
                 {
-                    if(utilities::is_same<T, dcmplx>::value)
-                    {
-                        eigenvalues[i] = std::real(D[i]);
-                    }
-                    else if(utilities::is_same<T, double>::value)
-                    {
-                        eigenvalues[i] = std::real(DR[i]);
-                    }
+                    eigenvalues[i] = std::real(D[i]);
                 }
-                else if(2 == m_matrixPower)
+                else if(utilities::is_same<T, double>::value)
                 {
-                    double temp = m_coefficientA[1]*m_coefficientB[0]+m_coefficientA[0]*m_coefficientB[1];;
-                    double descriminant = 0;
-                    if(utilities::is_same<T,dcmplx>::value)
-                    {
-                        descriminant = temp*temp-4.0*m_coefficientA[0]*m_coefficientA[1]*(m_coefficientB[0]*m_coefficientB[1]-std::real(D[i]));
-                    }
-                    else if(utilities::is_same<T,double>::value)
-                    {
-                        descriminant = temp*temp-4.0*m_coefficientA[0]*m_coefficientA[1]*(m_coefficientB[0]*m_coefficientB[1]-std::real(DR[i]));
-                    }                         
-                    if(descriminant<0)
-                    {
-                        eigenvalues[i] = (-temp-sqrt(-descriminant))/2.0*(m_coefficientA[0]*m_coefficientA[1]);
-                    }
-                    else
-                    {
-                        eigenvalues[i] = (-temp-sqrt(descriminant))/(2.0*m_coefficientA[0]*m_coefficientA[1]);
-                    }
+                    eigenvalues[i] = std::real(DR[i]);
                 }
             }
             //////      CLEAR UP MEMORY     ////////////////////////////////////////////
@@ -1054,31 +915,26 @@ namespace utilities
             delete[] WORKD;
             delete[] WORKL;
             delete[] SELECT;
-            if(utilities::is_same<T,dcmplx>::value)
+            if(utilities::is_same<T, dcmplx>::value)
             {
                 delete[] RWORK;
                 delete[] D;
             }
-            else if(utilities::is_same<T,double>::value)
+            else if(utilities::is_same<T, double>::value)
             {
                 delete[] DR;
                 delete[] DI;
             }
             delete[] WORKEV;
-            if(m_matrixPower>1)
-            {
-                delete[] tempVector;
-            }
             //////      PRINT SUMMARY OF CALCULATION DATA    ///////////////////////////
             if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
                 utilities::cout.SecondaryOutput()<<"\n\tPARPACK NCV:\t\t\t"<<NCV<<std::endl;
                 utilities::cout.SecondaryOutput()<<"\tPARPACK ITERATIONS:\t\t"<<iterationCounter<<std::endl;
-                utilities::cout.SecondaryOutput()<<"\tPARPACK NO. MATRIX-VECTOR CALLS:\t"<<m_matrixPower*iterationCounter<<std::endl;
+                utilities::cout.SecondaryOutput()<<"\tPARPACK NO. MATRIX-VECTOR CALLS:\t"<<iterationCounter<<std::endl;
             }
             return true;
         }
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
     };  //  End class ArpackWrapper
     }   //  End namespace linearAlgebra 
 }   //  End namespace utilities

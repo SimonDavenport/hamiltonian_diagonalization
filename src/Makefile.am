@@ -23,7 +23,7 @@ utilities/wrappers/arpack_wrapper.cpp \
 utilities/wrappers/fftw_wrapper.cpp \
 utilities/wrappers/sqlite_wrapper.cpp \
 utilities/mathematics/binary_number_tools.cpp \
-utilities/mathematics/binomial_table.cpp \
+utilities/mathematics/binomials.cpp \
 utilities/mathematics/murmur_hash2.cpp \
 utilities/mathematics/murmur_hash3.cpp
 
@@ -64,7 +64,7 @@ basis/two_level_fermion_fock_basis.cpp \
 utilities/wrappers/mpi_wrapper.cpp \
 utilities/wrappers/arpack_wrapper.cpp \
 utilities/mathematics/binary_number_tools.cpp \
-utilities/mathematics/binomial_table.cpp \
+utilities/mathematics/binomials.cpp \
 utilities/mathematics/clebsch_gordan_coefficients.cpp \
 utilities/mathematics/murmur_hash2.cpp \
 utilities/mathematics/murmur_hash3.cpp

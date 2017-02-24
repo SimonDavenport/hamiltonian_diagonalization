@@ -488,7 +488,6 @@ namespace diagonalization
             m_eigenvalues   = other.m_eigenvalues;
             m_eigenvectors  = other.m_eigenvectors;
             m_arpackWrapper = other.m_arpackWrapper;
-
             return *this;
         }
 
@@ -561,25 +560,11 @@ namespace diagonalization
         {
             if(0 == mpi.m_id)
             {
-                double a[2] = {1.0,0.0};
-                double b[2] = {0.0,0.0};
                 m_arpackWrapper.SetEigenvalueMagnitude('S');
-                m_arpackWrapper.SetPreconditioner(1, a, b);
-                if((*optionList)["shift-invert-mode"].as<bool>())
-                {
-                    m_arpackWrapper.SetMode(arpack::_SHIFT_INVERT_);
-                    if(mpi.m_nbrProcs > 1)
-                    {
-                        std::cerr<<"\n\tFIXME: SHIFT-INVERT MODE NOT AVAILABLE IN PARALLEL"<<std::endl;
-                        exit(EXIT_FAILURE);
-                    }
-                    m_arpackWrapper.SetShift((*optionList)["set-shift"].as<double>());
-                }
                 if((*optionList)["use-initial"].as<bool>())
                 {
                     m_arpackWrapper.UseInitialVector();
                 }
-                
                 if((*optionList)["store-final"].as<bool>())
                 {
                     m_arpackWrapper.StoreFinalVector();
@@ -818,7 +803,7 @@ namespace diagonalization
                 //  Distributed over a number of different nodes
                 m_eigenvalues.resize(m_data.m_nbrEigenvalues);
                 m_eigenvectors.resize(m_data.m_nbrEigenvalues*m_data.m_nodeDim);
-                if(this->MatrixDiagonalCheck(_PARALLEL_,mpi))
+                if(this->MatrixDiagonalCheck(_PARALLEL_, mpi))
                 {
                     if(0 == mpi.m_id)    //  For the master node
                     {
@@ -910,7 +895,7 @@ namespace diagonalization
                     m_crsSparseMatrix.PrepareForParallelMultiplication(&(mv.dataDistribution), &(mv.commGroups), 
                                                                        &(mv.inputVectorBuffer), &(mv.outputVectorBuffer), mpi);
                     //////  CALL MAIN ARPACK ROUTINE
-                    m_arpackWrapper.DiagonalizeSymmetricMatrix<T>(std::bind(&MatrixVectorFunction<T, L1, L2>::Preconditioned, 
+                    m_arpackWrapper.DiagonalizeSymmetricMatrix<T>(std::bind(&MatrixVectorFunction<T, L1, L2>::Simple, 
                                                                   mv, std::placeholders::_1, std::placeholders::_2, 
                                                                   std::placeholders::_3), m_eigenvectors.data(), 
                                                                   m_eigenvalues.data(), m_data.m_nodeDim, m_data.m_fockSpaceDim,

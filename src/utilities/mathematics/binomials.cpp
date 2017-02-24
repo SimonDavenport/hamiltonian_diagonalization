@@ -24,7 +24,7 @@
 //!                                                                             
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "binomial_table.hpp" 
+#include "binomials.hpp" 
 
 namespace utilities
 {

@@ -29,7 +29,7 @@
 #include "../utilities/general/orbital_and_state_defs.hpp"
 #include "../utilities/wrappers/mpi_wrapper.hpp"
 #include "../utilities/algorithms/binary_search.hpp"
-#include "../utilities/mathematics/binomial_table.hpp"  
+#include "../utilities/mathematics/binomials.hpp"  
 #include "../utilities/mathematics/binary_number_tools.hpp"
 #include <functional>
 #include <string.h>

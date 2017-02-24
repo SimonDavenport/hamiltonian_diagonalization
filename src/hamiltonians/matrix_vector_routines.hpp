@@ -52,14 +52,9 @@ namespace diagonalization
         std::vector<T> outputVectorBuffer;      //!<    Buffer used in output vector
                                                 //!     MPI communication
         char UPLO;                              //!<    Flag to state what part of the 
-                                                //!     Hermitian matrix is stored
-        int matrixPower;                        //!<    Matrix power in preconditioner
-        std::vector<double> a,b;                //!<    Shift and stretch parameters
-                                                //!     in preconditioner  
+                                                //!     Hermitian matrix is stored  
         utilities::CrsSparseMatrix<T>* matrix;  //!<    Optional pointer to the CRS
                                                 //!     sparse matrix
-        std::vector<T> tempVector;              //!<    Temporary storage to be used
-                                                //!     if matrixPower>1
         SpinlessFermionHamiltonian<T>* hamiltonian;
                                                 //!<    Optional pointer to a spinless
                                                 //!     Hamiltonian class
@@ -76,11 +71,6 @@ namespace diagonalization
             const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
         {
             this->UPLO = hamiltonian.m_arpackWrapper.GetUpperOrLower();
-            hamiltonian.m_arpackWrapper.GetPreconditioner(this->matrixPower, this->a, this->b);
-            if(this->matrixPower>1)
-            {
-                tempVector.resize(hamiltonian.m_data.m_nodeDim);
-            }
             this->matrix = &(hamiltonian.m_crsSparseMatrix);
             this->hamiltonian = &hamiltonian;
         }
@@ -94,9 +84,6 @@ namespace diagonalization
             const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
         {
             this->UPLO = hamiltonian.m_arpackWrapper.GetUpperOrLower();
-
-            hamiltonian.m_arpackWrapper.GetPreconditioner(this->matrixPower, this->a, this->b);
-            tempVector.resize(hamiltonian.m_data.m_nodeDim);
             this->matrix = &(hamiltonian.m_crsSparseMatrix);
             this->twoLevelHamiltonian = &hamiltonian;
         }
@@ -109,29 +96,11 @@ namespace diagonalization
             T* y,                               //!<    Output vector on the current node
             const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
         {
+            T scale = 1.0;
+            T shift = 0.0;
             utilities::linearAlgebra::ParallelSymmetricMatrixVectorMultiply(x, y, &(this->dataDistribution), 
-                this->matrix, &(this->UPLO), (T)this->a[0], (T)this->b[0], &(this->commGroups),
+                this->matrix, &(this->UPLO), scale, shift, &(this->commGroups),
                 this->inputVectorBuffer.data(), this->outputVectorBuffer.data(), this->inputVectorBuffer.size(), mpi);
-        }
-
-        //!
-        //! Simulate obtaining the eigenvalues of a matrix to some power
-        //! by repeatedly appling the matrix-vector routine
-        //! 
-        void Preconditioned(
-            T* x,                               //!<    Input vector on the current node
-            T* y,                               //!<    Output vector on the current node
-            const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
-        {
-            this->Simple(x, y, mpi);
-            for(int i=1; i<matrixPower; ++i)
-            {
-                memcpy(tempVector.data(), y, tempVector.size()*sizeof(T));
-                utilities::linearAlgebra::ParallelSymmetricMatrixVectorMultiply(tempVector.data(), y,
-                    &(this->dataDistribution), this->matrix,&(this->UPLO), (T)this->a[0], (T)this->b[0],
-                    &(this->commGroups), this->inputVectorBuffer.data(), this->outputVectorBuffer.data(),
-                    this->inputVectorBuffer.size(), mpi);
-            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -151,6 +120,7 @@ namespace diagonalization
             fock_t nbrSweeps = std::ceil((double)this->hamiltonian->m_data.m_nodeDim/nbrRowsPerSweep);
             fock_t currRow = 0;
             fock_t nbrNonZeros = 10000;
+            T* tempVector = new T[this->hamiltonian->m_data.m_nodeDim];
             //  Generate and store in CRS format a subset of all the matrix rows then
             //  perform a reduced matrix-vector multiplication for that subset of
             //  rows and store the outcome in a buffer
@@ -169,6 +139,7 @@ namespace diagonalization
             }
             //  Copy the accumulated vector into the output buffer
             memcpy(y, tempVector.data(), tempVector.size()*sizeof(T));
+            delete[] tempVector;
         }
     };
 }   //  End diagonalization namespace

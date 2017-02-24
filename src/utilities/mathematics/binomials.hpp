@@ -28,19 +28,48 @@
 #define _BINOMIAL_TABLE_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-#include "combinatorics.hpp"
 #include <iostream>
+#include <algorithm>
 #if _DEBUG_
 #include "../general/debug.hpp"
 #endif
 
 namespace utilities
 {
-
     static const int maxBinomial = 64;      //!<    Maximum argument n or r for 
                                             //!<    Tabulated coefficients n choose r
     long int BinomialFromTable(const int n, const int k);    
                                             //!<    Binomial look-up function protorype
+    //////////////////////////////////////////////////////////////////////////////////
+    //! \brief	This function returns the combinatoric factor input1 Choose input2.
+    //!	Inputs are double variables to avoid overflows.
+    //!	
+    //!	\return	 Value of binomial coefficient (output type T)
+    //////////////////////////////////////////////////////////////////////////////////
+    template <typename T>
+    T Binomial(
+	    T input1, 	//!<	First index of binomial
+	    T input2)	//!<	Second index of binomial
+    {
+	    if(input2>input1||input2<0){return 0;}
+	    if(input2==0)
+	    {
+		    return 1;
+	    }
+	    T cmp = 1;
+	    T output = 0;
+	    if(input1==input2){return 1;}
+	    if(input1>input2){output=input1;
+		    while (input1-cmp>input2){output*=(input1-cmp);++cmp;}}
+	    else if(input2>input1){output=input2;
+		    while (input2-cmp>input1){output*=(input2-cmp);++cmp;}
+		    output=1 / output;}
+	    T in=input1-input2;
+	    cmp=0;
+	    while (in-cmp>1){output/=(in-cmp);++cmp;}
+	    return (T)round(output);
+    }                                        
+                                            
     ////////        BINOMIAL TABLE      ////////////////////////////////////////////
     //!
     //! Stores non-trivial binomial coefficients up to 64 choose 64

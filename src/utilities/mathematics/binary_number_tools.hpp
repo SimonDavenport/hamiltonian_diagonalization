@@ -26,7 +26,7 @@
 #define _BINARY_NUMBER_TOOLS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-#include "binomial_table.hpp"
+#include "binomials.hpp"
 #include <bitset>
 #include <cstdint>
 #if _DEBUG_
