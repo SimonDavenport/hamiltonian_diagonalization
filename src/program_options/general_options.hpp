@@ -40,12 +40,30 @@ namespace myOptions
 	    generalOpt.add_options()
 	    ("help,h",
 	     "Display this message\n")
-	    ("verbose,v",po::value<int>()->default_value(1),
+	    ("verbose,v", po::value<int>()->default_value(1),
 	     "Set a value for the verbosity level:\n\t 0 output off (after command line parsed) \n\t 1 print brief information \n\t 2 print more detailed information \n\t 3 also print loading bars and timings \n\t 4 also print debugging messages.")
-	    ("in-path",po::value<std::string>()->default_value("./output/"),
+	    ("in-path", po::value<std::string>()->default_value("./output/"),
 	     "Specify the name of the file system path where program input data are stored\n")
-	    ("out-path",po::value<std::string>()->default_value("./output/"),
-	     "Specify the name of the file system path where program output data are stored\n");
+	    ("out-path", po::value<std::string>()->default_value("./output/"),
+	     "Specify the name of the file system path where program output data are stored\n")
+	    ("diagonalize,d", po::value<bool>()->default_value(false),
+	     "Set to 1 to generate and diagonalize the model's Hamiltonian.\n")
+	    ("block-diagonalize,b",po::value<bool>()->default_value(false),
+	     "Set to 1 in order to enable block diagonalization of all available quantum number sectors.\n")
+	    ("method", po::value<iSize_t>()->default_value(0),
+	     "Specify the diagonalization method:\n\t 0 Full (LAPACK) \n\t 1 Lanczos (ARPACK)\n")
+	    ("nbr-eigenvalues,e", po::value<iSize_t>()->default_value(4),
+	     "Specify number of lowest lying eigenvalues of the interacting Hamiltonian that will be calculated\n")
+	    ("eigenvalues-file", po::value<bool>()->default_value(false),
+	     "Set to 1 to store/retrieve eigenvalues in/from a file\n")
+	    ("eigenvectors-file", po::value<bool>()->default_value(false),
+	     "Set to 1 to additionally store/retrieve eigenvectors in/from a file (eigenvalues also stored/retrieved if this option is set)\n")
+        ("hamiltonian-file", po::value<bool>()->default_value(false),
+         "Set to 1 to store Hamiltonian matrix in a data file\n")
+        ("terms-file", po::value<bool>()->default_value(false),
+         "Set to 1 to generate and store Hamiltonian terms in a file")
+        ("retrieve-terms", po::value<bool>()->default_value(false),
+         "Set to 1 to retrieve Hamiltonian terms from existing file");
         return generalOpt;
     };
 }   //  End namespace myOptions
