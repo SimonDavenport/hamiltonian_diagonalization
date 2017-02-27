@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	    eigenvaluesFlag  = optionList["eigenvalues-file"].as<bool>();
 	    eigenvectorsFlag = optionList["eigenvectors-file"].as<bool>();
 	    hamiltonianWriteFlag = optionList["hamiltonian-to-file"].as<bool>();
-	    nbrLevels        = optionList["nbr-levels"].as<diagonalization::iSize_t>();
+	    nbrLevels = optionList["nbr-levels"].as<diagonalization::iSize_t>();
 	}
     //  MPI sync the flags from node 0
     mpi.Sync(&diagonalizeFlag, 1, 0);
