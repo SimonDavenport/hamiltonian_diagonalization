@@ -2,12 +2,10 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 31/10/2014
-//!                                                                             
 //!	 \file
 //!     This file declares program options associated with SQLite 
 //!     functionality
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -27,19 +25,15 @@
 #ifndef _SQL_OPTIONS_HPP_INCLUDED_
 #define _SQL_OPTIONS_HPP_INCLUDED_
 
-//  For command line options parsing
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <boost/program_options.hpp>
-
-//  For iSize_t definition
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 
 namespace diagonalization
 {
-
 namespace myOptions
 {
     namespace po = boost::program_options;
-
     inline po::options_description GetCommonSqlOptions()
     {
         po::options_description sqlOpt("SQLite options");
@@ -52,7 +46,6 @@ namespace myOptions
          "Specify the name of an sqllite table where data are stored\n")
         ("sql-id",po::value<iSize_t>()->default_value(1),
          "Specify the id of the parameter set extracted form the sqllite file.\n");
-         
          return sqlOpt;
     };
     
@@ -99,9 +92,7 @@ namespace myOptions
         ("sort-vectors",po::value<iSize_t>()->default_value(0),
          "Option to keep a running check for energy level cross overs as a function of model parameters, and to relabel the eigenvalues to keep the labelling consistent. The option value sets the number of eigenvalues to keep for the running check.\n");
     };
-
 }   //  End namespace myOptions
-
 }   //  End namespace diagonalization 
 
 #endif

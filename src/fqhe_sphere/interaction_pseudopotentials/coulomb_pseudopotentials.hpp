@@ -1,14 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //!                                                                             
-//!                        \author Simon C. Davenport
-//!                                                                             
-//!                      \date Last Modified: 27/03/2015              
+//!                        \author Simon C. Davenport             
 //!                                                                             
 //!	 \file
 //!     This file generates a set of two-body pseudopotential coefficients
 //!     for the Coulomb interaction, implemented in the sphere geometry        
 //!                                                        
-//!                    Copyright (C) 2015 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -29,25 +27,17 @@
 #define _COULOMB_PSEUDOPOTENTIALS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-
 #include "../../utilities/general/orbital_and_state_defs.hpp"
-                                            //  Declaration of iSize_t
-#include "../../utilities/mathematics/binomial_table.hpp"   
-                                            //  For calculation of Binomials
-#include <vector>                           //  For std::vector
-#include <iostream>                         //  For std::cerr
-
+#include "../../utilities/mathematics/binomial_table.hpp"
+#include <vector>
+#include <iostream> 
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
 #endif
 
 namespace diagonalization
 {
-    std::vector<double> GenCoulombPseudopotentials(
-        const iSize_t nbrOrbitals,
-        const iSize_t llIndex,
-        const double mulFactor);
-    
+    std::vector<double> GenCoulombPseudopotentials(const iSize_t nbrOrbitals, 
+        const iSize_t llIndex, const double mulFactor);
 }   //  End namespace diagonalization 
-
 #endif

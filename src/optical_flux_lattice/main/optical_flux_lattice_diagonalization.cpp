@@ -6,11 +6,9 @@
 //!     This code performs exact diagonalization of an interacting model
 //!     constructed in the lowest lying band of an optical flux lattice.
 //!     See e.g. PRL 109, 265301 (2012)
-//!
-//!     Project commenced on 14/02/2014
 //!                                     
 //!                    Copyright (C) Simon C Davenport
-//!                                                                             
+//!             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
 //!     the Free Software Foundation, either version 3 of the License,
@@ -44,9 +42,9 @@ std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(boost::p
 ///////		START OF MAIN FUNCTION      ////////////////////////////////////////
 int main(int argc, char *argv[])
 {
-	mpi.Init(argc,argv);
+	mpi.Init(argc, argv);
     boost::program_options::variables_map optionList;
-    optionList = ParseCommandLine(argc,argv,mpi);
+    optionList = ParseCommandLine(argc, argv, mpi);
     //  Import and synchronize top-level command line options over all nodes
     bool diagonalizeFlag;
     bool eigenvaluesFlag;
@@ -80,7 +78,8 @@ int main(int argc, char *argv[])
         }
         else    //  Diagonalize selected sectors
         {
-            for(std::vector<std::complex<diagonalization::iSize_t> >::const_iterator it = sectorList.begin(); it != sectorList.end(); it++)
+            for(std::vector<std::complex<diagonalization::iSize_t> >::const_iterator it = sectorList.begin(); 
+            it != sectorList.end(); ++it)
             {
                 hamiltonian.SetSector(it->real(),it->imag());
                 hamiltonian.BuildFockBasis(mpi);
@@ -124,7 +123,8 @@ int main(int argc, char *argv[])
         }
         else
         {
-            for(std::vector<std::complex<diagonalization::iSize_t> >::const_iterator it = sectorList.begin(); it != sectorList.end(); it++)
+            for(std::vector<std::complex<diagonalization::iSize_t> >::const_iterator it = sectorList.begin(); 
+            it != sectorList.end(); ++it)
             {
                 hamiltonian.SetSector(it->real(),it->imag());
                 hamiltonian.EigensystemFromFile(eigenvaluesFlag,eigenvectorsFlag, mpi);
@@ -138,15 +138,12 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
 //////////////////////////////////////////////////////////////////////////////////
 //! \brief A function to parse the command line arguments
 //!
 //! \return An instance of the boost program options variables map
 //! containing the parsed command line arguments
 //////////////////////////////////////////////////////////////////////////////////
-
 boost::program_options::variables_map ParseCommandLine(
     const int argc,             //!<	Number of characters to parse
 	char *argv[],	            //!<	Character array to parse
@@ -195,15 +192,12 @@ boost::program_options::variables_map ParseCommandLine(
     return vm;
 }
 
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
-
 //////////////////////////////////////////////////////////////////////////////////
 //! \brief A function to generate a list of pairs kx_tot ky_tot  (or just ky_tot
 //! in the Wannier basis) of linear momentum sectors to be diagonalized
 //!
 //! \return a list of pairs of kx_tot ky_tot  (or just ky_tot) linear momentum sectors
 //////////////////////////////////////////////////////////////////////////////////
-
 std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(
     boost::program_options::variables_map* optionList,
                                 //!<    Import command line option list to set sectors
@@ -273,5 +267,3 @@ std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(
     delete[] sectorList;
     return returnArray;
 }
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//

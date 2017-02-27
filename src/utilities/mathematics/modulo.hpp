@@ -2,13 +2,11 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 18/09/2014
-//!
 //!  \file
 //!		This file contains a function template for a modulo operator that deals
 //!     properly with negative numbers. 
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!
 //!		This program is free software: you can redistribute it and/or modify
 //!		it under the terms of the GNU General Public License as published by
@@ -28,7 +26,8 @@
 #ifndef _MODULO_HPP_INCLUDED_
 #define _MODULO_HPP_INCLUDED_
 
-#include <cmath> //  For definition of std::abs
+///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
+#include <cmath> 
 
 namespace utilities
 {
@@ -49,9 +48,7 @@ namespace utilities
     //! 4 - abs(-1) % 4 = 3
     //!
     //! NOTE: negative values of b are not treated correctly here. 
-    //!
-    ////////////////////////////////////////////////////////////////////////////////
-    
+    //////////////////////////////////////////////////////////////////////////////// 
     template <typename T>
     T Modulo(
         const T a,    //!<    First argument in modulo function
@@ -59,7 +56,5 @@ namespace utilities
     {
         return a >= 0 ? a % b : ( b - (T)std::abs ( a%b ) ) % b;
     }
-
 }   //  End namespace utilities
-
 #endif

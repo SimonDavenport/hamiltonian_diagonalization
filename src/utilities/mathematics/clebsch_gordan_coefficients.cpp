@@ -2,15 +2,13 @@
 //!                                                                             
 //!                        \author Simon C. Davenport
 //!                                                                             
-//!                      \date Last Modified: 18/05/2015
-//!                                                                             
 //!	 \file
 //!     This file defines a class to store pre-calculated Clebsch-Gordan 
 //!     coefficients. Coefficients are calculated using the algorithm described 
 //!     here: arXiv:1009.0437v1. See:
 //!     http://homepages.physik.uni-muenchen.de/~vondelft/Papers/ClebschGordan/
 //!
-//!                    Copyright (C) 2015 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -30,10 +28,7 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 
 #include "clebsch_gordan_coefficients.hpp"
-
 clebsch::Binomial_t clebsch::binomial;
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
 
 //////////////////////////////////////////////////////////////////////////////////
 //! The following implementations are written by the authors of arXiv:1009.0437v1
@@ -41,7 +36,6 @@ clebsch::Binomial_t clebsch::binomial;
 //////////////////////////////////////////////////////////////////////////////////
 
 // implementation of "Binomial_t" starts here
-
 int clebsch::Binomial_t::operator()(int n, int k) {
     if (N <= n) {
         for (cache.resize((n + 1) * (n + 2) / 2); N <= n; ++N) {
@@ -52,12 +46,10 @@ int clebsch::Binomial_t::operator()(int n, int k) {
             }
         }
     }
-
     return cache[n * (n + 1) / 2 + k];
 }
 
 // implementation of "weight" starts here
-
 clebsch::Weight::Weight(int N) : elem(N), N(N) {}
 
 clebsch::Weight::Weight(int N, int index) : elem(N, 0), N(N) {
@@ -65,13 +57,11 @@ clebsch::Weight::Weight(int N, int index) : elem(N, 0), N(N) {
         for (int j = 1; binomial(N - i - 1 + j, N - i - 1) <= index; j <<= 1) {
             elem[i] = j;
         }
-
         for (int j = elem[i] >> 1; j > 0; j >>= 1) {
             if (binomial(N - i - 1 + (elem[i] | j), N - i - 1) <= index) {
                 elem[i] |= j;
             }
         }
-
         index -= binomial(N - i - 1 + elem[i]++, N - i - 1);
     }
 }
@@ -105,49 +95,40 @@ bool clebsch::Weight::operator<(const Weight &w) const {
 
 bool clebsch::Weight::operator==(const Weight &w) const {
     assert(w.N == N);
-
     for (int i = 1; i < N; ++i) {
         if (w.elem[i] - w.elem[i - 1] != elem[i] - elem[i - 1]) {
             return false;
         }
     }
-
     return true;
 }
 
 clebsch::Weight clebsch::Weight::operator+(const Weight &w) const {
     Weight result(N);
-
     transform(elem.begin(), elem.end(), w.elem.begin(), result.elem.begin(), std::plus<int>());
-
     return result;
 }
 
 int clebsch::Weight::Index() const {
     int result = 0;
-
     for (int i = 0; elem[i] > elem[N - 1]; ++i) {
         result += binomial(N - i - 1 + elem[i] - elem[N - 1] - 1, N - i - 1);
     }
-
     return result;
 }
 
 long long clebsch::Weight::Dimension() const {
     long long numerator = 1, denominator = 1;
-
     for (int i = 1; i < N; ++i) {
         for (int j = 0; i + j < N; ++j) {
             numerator *= elem[j] - elem[i + j] + i;
             denominator *= i;
         }
     }
-
     return numerator / denominator;
 }
 
 // implementation of "Pattern" starts here
-
 clebsch::Pattern::Pattern(const Pattern &p) : elem(p.elem), N(p.N) {}
 
 clebsch::Pattern::Pattern(const Weight &irrep, int index) :
@@ -155,16 +136,13 @@ clebsch::Pattern::Pattern(const Weight &irrep, int index) :
     for (int i = 1; i <= N; ++i) {
         (*this)(i, N) = irrep(i);
     }
-
     for (int l = N - 1; l >= 1; --l) {
         for (int k = 1; k <= l; ++k) {
             (*this)(k, l) = (*this)(k + 1, l + 1);
         }
     }
-
     while (index-- > 0) {
         bool b = ++(*this);
-
         assert(b);
     }
 }
@@ -179,13 +157,11 @@ const int &clebsch::Pattern::operator()(int k, int l) const {
 
 bool clebsch::Pattern::operator++() {
     int k = 1, l = 1;
-
     while (l < N && (*this)(k, l) == (*this)(k, l + 1)) {
         if (--k == 0) {
             k = ++l;
         }
     }
-
     if (l == N) {
         return false;
     }
@@ -197,22 +173,18 @@ bool clebsch::Pattern::operator++() {
             k = 1;
             --l;
         }
-
         (*this)(k, l) = (*this)(k + 1, l + 1);
     }
-
     return true;
 }
 
 bool clebsch::Pattern::operator--() {
     int k = 1, l = 1;
-
     while (l < N && (*this)(k, l) == (*this)(k + 1, l + 1)) {
         if (--k == 0) {
             k = ++l;
         }
     }
-
     if (l == N) {
         return false;
     }
@@ -224,80 +196,63 @@ bool clebsch::Pattern::operator--() {
             k = 1;
             --l;
         }
-
         (*this)(k, l) = (*this)(k, l + 1);
     }
-
     return true;
 }
 
 int clebsch::Pattern::Index() const {
     int result = 0;
-
     for (Pattern p(*this); --p; ++result) {}
-
     return result;
 }
 
 clebsch::Weight clebsch::Pattern::GetWeight() const {
     clebsch::Weight result(N);
-
     for (int prev = 0, l = 1; l <= N; ++l) {
         int now = 0;
-
         for (int k = 1; k <= l; ++k) {
             now += (*this)(k, l);
         }
-
         result(l) = now - prev;
         prev = now;
     }
-
     return result;
 }
 
 double clebsch::Pattern::LoweringCoeff(int k, int l) const {
     double result = 1.0;
-
     for (int i = 1; i <= l + 1; ++i) {
         result *= (*this)(i, l + 1) - (*this)(k, l) + k - i + 1;
     }
-    
     for (int i = 1; i <= l - 1; ++i) {
         result *= (*this)(i, l - 1) - (*this)(k, l) + k - i;
     }
-
     for (int i = 1; i <= l; ++i) {
         if (i == k) continue;
         result /= (*this)(i, l) - (*this)(k, l) + k - i + 1;
         result /= (*this)(i, l) - (*this)(k, l) + k - i;
     }
-
     return std::sqrt(-result);
 }
 
 double clebsch::Pattern::RaisingCoeff(int k, int l) const {
     double result = 1.0;
-
     for (int i = 1; i <= l + 1; ++i) {
         result *= (*this)(i, l + 1) - (*this)(k, l) + k - i;
     }
-
     for (int i = 1; i <= l - 1; ++i) {
         result *= (*this)(i, l - 1) - (*this)(k, l) + k - i - 1;
     }
-
     for (int i = 1; i <= l; ++i) {
         if (i == k) continue;
         result /= (*this)(i, l) - (*this)(k, l) + k - i;
         result /= (*this)(i, l) - (*this)(k, l) + k - i  - 1;
     }
-
     return std::sqrt(-result);
 }
 
 // implementation of "Decomposition" starts here
-
 clebsch::Decomposition::Decomposition(const Weight &factor1, const Weight &factor2) :
         N(factor1.N), factor1(factor1), factor2(factor2) {
     assert(factor1.N == factor2.N);
@@ -305,7 +260,6 @@ clebsch::Decomposition::Decomposition(const Weight &factor1, const Weight &facto
     Pattern low(factor1), high(factor1);
     Weight trial(factor2);
     int k = 1, l = N;
-
     do {
         while (k <= N) {
             --l;
@@ -328,7 +282,6 @@ clebsch::Decomposition::Decomposition(const Weight &factor1, const Weight &facto
                 l = N;
             }
         }
-
         if (k > N) {
             result.push_back(trial);
             for (int i = 1; i <= N; ++i) {
@@ -337,7 +290,6 @@ clebsch::Decomposition::Decomposition(const Weight &factor1, const Weight &facto
         } else {
             ++l;
         }
-
         while (k != 1 || l != N) {
             if (l == N) {
                 l = --k - 1;
@@ -352,7 +304,6 @@ clebsch::Decomposition::Decomposition(const Weight &factor1, const Weight &facto
             ++l;
         }
     } while (k != 1 || l != N);
-
     sort(result.begin(), result.end());
     for (std::vector<clebsch::Weight>::iterator it = result.begin(); it != result.end(); ++it) {
         if (it != result.begin() && *it == weights.back()) {
@@ -376,12 +327,10 @@ int clebsch::Decomposition::Multiplicity(const Weight &irrep) const {
     assert(irrep.N == N);
     std::vector<clebsch::Weight>::const_iterator it
         = std::lower_bound(weights.begin(), weights.end(), irrep);
-
     return it != weights.end() && *it == irrep ? multiplicities[it - weights.begin()] : 0;
 }
 
 // implementation of "IndexAdapter" starts here
-
 clebsch::IndexAdapter::IndexAdapter(const clebsch::Decomposition &decomp) :
         N(decomp.N),
         factor1(decomp.factor1.Index()),
@@ -402,12 +351,10 @@ int clebsch::IndexAdapter::operator()(int j) const {
 
 int clebsch::IndexAdapter::Multiplicity(int irrep) const {
     std::vector<int>::const_iterator it = std::lower_bound(indices.begin(), indices.end(), irrep);
-
     return it != indices.end() && *it == irrep ? multiplicities[it - indices.begin()] : 0;
 }
 
 // implementation of "Coefficients" starts here
-
 void clebsch::Coefficients::Set(int factor1_state,
                                 int factor2_state,
                                 int multiplicity_index,
@@ -428,18 +375,15 @@ void clebsch::Coefficients::Set(int factor1_state,
 
 void clebsch::Coefficients::HighestWeightNormalForm() {
     int hws = irrep_dimension - 1;
-
     // bring CGCs into reduced row echelon form
     for (int h = 0, i = 0; h < multiplicity - 1 && i < factor1_dimension; ++i) {
         for (int j = 0; h < multiplicity - 1 && j < factor2_dimension; ++j) {
             int k0 = h;
-
             for (int k = h + 1; k < multiplicity; ++k) {
                 if (fabs((*this)(i, j, k, hws)) > fabs((*this)(i, j, k0, hws))) {
                     k0 = k;
                 }
             }
-
             if ((*this)(i, j, k0, hws) < -EPS) {
                 for (int i2 = i; i2 < factor1_dimension; ++i2) {
                     for (int j2 = i2 == i ? j : 0; j2 < factor2_dimension; ++j2) {
@@ -449,7 +393,6 @@ void clebsch::Coefficients::HighestWeightNormalForm() {
             } else if ((*this)(i, j, k0, hws) < EPS) {
                 continue;
             }
-
             if (k0 != h) {
                 for (int i2 = i; i2 < factor1_dimension; ++i2) {
                     for (int j2 = i2 == i ? j : 0; j2 < factor2_dimension; ++j2) {
@@ -459,7 +402,6 @@ void clebsch::Coefficients::HighestWeightNormalForm() {
                     }
                 }
             }
-
             for (int k = h + 1; k < multiplicity; ++k) {
                 for (int i2 = i; i2 < factor1_dimension; ++i2) {
                     for (int j2 = i2 == i ? j : 0; j2 < factor2_dimension; ++j2) {
@@ -468,7 +410,6 @@ void clebsch::Coefficients::HighestWeightNormalForm() {
                     }
                 }
             }
-
             // next 3 lines not strictly necessary, might improve numerical stability
             for (int k = h + 1; k < multiplicity; ++k) {
                 Set(i, j, k, hws, 0.0);
@@ -487,14 +428,12 @@ void clebsch::Coefficients::HighestWeightNormalForm() {
                     overlap += (*this)(i, j, h, hws) * (*this)(i, j, k, hws);
                 }
             }
-
             for (int i = 0; i < factor1_dimension; ++i) {
                 for (int j = 0; j < factor2_dimension; ++j) {
                     Set(i, j, h, hws, (*this)(i, j, h, hws) - overlap * (*this)(i, j, k, hws));
                 }
             }
         }
-
         double norm = 0.0;
         for (int i = 0; i < factor1_dimension; ++i) {
             for (int j = 0; j < factor2_dimension; ++j) {
@@ -502,7 +441,6 @@ void clebsch::Coefficients::HighestWeightNormalForm() {
             }
         }
         norm = std::sqrt(norm);
-
         for (int i = 0; i < factor1_dimension; ++i) {
             for (int j = 0; j < factor2_dimension; ++j) {
                 Set(i, j, h, hws, (*this)(i, j, h, hws) / norm);
@@ -532,7 +470,6 @@ void clebsch::Coefficients::ComputeHighestWeightCoeffs() {
             }
         }
     }
-
     if (n_coeff == 1) {
         for (int i = 0; i < factor1_dimension; ++i) {
             for (int j = 0; j < factor2_dimension; ++j) {
@@ -547,7 +484,6 @@ void clebsch::Coefficients::ComputeHighestWeightCoeffs() {
     double *hw_system = new double[n_coeff * (factor1_dimension * factor2_dimension)];
     assert(hw_system != NULL);
     memset(hw_system, 0, n_coeff * (factor1_dimension * factor2_dimension) * sizeof (double));
-
     Pattern r(factor1, 0);
     for (int i = 0; i < factor1_dimension; ++i, ++r) {
         Pattern q(factor2, 0);
@@ -590,7 +526,6 @@ void clebsch::Coefficients::ComputeHighestWeightCoeffs() {
 
     int lwork = -1, info;
     double worksize;
-
     double *singval = new double[std::min(n_coeff, n_states)];
     assert(singval != NULL);
     double *singvec = new double[n_coeff * n_coeff];
@@ -645,10 +580,8 @@ void clebsch::Coefficients::ComputeHighestWeightCoeffs() {
             }
         }
     }
-
     // uncomment next line to bring highest-weight coefficients into "normal form"
     // HighestWeightNormalForm();
-
     delete[] work;
     delete[] singvec;
     delete[] singval;
@@ -697,7 +630,6 @@ void clebsch::Coefficients::ComputeLowerWeightCoeffs(int multip_index,
     std::vector<std::vector<int> > map_prodstat(factor1_dimension,
                                                 std::vector<int>(factor2_dimension, -1));
     int n_prodstat = 0;
-
     Pattern r(irrep, 0);
     for (int i = 0; i < irrep_dimension; ++i, ++r) {
         if (map_parent[i] >= 0) {

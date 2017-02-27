@@ -1,13 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 //!
-//!                         \author Simon C. Davenport 
-//!
-//!                         \date Last Modified: 07/05/2014
+//!                         \author Simon C. Davenport
 //!
 //!  \file
 //!		Header file for cout tools
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
 //!     it under the terms of the GNU General Public License as published by
@@ -28,26 +26,24 @@
 #define _COUT_TOOLS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-
-#include <mpi.h>	  //  For MPI_Bcast and MPI_Comm
-#include <iostream>   //  For std::cout
-#include <fstream>    //  For passing output to /dev/null/
+#include <mpi.h>
+#include <iostream>
+#include <fstream>
 
 namespace utilities
 {
-    enum vLevel {_OUTPUT_OFF_=0,_MAIN_OUTPUT_=1,_SECONDARY_OUTPUT_=2,_ADDITIONAL_INFO_=3,_DEBUGGING_INFO_=4};
-
+    enum vLevel {_OUTPUT_OFF_=0, _MAIN_OUTPUT_=1, _SECONDARY_OUTPUT_=2, 
+                 _ADDITIONAL_INFO_=3, _DEBUGGING_INFO_=4};
+    
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Define a class to contain functions that control the verbosity 
     //! level of cout output. An object of this class type should be declared 
     //! as a global extern, with a single instance declared in the main file.
-    //!
     ////////////////////////////////////////////////////////////////////////////////
 
     class Cout
     {
         private:
-            
         vLevel m_verbosityLevel;    //!<    A signed integer to define the verbosity
                                     //!     level: -1 turns off all output, and
                                     //!     positive values specify increasingly
@@ -60,7 +56,6 @@ namespace utilities
         //! An output level function to optionally print various levels
         //! of output, or alternatively send output to /dev/null
         //!
-        
         inline std::ostream& Level(
             const vLevel& level)    //!<    Specified output level
         {
@@ -75,7 +70,6 @@ namespace utilities
         }
         
         public:
-
         //!
         //! Default constructor
         //!
@@ -84,11 +78,9 @@ namespace utilities
                 m_nullOut("/dev/null")
                 
         {}
-
         //!
         //!  A function to set the verbosity level
         //!
-
         inline void SetVerbosity(
             const short int verbosityLevel)     //!<    New verbosity level
         {
@@ -113,91 +105,70 @@ namespace utilities
                     m_verbosityLevel = _MAIN_OUTPUT_;
             }
         }
-        
         //!
         //!  A function to get the verbosity level
         //!
-
         inline short int GetVerbosity() const
         {
             return m_verbosityLevel; 
         }
-        
         //!
         //! Public interface for the Level function - main output
         //!
-        
         inline std::ostream& MainOutput()
         {
             return this->Level(_MAIN_OUTPUT_);
         }
-        
         //!
         //! Public interface for the Level function - secondary output
         //!
-        
         inline std::ostream& SecondaryOutput()
         {
             return this->Level(_SECONDARY_OUTPUT_);
         }
-        
         //!
         //! Public interface for the Level function - additional info
         //!
-        
         inline std::ostream& AdditionalInfo()
         {
             return this->Level(_ADDITIONAL_INFO_);
         }
-        
         //!
         //! Public interface for the Level function - debugging info
         //!
-        
         inline std::ostream& DebuggingInfo()
         {
             return this->Level(_DEBUGGING_INFO_);
         }
-        
         //!
         //! MPI sync function to set the same verbosity on all nodes
         //! (can only be called after MPI_Init)
         //!
-        
         inline void MpiSync(
             const int syncNodeId,   //!<    Node ID to sync with
             MPI_Comm comm)          //!<    MPI communicator
         {
-            MPI_Bcast(&m_verbosityLevel,1,MPI_INT,syncNodeId,comm);
+            MPI_Bcast(&m_verbosityLevel, 1, MPI_INT, syncNodeId, comm);
         }
-        
         //!
         //! Make a string containing a line of hyphens
         //!
-
         inline std::string HyphenLine()
         {
             return "---------------------------------------------"
                    "---------------------------------------------";
         }
-
         //!
         //! Make a string containing a line of equals
         //!
-
         inline std::string EqualsLine()
         {
             return "============================================="
                    "=============================================";
         }
     };
-    
     extern Cout cout;      //!< Specify an extern declaration meaning that 
-                           //!  every file including coutTools.h expects
+                           //!  every file including coutTools.hpp expects
                            //!  an Cout struct to be declared once
-}
-
-//  End namespace utilities
-
+}   //  End namespace utilities
 #endif
-

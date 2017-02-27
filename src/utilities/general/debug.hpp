@@ -1,13 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 //!                                                                             
 //!                        \author Simon C. Davenport
-//!                                                                             
-//!                      \date Last Modified: 05/04/2014
-//!                                                                             
+//!                                                                                                        
 //!	 \file
 //!     This file contains debugging tools      
 //!                                                        
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!      This program is free software: you can redistribute it and/or modify
 //!      it under the terms of the GNU General Public License as published by
@@ -28,24 +26,20 @@
 #define _DEBUG_TOOLS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////		
-
-#include "../wrappers/mpi_wrapper.hpp"    //  For MPI functionality
-
-#include <iostream> //  For std::cout
-#include <string>   //  For std::string
-#include <bitset>   //  Debugging bitwise operations
+#include "../wrappers/mpi_wrapper.hpp"
+#include <iostream>
+#include <string>
+#include <bitset>
 
 inline void BREAK(const int val)
 {
     std::cout<<"\n\tHERE "<<val<<std::endl;
-
     return;
 }
 
-inline void PAR_BREAK(const int val,const utilities::MpiWrapper& mpi)
+inline void PAR_BREAK(const int val, const utilities::MpiWrapper& mpi)
 {
     std::cout<<"\n\t NODE "<<mpi.m_id<<" HERE "<<val<<std::endl;
-
     return;
 }
 
@@ -68,69 +62,55 @@ inline void PAR_PAUSE(const utilities::MpiWrapper& mpi)
 }
 
 template <typename T>
-void PRINT(const std::string name,const T val)
+void PRINT(const std::string name, const T val)
 {
     std::cout<<"\n\t"<<name<<" = "<<val<<std::endl;
-
     return;
 }
 
 template <typename T>
-void PAR_PRINT(const std::string name,const T val,const utilities::MpiWrapper& mpi)
+void PAR_PRINT(const std::string name, const T val, const utilities::MpiWrapper& mpi)
 {
     std::cout<<"\n\t NODE "<<mpi.m_id<<"\t"<<name<<" = "<<val<<std::endl;
-
     return;
 }
 
 template <typename T>
-void PRINT(const std::string name,T* array,const int dim)
+void PRINT(const std::string name, T* array, const int dim)
 {
     std::cout<<std::endl;
-
-    for(int i=0;i<dim;i++)
+    for(int i=0; i<dim; ++i)
     {
         std::cout<<"\t"<<name<<"["<<i<<"] = "<<array[i]<<std::endl;
     }
-    
     std::cout<<std::endl;
-    
     return;
 }
 
 template <typename T>
-void PAR_PRINT(const std::string name,T* array,const int dim,const utilities::MpiWrapper& mpi)
+void PAR_PRINT(const std::string name, T* array, const int dim, const utilities::MpiWrapper& mpi)
 {
     std::cout<<std::endl;
-
-    for(int i=0;i<dim;i++)
+    for(int i=0; i<dim; ++i)
     {
         std::cout<<"\n\t NODE "<<mpi.m_id<<"\t"<<name<<"["<<i<<"] = "<<array[i]<<std::endl;
     }
-    
-    std::cout<<std::endl;
-    
+    std::cout<<std::endl;  
     return;
 }
 
 template <typename T>
-void MATHEMATICA_COMPLEX_PRINT(T* array,const int dim)
+void MATHEMATICA_COMPLEX_PRINT(T* array, const int dim)
 {
     std::cout.precision(15);
-
     std::cout<<std::endl;
-    
     std::cout<<"{";
-
-    for(int i=0;i<dim-1;i++)
+    for(int i=0; i<dim-1; ++i)
     {
         std::cout<<"{"<<array[i].real()<<"+I*"<<array[i].imag()<<"},";
     }
-    
     std::cout<<"{"<<array[dim-1].real()<<"+I*"<<array[dim-1].imag()<<"}}";
-    
     std::cout<<std::endl;
-    
     return;
 }
 

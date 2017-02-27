@@ -2,12 +2,10 @@
 //!
 //!                         \author Simon C. Davenport 
 //!
-//!                         \date Last Modified: 19/06/2014
-//!
 //!  \file
 //!		This file contains a wrapper for the FFTW library
 //!
-//!                    Copyright (C) 2014 Simon C Davenport
+//!                    Copyright (C) Simon C Davenport
 //!
 //!		This program is free software: you can redistribute it and/or modify
 //!		it under the terms of the GNU General Public License as published by
@@ -28,27 +26,14 @@
 #define _FOURIER_TRANSFORM_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-
 #include <fftw3.h>
-//	"Fastest Fourier Transform in the West" library functions
-
-#include "../general/dcmplx_type_def.hpp" //  For dcmplx type
-
+#include "../general/dcmplx_type_def.hpp"
 #if _DEBUG_
 #include "../general/debug.hpp"
 #endif
 
-//////////////////////////////////////////////////////////////////////////////// 
-//! \brief A namespace to contain any functions and utilities that I have 
-//! written for use with any c++ program.
-//!
-////////////////////////////////////////////////////////////////////////////////
-
 namespace utilities
 {
-    void DiscreteFourierTransform1D(int N,int M,dcmplx* coefficients,dcmplx* outputs,int sign);
-
+    void DiscreteFourierTransform1D(int N, int M, dcmplx* coefficients, dcmplx* outputs, int sign);
 };  //  End namespace utilities
-
 #endif
-
