@@ -31,6 +31,7 @@
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../wrappers/mpi_wrapper.hpp"
+#include "../wrappers/io_wrapper.hpp"
 #include "../wrappers/murmur_hash_wrapper.hpp"
 #include "../general/serialize.hpp"
 #if _SPEED_OPTIMIZED_MAP_
@@ -447,7 +448,7 @@ namespace utilities
             T* p_valueBuffer = valueRecvBuffer;
             for(uint64_t i=0; i<sizeList[mpi.m_id]; ++i, ++p_keyBuffer, ++p_valueBuffer)
             {
-                pairList.push_back(std::pair<uint64_t,T>(*(p_keyBuffer), *(p_valueBuffer)));
+                pairList.push_back(std::pair<uint64_t, T>(*(p_keyBuffer), *(p_valueBuffer)));
             }
             //  Insert the whole range into the map in one operation
             map.insert(pairList.begin(), pairList.end());
@@ -462,56 +463,90 @@ namespace utilities
         //!
         template <class M>
         void ToFileBase(
-            M& map,                 //!<    Map containing data to write to the file
-            std::ofstream& f_out,   //!<    Out file stream handle
-            const unsigned int nbrLabels) //!<  NUmber of key labels
+            const M& map,                   //!<    Map containing data to write to the file
+            const std::string fileName,     //!<    Name of file
+            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            const unsigned int nbrLabels,   //!<  Number of key labels
+            MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class  
         {
-            //  First entry to file is number of entries in the map  
-            f_out<<map.size()<<"\n";
-            //  Second entry to file is the number of map labels
-            f_out<<nbrLabels<<"\n";
-            //  Write map key-value pairs to the file (including multiple  
-            //  values if found)
-            for(auto it = map.begin(); it != map.end(); ++it)
+            //  Create a copy of the map for the MPI gather operation to modify
+            temp_map = map.copy();
+            this->MpiGatherBase(temp_map, 0, mpi);
+            if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
-                //  Convert the key into a string containing
-                //  a decomposition into the list of size nbrLabels
-                switch(nbrLabels)
+                std::ofstream f_out = utilities::GenFileStream<std::ofstream>(fileName, format, mpi);
+                if(!mpi.m_exitFlag)
                 {
-                    case 1:
+                    if("binary" == format)
+                    {   
+                        std::vector<uint64_t> keys(temp_map.size());
+                        std::vector<T> values(temp_map.size());
+                        std::vector<uint64_t>::iterator keys_it = keys.begin();
+                        std::vector<T>::iterator values_it = values.begin();
+                        for(auto it = temp_map.begin(); it != temp_map.end(); ++it, ++keys_it, ++values_it)
+                        {
+                            *keys_it = it->first;
+                            *values_it = it->second;
+                        }
+                        f_out.write((char*)&dim, sizeof(iSize_t));
+                        f_out.write((char*)keys.data(), dim*sizeof(uint64_t));
+                        f_out.write((char*)values.data(), dim*sizeof(T));
+                    }
+                    else
                     {
-                        f_out<<it->first<<"\t"<<std::setprecision(15)<<it->second<<"\n";
-                        break;
+                        //  First entry to file is number of entries in the map  
+                        f_out << temp_map.size() << "\n";
+                        //  Second entry to file is the number of map labels
+                        f_out << nbrLabels << "\n";
+                        //  Write map key-value pairs to the file (including multiple  
+                        //  values if found)
+                        for(auto it = temp_map.begin(); it != temp_map.end(); ++it)
+                        {
+                            switch(nbrLabels)
+                            {
+                                case 1:
+                                {
+                                    f_out << it->first << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    break;
+                                }
+                                case 2:
+                                {    
+                                    uint32_t key1, key2;
+                                    utilities::Unpack2x32(it->first, key1, key2);
+                                    f_out << key1 << "\t" << key2 << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    break;
+                                }
+                                case 3:
+                                {    
+                                    uint16_t key1, key2, key3, key4;
+                                    utilities::Unpack4x16(it->first, key1, key2, key3, key4);
+                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    break;
+                                }
+                                case 4:
+                                {
+                                    uint16_t key1, key2, key3, key4;
+                                    utilities::Unpack4x16(it->first, key1, key2, key3, key4);           
+                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t";
+                                    f_out << std::setprecision(15) << it->second<<"\n";
+                                    break;
+                                }
+                                case 8:
+                                {
+                                    uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
+                                    utilities::Unpack8x8(it->first, key1, key2, key3, key4, key5, key6, key7, key8);
+                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t" << key5<< "\t" << key6;
+                                    f_out << "\t" << key7; << "\t" << key8 << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    case 2:
-                    {    
-                        uint32_t key1, key2;
-                        utilities::Unpack2x32(it->first, key1, key2);
-                        f_out<<key1<<"\t"<<key2<<"\t"<<std::setprecision(15)<<it->second<<"\n";
-                        break;
-                    }
-                    case 3:
-                    {    
-                        uint16_t key1, key2, key3, key4;
-                        utilities::Unpack4x16(it->first, key1, key2, key3, key4);
-                        f_out<<key1<<"\t"<<key2<<"\t"<<key3<<"\t"<<std::setprecision(15)<<it->second<<"\n";
-                        break;
-                    }
-                    case 4:
-                    {  
-                        uint16_t key1, key2, key3, key4;
-                        utilities::Unpack4x16(it->first, key1, key2, key3, key4);           
-                        f_out<<key1<<"\t"<<key2<<"\t"<<key3<<"\t"<<key4<<"\t"<<std::setprecision(15)<<it->second<<"\n";
-                        break;
-                    }
-                    case 8:
-                    {  
-                        uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
-                        utilities::Unpack8x8(it->first, key1, key2, key3, key4, key5, key6, key7, key8);                        f_out<<key1<<"\t"<<key2<<"\t"<<key3<<"\t"<<key4<<"\t"<<key5<<"\t"<<key6<<"\t"<<key7<<"\t"<<key8<<"\t"<<std::setprecision(15)<<it->second<<"\n";
-                        break;
-                    }
+                    f_out.close();
                 }
             }
+            mpi.ExitFlagTest();
+            return;
         }
 
         //!
@@ -519,79 +554,117 @@ namespace utilities
         //! of key labels
         //!
         void FromFileBase(
-            std::vector<std::pair<uint64_t,T> >& pairList,     //!<    List of pair entries to be inserted into map
-            std::ifstream& f_in)    //!<    In file stream handle
+            M& map,                         //!<    Map containing data to write to the file
+            const std::string fileName,     //!<    Name of file
+            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class  
         {
-            //  Read in the first value of the file, which is the number
-            //  of entries in the map to be constructed
-            uint64_t size;
-            f_in>>size;
-            uint64_t nbrVars; 
-            f_in>>nbrVars;
-            //  Read map key-value pairs from the file (including multiple values 
-            //  if found) into a range of pairs
-            std::string line;
-            pairList.reserve(size);
-            for(uint64_t i=0; i<size; ++i)
+            if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
-                uint64_t key;
-                T val; 
-                switch(nbrVars)
+                std::ifstream f_out = utilities::GenFileStream<std::ifstream>(fileName, format, mpi);
+                if(!mpi.m_exitFlag)
                 {
-                    case 1:
+                    std::vector<std::pair<uint64_t, T> > pairList;
+                    if("binary" == format)
                     {
-                        f_in>>key;
-                        break;
+                        iSize_t dim = 0;
+                        f_in.read(reinterpret_cast<char*>(&dim), sizeof(iSize_t));
+                        pairList.resize(dim);
+                        std::vector<uint64_t> keys(dim);
+                        std::vector<T> values(dim);
+                        f_in.read(reinterpret_cast<char*>(keys.data()), dim*sizeof(uint64_t));
+                        f_in.read(reinterpret_cast<char*>(values.data()), dim*sizeof(T));
+                        std::vector<uint64_t>::iterator keys_it = keys.begin();
+                        std::vector<T>::iterator values_it = values.begin();
+                        for(auto it = pairList.begin(); it != map.end(); ++it, ++keys_it, ++values_it)
+                        {
+                            it->first = *keys_it;
+                            it_second = *values_it;
+                        }
                     }
-                    case 2:
+                    else
                     {
-                        uint32_t key1, key2;
-                        f_in>>key1;
-                        f_in>>key2;
-                        key = utilities::Pack2x32(key1, key2);
-                        break;
+                        iSize_t size;
+                        f_in >> size;
+                        uint64_t nbrLabels; 
+                        f_in >> nbrLabels;
+                        std::string line;
+                        pairList.reserve(size);
+                        for(uint64_t i=0; i<size; ++i)
+                        {
+                            uint64_t key;
+                            T val; 
+                            switch(nbrLabels)
+                            {
+                                case 1:
+                                {
+                                    f_in>>key;
+                                    break;
+                                }
+                                case 2:
+                                {
+                                    uint32_t key1, key2;
+                                    f_in >> key1;
+                                    f_in >> key2;
+                                    key = utilities::Pack2x32(key1, key2);
+                                    break;
+                                }
+                                case 3:
+                                {
+                                    uint16_t key1, key2, key3;
+                                    f_in >> key1;
+                                    f_in >> key2;
+                                    f_in >> key3;
+                                    key = utilities::Pack4x16(key1, key2, key3, 0);
+                                    break;
+                                }
+                                case 4:
+                                {
+                                    uint16_t key1, key2, key3, key4;
+                                    f_in >> key1;
+                                    f_in >> key2;
+                                    f_in >> key3;
+                                    f_in >> key4;
+                                    key = utilities::Pack4x16(key1, key2, key3, key4);
+                                    break;
+                                }
+                                case 8:
+                                {
+                                    uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
+                                    f_in >> key1;
+                                    f_in >> key2;
+                                    f_in >> key3;
+                                    f_in >> key4;
+                                    f_in >> key5;
+                                    f_in >> key6;
+                                    f_in >> key7;
+                                    f_in >> key8;
+                                    key = utilities::Pack8x8(key1, key2, key3, key4, key5, key6, key7, key8);
+                                    break;
+                                }
+                            }
+                            f_in >> val;
+                            pairList.push_back(std::pair<uint64_t, T>(key, val));
+                        }
                     }
-                    case 3:
-                    {
-                        uint16_t key1, key2, key3;
-                        f_in>>key1;
-                        f_in>>key2;
-                        f_in>>key3;
-                        key = utilities::Pack4x16(key1, key2, key3, 0);
-                        break;
-                    }
-                    case 4:
-                    {
-                        uint16_t key1, key2, key3, key4;
-                        f_in>>key1;
-                        f_in>>key2;
-                        f_in>>key3;
-                        f_in>>key4;
-                        key = utilities::Pack4x16(key1, key2, key3, key4);
-                        break;
-                    }
-                    case 8:
-                    {
-                        uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
-                        f_in>>key1;
-                        f_in>>key2;
-                        f_in>>key3;
-                        f_in>>key4;
-                        f_in>>key5;
-                        f_in>>key6;
-                        f_in>>key7;
-                        f_in>>key8;
-                        key = utilities::Pack8x8(key1, key2, key3, key4, key5, key6, key7, key8);
-                        break;
-                    }
+                    f_in.close();
+                    m_map.insert(pairList.begin(), pairList.end());
                 }
-                f_in>>val;
-                pairList.push_back(std::pair<uint64_t, T>(key, val));
             }
+            mpi.ExitFlagTest();
+            this->MpiSynchronize(0, mpi);
+            return;
         }
         public:
         
+        //!
+        //! MultiHashBase constructor
+        //!
         MultiHashBase(){};
+        
+        //!
+        //! MultiHashBase destructor
+        //!
         ~MultiHashBase(){};
     }; 
 
@@ -720,72 +793,27 @@ namespace utilities
         }
 
         //!
-        //! Store the current map in a file in a format labelled by the 
-        //! set number of map key labels.
+        //! Store the map in a file
         //! 
         void ToFile(
-            std::string fileName,           //!<    Name of file to write to
+            const std::string fileName,     //!<    Name of file to write to
+            const std::string format,       //!<    Format of file (e.g. "binary", "text")
             const unsigned int nbrLabels,   //!<    Number of map key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            //  First call the class MPI gather function
-            this->MpiGatherBase(m_map, 0, mpi);
-            //  Then store the map values from the master node only
-            if(0 == mpi.m_id)    //  FOR THE MASTER NODE
-            {
-                std::ofstream f_out;
-                f_out.open(fileName.c_str(), std::ios::out);
-                if(!f_out.is_open())
-                {
-                    std::cerr<<"\t\n ERROR in MultiHashMap<T>::ToFile: file name "<<fileName<<" CANNOT BE OPENED"<<std::endl;
-                    mpi.m_exitFlag=true;
-                }
-                else
-                {
-                    this->ToFileBase(m_map, f_out, nbrLabels);
-                    f_out.close();
-                }
-            }
-            //  Check for problems with the file being opened, and exit
-            //  if there is any issue
-            mpi.ExitFlagTest();
-            return;
+            this->ToFileBase(m_map, format, nbrLabels, mpi);
         }
 
         //!
         //! Retrieve map data from a file and use it to construct a new map
         //! 
         void FromFile(
-            std::string fileName,       //!<    Name of file to read from
-            MpiWrapper& mpi)            //!<    Instance of the MPI wrapper class
+            const std::string fileName,     //!<    Name of file
+            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            //  Read in file on the master node only
-            if(0 == mpi.m_id)    //  FOR THE MASTER NODE
-            {
-                std::ifstream f_in;
-                f_in.open(fileName.c_str(), std::ios::in);
-                if(!f_in.is_open())
-                {
-                    std::cerr<<"\t\n ERROR in MultiHash<T>::FromFile: file name "<<fileName<<" CANNOT BE OPENED"<<std::endl;
-                    mpi.m_exitFlag = true;
-                }
-                else
-                {
-                    //  First clear the map if it contains any existing data
-                    this->Clear();
-                    std::vector<std::pair<uint64_t, T> > pairList;
-                    this->FromFileBase(pairList, f_in);
-                    f_in.close();
-                    //  Insert the whole range into the map in one operation
-                    m_map.insert(pairList.begin(), pairList.end());
-                }
-            }
-            //  Check for problems with the file being opened, and exit
-            //  if there is any issue
-            mpi.ExitFlagTest();
-            //  Synchronize over all nodes
-            this->MpiSynchronize(0, mpi);
-            return;
+            this->Clear();
+            this->FromFileBase(m_map, fileName, format, mpi);
         }   
 
         //!
@@ -819,61 +847,6 @@ namespace utilities
             const MpiWrapper& mpi)      //!<    Instance of the MPI wrapper class
         {
             this->MpiScatterBase(m_map, maxKey, nodeId, mpi);
-        }
-
-        //!
-        //! Print out all the values and keys in the map
-        //!
-        template<typename... Js>
-        void Print()
-        {
-            std::cout<<"\n\tPRINTING CONTENTS OF MultiHashMap"<<std::endl;
-            uint64_t mapSize = m_map.size();
-            if(1==mapSize)
-            {
-                std::cout<<"\t"<<"1 ENTRY"<<std::endl;   
-            }
-            else
-            {
-                std::cout<<"\t"<<mapSize<<" ENTRIES"<<std::endl;
-            }
-            for(auto it = m_map.begin();it != m_map.end();it++)
-            {
-                //  convert the key into a string containing
-                //  a decomposition into the list of types specified by the
-                //  template arguments  ...Js
-                uint64_t temp = it->first;
-                std::cout<<"\t"<<utilities::Unserialize<uint64_t, Js...>(temp)<<"\t"<<it->second<<"\n";
-            }
-        }        
-
-        //!
-        //! Print out all the values and keys in the map, when using a class type
-        //! container
-        //!
-        template<class C, typename... Js>
-        void PrintClass()
-        {
-            std::cout<<"\n\tPRINTING CONTENTS OF MultiHashMultiMap"<<std::endl;
-            uint64_t mapSize = m_map.size();
-            if(1==mapSize)
-            {
-                std::cout<<"\t"<<"1 ENTRY"<<std::endl;   
-            }
-            else
-            {
-                std::cout<<"\t"<<mapSize<<" ENTRIES"<<std::endl;
-            }
-            for(auto it = m_map.begin(); it != m_map.end(); ++it)
-            {
-                //  convert the key into a string containing
-                //  a decomposition into the list of types specified by the
-                //  template arguments  ...Js
-                uint64_t temp = it->first;
-                std::cout<<"\t"<<utilities::Unserialize<uint64_t, Js...>(temp);          
-                C temp2 = it->second;
-                temp2.Print();
-            }
         }
     };  //  End MultiHashMap
 
@@ -996,75 +969,27 @@ namespace utilities
         }
 
         //!
-        //! Store the current map in a file in a format labelled by the 
-        //! set number of map key labels.
-        //!
+        //! Store the map in a file
+        //! 
         void ToFile(
-            std::string fileName,           //!<    Name of file to write to
+            const std::string fileName,     //!<    Name of file to write to
+            const std::string format,       //!<    Format of file (e.g. "binary", "text")
             const unsigned int nbrLabels,   //!<    Number of map key labels
-            utilities::MpiWrapper& mpi)     //!<    Instance of the MPI wrapper class
+            MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            //  First call the class MPI gather function
-            this->MpiGatherBase(m_map, 0, mpi);
-            //  Then store the map values from the master node only
-            if(0 == mpi.m_id)    //  FOR THE MASTER NODE
-            {
-                std::ofstream f_out;
-                f_out.open(fileName.c_str(), std::ios::out);
-                if(!f_out.is_open())
-                {
-                    std::cerr<<"\t\n ERROR in MultiHashMultiMap<T>::ToFile: file name "<<fileName<<" CANNOT BE OPENED"<<std::endl;
-                    mpi.m_exitFlag = true;
-                }
-                else
-                {
-                    this->ToFileBase(m_map, f_out, nbrLabels);
-                    f_out.close();
-                }
-            }
-            //  Check for problems with the file being opened, and exit
-            //  if there is any issue
-            mpi.ExitFlagTest();
-            return;
+            this->ToFileBase(m_map, f_out, format, nbrLabels, mpi);
         }
 
         //!
         //! Retrieve map data from a file and use it to construct a new map
         //!
         void FromFile(
-            std::string fileName,       //!<    Name of file to read from
+            const std::string fileName, //!<    Name of file to read from
+            const std::string format,   //!<    Format of file (e.g. "binary", "text")
             MpiWrapper& mpi)            //!<    Instance of the MPI wrapper class
         {
-            //  Read in file on the master node only
-            if(0 == mpi.m_id)    //  FOR THE MASTER NODE
-            {
-                std::ifstream f_in;
-                f_in.open(fileName.c_str(), std::ios::in);
-                if(!f_in.is_open())
-                {
-                    std::cerr<<"\t\n ERROR in MultiHashMultiMap<T>::FromFile: file name "<<fileName<<" CANNOT BE OPENED"<<std::endl;
-                    mpi.m_exitFlag=true;
-                }
-                else
-                {
-                    //  First clear the map if it contains any existing data
-                    this->Clear();
-                    std::vector<std::pair<uint64_t, T> > pairList;
-                    this->FromFileBase(pairList, f_in);
-                    f_in.close();
-                    //  Insert the whole range into the map in one operation
-                    m_map.insert(pairList.begin(), pairList.end());
-                    f_in.close();
-                    //  Insert the whole range into the map in one operation
-                    m_map.insert(pairList.begin(), pairList.end());
-                }
-            }
-            //  Check for problems with the file being opened, and exit
-            //  if there is any issue
-            mpi.ExitFlagTest();
-            //  Synchronize over all nodes
-            this->MpiSynchronize(0, mpi);
-            return;
+            this->Clear();
+            this->FromFileBase(fileName, fileName, format, mpi);
         }
 
         //!
@@ -1086,63 +1011,6 @@ namespace utilities
             const MpiWrapper& mpi)      //!<    Instance of the MPI wrapper class
         {
             this->MpiGatherBase(m_map, nodeId, mpi);
-        }
-
-        //!
-        //! Print out all the values and keys in the map
-        //!
-        template<typename... Js>
-        void Print()
-        {
-            std::cout<<"\n\tPRINTING CONTENTS OF MultiHashMultiMap"<<std::endl;
-            uint64_t mapSize = m_map.size();
-            if(1==mapSize)
-            {
-                std::cout<<"\t"<<"1 ENTRY"<<std::endl;   
-            }
-            else
-            {
-                std::cout<<"\t"<<mapSize<<" ENTRIES"<<std::endl;
-            }
-        
-            for(auto it = m_map.begin(); it != m_map.end(); ++it)
-            {
-                //  convert the key into a string containing
-                //  a decomposition into the list of types specified by the
-                //  template arguments  ...Js
-                uint64_t temp = it->first;
-                std::cout<<"\t"<<utilities::Unserialize<uint64_t, Js...>(temp)<<"\t:\t"<<it->second<<"\n";
-            }
-        }
-
-        //!
-        //! Print out all the values and keys in the map, when using a class type
-        //! container
-        //!
-        template<class C, typename... Js>
-        void PrintClass()
-        {
-            std::cout<<"\n\tPRINTING CONTENTS OF MultiHashMultiMap"<<std::endl;
-            uint64_t mapSize = m_map.size();
-            if(1==mapSize)
-            {
-                std::cout<<"\t"<<"1 ENTRY"<<std::endl;   
-            }
-            else
-            {
-                std::cout<<"\t"<<mapSize<<" ENTRIES"<<std::endl;
-            }
-        
-            for(auto it = m_map.begin(); it != m_map.end(); ++it)
-            {
-                //  convert the key into a string containing
-                //  a decomposition into the list of types specified by the
-                //  template arguments  ...Js
-                uint64_t temp = it->first;
-                std::cout<<"\t"<<utilities::Unserialize<uint64_t, Js...>(temp);
-                C temp2 = it->second;
-                temp2.Print();
-            }
         }
     };  //  End class MultiHashMultiMap
 }  //  End namespace utilities

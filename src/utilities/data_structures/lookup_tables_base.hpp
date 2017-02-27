@@ -3,7 +3,7 @@
 //!                        \author Simon C. Davenport                                                  
 //!                                                                             
 //!	 \file
-//!     This file contains the base class implementation for lookup tables
+//!     This file contains the base class implementation for term tables
 //!                                                  
 //!                    Copyright (C) Simon C Davenport
 //!                                                                             
@@ -22,11 +22,12 @@
 //!                                                                             
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _LOOKUP_TABLES_BASE_HPP_INCLUDED_
-#define _LOOKUP_TABLES_BASE_HPP_INCLUDED_
+#ifndef _TERM_TABLES_BASE_HPP_INCLUDED_
+#define _TERM_TABLES_BASE_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../general/orbital_and_state_defs.hpp"
+#include "../wrappers/io_wrapper.hpp"
 #include "../wrappers/mpi_wrapper.hpp"
 #include <vector>
 #if _DEBUG_
@@ -40,7 +41,7 @@ namespace diagonalization
     //! momentum conservation laws
     //!
     template <typename T>
-    class LookUpTables
+    class TermTables
     {
         protected:
         std::vector<T> m_vTable;            //!<    Look-up table data 
@@ -75,7 +76,7 @@ namespace diagonalization
             const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class 
         {
             m_kMax = kMax;
-            iSize_t dim = this->CalculateDim(kMax);
+            iSize_t dim = this->CalculateDim(m_kMax);
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             { 
                 utilities::cout.AdditionalInfo()<<"\n\t- INITIALIZING LOOKUP TABLE "<<std::endl;
@@ -101,6 +102,10 @@ namespace diagonalization
                            const kState_t k4) const{ return 0.0;};
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const{};
         virtual T GetEkk(const kState_t k1, const kState_t k2) const{ return 0.0;};
+        virtual void ToFile(const std::string fileName, std::string format, 
+                                 utilities::MpiWrapper& mpi) const=0;
+        virtual void FromFile(const std::string fileName, std::string format,
+                                   utilities::MpiWrapper& mpi)=0;
 
         //!
         //! Only allow for a single k value to be returned
@@ -160,31 +165,65 @@ namespace diagonalization
             mpi.Sync(&m_vTable, syncId);
             mpi.Sync(&m_kTable, syncId);
         }
-
+        
         //!
-        //! Write the table to a binary file.
+        //! Output the table to a file
         //!
-        void TableToFile(
-            const std::string fileName, //!<    Name of file
-            utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
-            const
+        void ToFileBase(
+            const std::string fileName,         //!<    File name
+            const std::string format,           //!<    Format of file (e.g. "binary", "text")
+            const iSize_t nbrLabels,            //!<    Number of quantum number labels
+            utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
-                std::ofstream f_out;
-                f_out.open(fileName.c_str(), std::ios::binary);
-                if(f_out.is_open())
+                std::ofstream f_out = utilities::GenFileStream<std::ofstream>(fileName, format, mpi);
+                if(!mpi.m_exitFlag)
                 {
-                    iSize_t dim = m_vTable.size();
-                    f_out.write((char*)&dim, sizeof(iSize_t));
-                    f_out.write((char*)m_vTable.data(), dim*sizeof(T));
+                    iSize_t dim = this->CalculateDim(m_kMax);
+                    if("binary" == format)
+                    {
+                        f_out.write((char*)&dim, sizeof(iSize_t));
+                        f_out.write((char*)&nbrLabels, sizeof(iSize_t));
+                        if(2 == nbrLabels)
+                        {
+                            f_out.write((char*)m_vTable.data(), dim*sizeof(T));
+                        }
+                        else if(4 == nbrLabels)
+                        {
+                            f_out.write((char*)m_kTable.data(), dim*sizeof(kState_t));
+                            f_out.write((char*)m_vTable.data(), dim*sizeof(T));
+                        }
+                    }
+                    else
+                    {
+                        f_out << dim << "\n";
+                        f_out << nbrLabels << "\n";
+                        if(2 == nbrLabels)
+                        {
+                            for(kState_t k1=0; k1<m_kMax; ++k1)
+                            {
+                                f_out << k1 << "\t" << k1 << "\t" << std::setprecision(15) << m_vTable[k1]<<"\n";
+                            }
+                        }
+                        else if(4 == nbrLabels)
+                        {
+                            kState_t k1;
+                            for(kState_t k4=0; k4<m_kMax; ++k4)
+                            {
+                                for(kState_t k3=0; k3<m_kMax; ++k3)
+                                {
+                                    for(kState_t k2=0; k2<m_kMax; ++k2)
+                                    {
+                                        this->GetK1(&k1, 1, k2, k3, k4);
+                                        f_out << k1 << "\t" << k2 << "\t" << k3 << "\t" << k4;
+                                        f_out << "\t" << std::setprecision(15) << this->GetVkkkk(k1, k2, k3, k4)<<"\n";
+                                    }
+                                }
+                            }
+                        }
+                    }
                     f_out.close();
-                    utilities::cout.AdditionalInfo()<<"DONE (see e.g. "<<fileName<<")"<<std::endl;
-                }
-                else
-                {
-                    std::cerr<<"ERROR in TableToFile(). File "<<fileName<<" not found!"<<std::endl;
-                    mpi.m_exitFlag=true;
                 }
             }
             MPI_Barrier(mpi.m_comm);
@@ -192,34 +231,68 @@ namespace diagonalization
         }
 
         //!
-        //! Read the table in from an existing binary file.
+        //! Import the term table from a file
         //!
-        void TableFromFile(
-            const std::string fileName, //!<    Name of file
-            utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
+        void FromFileBase(
+            const std::string fileName,         //!<    File name
+            const std::string format,           //!<    Format of file (e.g. "binary", "text")
+            utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
-                std::ifstream f_in;
-                f_in.open(fileName.c_str(), std::ios::binary);
-                if(f_in.is_open())
+                std::ifstream f_in = utilities::OpenReadFile(fileName, format, mpi);
+                if(!mpi.m_exitFlag)
                 {
                     iSize_t dim = 0;
-                    f_in.read(reinterpret_cast<char*>(&dim), sizeof(iSize_t));
-                    //  Allocate memory to store the table
-                    m_vTable.resize(dim);
-                    f_in.read(reinterpret_cast<char*>(m_vTable.data()), dim*sizeof(dcmplx));
+                    iSize_t nbrLabels = 0;
+                    if("binary" == format)
+                    {
+                        f_in.read(reinterpret_cast<char*>(&dim), sizeof(iSize_t));
+                        f_in.read(reinterpret_cast<char*>(&nbrLabels), sizeof(iSize_t));
+                        m_kTable.resize(dim);
+                        m_vTable.resize(dim);
+                        if(2 == nbrLabels)
+                        {
+                            f_in.read(reinterpret_cast<char*>(m_vTable.data()), dim*sizeof(T));
+                        }
+                        else if(4 == nbrLabels)
+                        {
+                            f_in.read(reinterpret_cast<char*>(m_kTable.data()), dim*sizeof(kState_t));
+                            f_in.read(reinterpret_cast<char*>(m_vTable.data()), dim*sizeof(T));
+                        }
+                    }
+                    else
+                    {
+                        f_in >> dim;
+                        f_in >> nbrLabels;
+                        m_kTable.resize(dim);
+                        m_vTable.resize(dim);
+                        if(2 == nbrLabels)
+                        {
+                            kState_t k1;
+                            kState_t k2;
+                            for(iSize_t i=0; i<dim; ++i)
+                            {
+                                f_in >> k1 >> k2 >> m_vTable[i];
+                            }
+                        }
+                        else if(4 == nbrLabels)
+                        {
+                            for(iSize_t i=0; i<dim; ++i)
+                            {
+                                f_in >> m_kTable[i];
+                            }
+                            for(iSize_t i=0; i<dim; ++i)
+                            {
+                                f_in >> m_vTable[i];
+                            }
+                        }
+                    }
                     f_in.close();
-                    utilities::cout.SecondaryOutput()<<"DONE ";
                 }
-                else
-                {
-                    std::cerr<<"ERROR in TableFromFile(). File "<<fileName<<" not found!"<<std::endl;
-                    mpi.m_exitFlag=true;
-                }        
             }
             mpi.ExitFlagTest();
-            mpi.Sync(&m_vTable, 0);
+            MpiSynchronize(0, mpi);
         }
     };
 }   //  End diagonalization namespace

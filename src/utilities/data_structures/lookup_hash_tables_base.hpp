@@ -3,7 +3,7 @@
 //!                        \author Simon C. Davenport                                                  
 //!                                                                             
 //!	 \file
-//!     This file contains the base class implementation for lookup tables
+//!     This file contains the base class implementation for term tables
 //!     using an underlying multi key hash table implementation
 //!                                                  
 //!                    Copyright (C) Simon C Davenport
@@ -23,8 +23,8 @@
 //!                                                                             
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _LOOKUP_HASH_TABLES_BASE_HPP_INCLUDED_
-#define _LOOKUP_HASH_TABLES_BASE_HPP_INCLUDED_
+#ifndef _TERM_HASH_TABLES_BASE_HPP_INCLUDED_
+#define _TERM_HASH_TABLES_BASE_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../general/orbital_and_state_defs.hpp"
@@ -35,13 +35,13 @@
 namespace diagonalization
 {
     ////////////////////////////////////////////////////////////////////////////////
-    //! \brief A class to contain look-up table values of the form 
+    //! \brief A class to contain term table values of the form 
     //! V_{k1,k2,k3,k4}. This version uses an underlying hash table
     //! data structure.
     ////////////////////////////////////////////////////////////////////////////////
 
     template <typename T>
-    class LookUpHashTables
+    class TermHashTables
     {
         protected:
         utilities::MultiHashMap<T> m_vTable;    //!< Look-up table data
@@ -54,7 +54,7 @@ namespace diagonalization
         //!
         //! Default constructor
         //!
-        LookUpHashTables()
+        TermHashTables()
         :
             m_kMax(0)
         {}
@@ -62,7 +62,7 @@ namespace diagonalization
         //!
         //! Destructor
         //!
-        ~LookUpHashTables(){}
+        ~TermHashTables(){}
 
         //!
         //! Set the internal kMax variable
@@ -89,7 +89,10 @@ namespace diagonalization
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const{};
         virtual T GetEkk(const kState_t k1, const kState_t k2) const{ return 0.0;};
         virtual iSize_t GetMaxKCount() const{return 1;};
-
+        virtual void TableToFile(const std::string fileName, std::string format, 
+                                 utilities::MpiWrapper& mpi) const=0;
+        virtual void TableFromFile(const std::string fileName, std::string format,
+                                   utilities::MpiWrapper& mpi)=0;
         //!
         //! Get the address of the quantum number hash table
         //!
@@ -131,23 +134,24 @@ namespace diagonalization
         //!
         //! Output the table to a file
         //!
-        void TableToFile(
+        void TableToFileBase(
             const std::string fileName,         //!<    File name
-            const iSize_t nbrLabels,            //!<    Number of momentum labels
+            const std::string format,           //!<    Format of file (e.g. "binary", "text")
+            const iSize_t nbrLabels,            //!<    Number of quantum number labels
             utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
         {
-            m_vTable.ToFile(fileName, nbrLabels, mpi);
+            m_vTable.ToFile(fileName, format, nbrLabels, mpi);
         }
 
         //!
-        //! Import the term table from a file (assumes 4 k labels)
+        //! Import the term table from a file
         //!
-        void TableFromFile(
+        void TableFromFileBase(
             const std::string fileName,         //!<    File name
-            const iSize_t nbrLabels,            //!<    Number of momentum labels
+            const std::string format,           //!<    Format of file (e.g. "binary", "text")
             utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
         {
-            m_vTable.FromFile(fileName, mpi);
+            m_vTable.FromFile(fileName, format, mpi);
         }
 
         ////////////////////////////////////////////////////////////////////////////////
