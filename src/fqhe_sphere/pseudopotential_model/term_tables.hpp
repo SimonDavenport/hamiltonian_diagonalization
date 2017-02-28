@@ -41,10 +41,10 @@ namespace diagonalization
         public:
         void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const;
         double GetEkk(const kState_t k1, const kState_t k2) const;
-        void ToFile(const std::string fileName, std::string format, 
-                         utilities::MpiWrapper& mpi) const;
-        void FromFile(const std::string fileName, std::string format,
-                           utilities::MpiWrapper& mpi);
+        void ToFile(const std::string fileName, const std::string format, 
+                    utilities::MpiWrapper& mpi) const;
+        void FromFile(const std::string fileName, const std::string format,
+                      utilities::MpiWrapper& mpi);
     };
     
     class QuarticTermTables : public TermTables<double>
@@ -52,12 +52,18 @@ namespace diagonalization
         private:
         iSize_t CalculateDim(const kState_t kMax) const;
         public:
-        void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2, const kState_t k3, const kState_t k4) const;
-        double GetVkkkk(const kState_t k1, const kState_t k2, const kState_t k3, const kState_t k4) const;
-        void ToFile(const std::string fileName, std::string format, 
-                         utilities::MpiWrapper& mpi) const;
-        void FromFile(const std::string fileName, std::string format,
-                           utilities::MpiWrapper& mpi);
+        void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2, 
+                   const kState_t k3, const kState_t k4) const;
+        void SetK1(const kState_t k1, const kState_t k2, 
+                   const kState_t k3, const kState_t k4);
+        double GetVkkkk(const kState_t k1, const kState_t k2, const kState_t k3, 
+                        const kState_t k4) const;
+        void SetVkkkk(const double Vkkkk, const kState_t k1, const kState_t k2, 
+                      const kState_t k3, const kState_t k4);
+        void ToFile(const std::string fileName, const std::string format, 
+                    utilities::MpiWrapper& mpi) const;
+        void FromFile(const std::string fileName, const std::string format,
+                      utilities::MpiWrapper& mpi);
     };
 }   //  End namespace diagonalization
 #endif
