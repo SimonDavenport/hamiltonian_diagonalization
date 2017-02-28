@@ -78,7 +78,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = fqhe_sphere_spinless_fermions_diagonalization$(EXEEXT) \
 	optical_flux_lattice_diagonalization$(EXEEXT) \
-	optical_flux_lattice_single_particle_model$(EXEEXT) \
+	optical_flux_lattice_noninteracting_model$(EXEEXT) \
 	optical_flux_lattice_sql_gen$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -94,17 +94,17 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_fqhe_sphere_spinless_fermions_diagonalization_OBJECTS = fqhe_sphere/main/fqhe_sphere_spinless_fermions_diagonalization.$(OBJEXT) \
-	fqhe_sphere/pseudopotential_hamiltonian/pseudopotential_hamiltonian.$(OBJEXT) \
-	fqhe_sphere/pseudopotential_hamiltonian/two_level_pseudopotential_hamiltonian.$(OBJEXT) \
-	fqhe_sphere/pseudopotential_hamiltonian/pseudopotential_hamiltonian_data.$(OBJEXT) \
-	fqhe_sphere/pseudopotential_hamiltonian/lookup_tables.$(OBJEXT) \
+	fqhe_sphere/pseudopotential_model/pseudopotential_model.$(OBJEXT) \
+	fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.$(OBJEXT) \
+	fqhe_sphere/pseudopotential_model/pseudopotential_model_data.$(OBJEXT) \
+	fqhe_sphere/pseudopotential_model/lookup_tables.$(OBJEXT) \
 	hamiltonians/hamiltonian_data.$(OBJEXT) \
 	basis/fermion_fock_basis.$(OBJEXT) \
 	basis/two_level_fermion_fock_basis.$(OBJEXT) \
 	utilities/wrappers/mpi_wrapper.$(OBJEXT) \
 	utilities/wrappers/arpack_wrapper.$(OBJEXT) \
 	utilities/mathematics/binary_number_tools.$(OBJEXT) \
-	utilities/mathematics/binomial_table.$(OBJEXT) \
+	utilities/mathematics/binomials.$(OBJEXT) \
 	utilities/mathematics/clebsch_gordan_coefficients.$(OBJEXT) \
 	utilities/mathematics/murmur_hash2.$(OBJEXT) \
 	utilities/mathematics/murmur_hash3.$(OBJEXT)
@@ -112,14 +112,14 @@ fqhe_sphere_spinless_fermions_diagonalization_OBJECTS =  \
 	$(am_fqhe_sphere_spinless_fermions_diagonalization_OBJECTS)
 fqhe_sphere_spinless_fermions_diagonalization_LDADD = $(LDADD)
 am_optical_flux_lattice_diagonalization_OBJECTS = optical_flux_lattice/main/optical_flux_lattice_diagonalization.$(OBJEXT) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian.$(OBJEXT) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/linear_momentum_constraints_2D.$(OBJEXT) \
+	optical_flux_lattice/interacting_ofl_model/interacting_ofl_model.$(OBJEXT) \
+	optical_flux_lattice/interacting_ofl_model/linear_momentum_constraints_2D.$(OBJEXT) \
 	optical_flux_lattice/observables_manager/observables_manager.$(OBJEXT) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian_data.$(OBJEXT) \
-	optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian.$(OBJEXT) \
-	optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian_array.$(OBJEXT) \
-	optical_flux_lattice/single_particle_hamiltonian/single_particle_parameters.$(OBJEXT) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/lookup_tables.$(OBJEXT) \
+	optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.$(OBJEXT) \
+	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.$(OBJEXT) \
+	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.$(OBJEXT) \
+	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.$(OBJEXT) \
+	optical_flux_lattice/interacting_ofl_model/lookup_tables.$(OBJEXT) \
 	hamiltonians/hamiltonian_data.$(OBJEXT) \
 	basis/fermion_fock_basis.$(OBJEXT) \
 	utilities/wrappers/mpi_wrapper.$(OBJEXT) \
@@ -127,24 +127,24 @@ am_optical_flux_lattice_diagonalization_OBJECTS = optical_flux_lattice/main/opti
 	utilities/wrappers/fftw_wrapper.$(OBJEXT) \
 	utilities/wrappers/sqlite_wrapper.$(OBJEXT) \
 	utilities/mathematics/binary_number_tools.$(OBJEXT) \
-	utilities/mathematics/binomial_table.$(OBJEXT) \
+	utilities/mathematics/binomials.$(OBJEXT) \
 	utilities/mathematics/murmur_hash2.$(OBJEXT) \
 	utilities/mathematics/murmur_hash3.$(OBJEXT)
 optical_flux_lattice_diagonalization_OBJECTS =  \
 	$(am_optical_flux_lattice_diagonalization_OBJECTS)
 optical_flux_lattice_diagonalization_LDADD = $(LDADD)
-am_optical_flux_lattice_single_particle_model_OBJECTS = optical_flux_lattice/main/optical_flux_lattice_single_particle_model.$(OBJEXT) \
-	optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian.$(OBJEXT) \
-	optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian_array.$(OBJEXT) \
-	optical_flux_lattice/single_particle_hamiltonian/single_particle_parameters.$(OBJEXT) \
+am_optical_flux_lattice_noninteracting_model_OBJECTS = optical_flux_lattice/main/optical_flux_lattice_noninteracting_model.$(OBJEXT) \
+	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.$(OBJEXT) \
+	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.$(OBJEXT) \
+	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.$(OBJEXT) \
 	utilities/wrappers/mpi_wrapper.$(OBJEXT) \
 	utilities/wrappers/fftw_wrapper.$(OBJEXT) \
 	utilities/wrappers/sqlite_wrapper.$(OBJEXT) \
 	utilities/mathematics/murmur_hash2.$(OBJEXT) \
 	utilities/mathematics/murmur_hash3.$(OBJEXT)
-optical_flux_lattice_single_particle_model_OBJECTS =  \
-	$(am_optical_flux_lattice_single_particle_model_OBJECTS)
-optical_flux_lattice_single_particle_model_LDADD = $(LDADD)
+optical_flux_lattice_noninteracting_model_OBJECTS =  \
+	$(am_optical_flux_lattice_noninteracting_model_OBJECTS)
+optical_flux_lattice_noninteracting_model_LDADD = $(LDADD)
 am_optical_flux_lattice_sql_gen_OBJECTS = optical_flux_lattice/main/optical_flux_lattice_sql_gen.$(OBJEXT) \
 	utilities/wrappers/sqlite_wrapper.$(OBJEXT)
 optical_flux_lattice_sql_gen_OBJECTS =  \
@@ -181,12 +181,12 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(fqhe_sphere_spinless_fermions_diagonalization_SOURCES) \
 	$(optical_flux_lattice_diagonalization_SOURCES) \
-	$(optical_flux_lattice_single_particle_model_SOURCES) \
+	$(optical_flux_lattice_noninteracting_model_SOURCES) \
 	$(optical_flux_lattice_sql_gen_SOURCES)
 DIST_SOURCES =  \
 	$(fqhe_sphere_spinless_fermions_diagonalization_SOURCES) \
 	$(optical_flux_lattice_diagonalization_SOURCES) \
-	$(optical_flux_lattice_single_particle_model_SOURCES) \
+	$(optical_flux_lattice_noninteracting_model_SOURCES) \
 	$(optical_flux_lattice_sql_gen_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -306,14 +306,14 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 optical_flux_lattice_diagonalization_SOURCES = \
 optical_flux_lattice/main/optical_flux_lattice_diagonalization.cpp \
-optical_flux_lattice/optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian.cpp \
-optical_flux_lattice/optical_flux_lattice_hamiltonian/linear_momentum_constraints_2D.cpp \
+optical_flux_lattice/interacting_ofl_model/interacting_ofl_model.cpp \
+optical_flux_lattice/interacting_ofl_model/linear_momentum_constraints_2D.cpp \
 optical_flux_lattice/observables_manager/observables_manager.cpp \
-optical_flux_lattice/optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian_data.cpp \
-optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian.cpp \
-optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian_array.cpp \
-optical_flux_lattice/single_particle_hamiltonian/single_particle_parameters.cpp \
-optical_flux_lattice/optical_flux_lattice_hamiltonian/lookup_tables.cpp \
+optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.cpp \
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.cpp \
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp \
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
+optical_flux_lattice/interacting_ofl_model/lookup_tables.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp  \
 utilities/wrappers/mpi_wrapper.cpp \
@@ -321,40 +321,40 @@ utilities/wrappers/arpack_wrapper.cpp \
 utilities/wrappers/fftw_wrapper.cpp \
 utilities/wrappers/sqlite_wrapper.cpp \
 utilities/mathematics/binary_number_tools.cpp \
-utilities/mathematics/binomial_table.cpp \
+utilities/mathematics/binomials.cpp \
 utilities/mathematics/murmur_hash2.cpp \
 utilities/mathematics/murmur_hash3.cpp
 
 optical_flux_lattice_diagonalization_LINK = $(FC) $(LDFLAGS) -o optical_flux_lattice_diagonalization
-optical_flux_lattice_single_particle_model_SOURCES = \
-optical_flux_lattice/main/optical_flux_lattice_single_particle_model.cpp \
-optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian.cpp \
-optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian_array.cpp \
-optical_flux_lattice/single_particle_hamiltonian/single_particle_parameters.cpp \
+optical_flux_lattice_noninteracting_model_SOURCES = \
+optical_flux_lattice/main/optical_flux_lattice_noninteracting_model.cpp \
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.cpp \
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp \
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
 utilities/wrappers/mpi_wrapper.cpp \
 utilities/wrappers/fftw_wrapper.cpp \
 utilities/wrappers/sqlite_wrapper.cpp \
 utilities/mathematics/murmur_hash2.cpp \
 utilities/mathematics/murmur_hash3.cpp
 
-optical_flux_lattice_single_particle_model_LINK = $(FC) $(LDFLAGS) -o optical_flux_lattice_single_particle_model
+optical_flux_lattice_noninteracting_model_LINK = $(FC) $(LDFLAGS) -o optical_flux_lattice_noninteracting_model
 optical_flux_lattice_sql_gen_SOURCES = \
 optical_flux_lattice/main/optical_flux_lattice_sql_gen.cpp \
 utilities/wrappers/sqlite_wrapper.cpp
 
 fqhe_sphere_spinless_fermions_diagonalization_SOURCES = \
 fqhe_sphere/main/fqhe_sphere_spinless_fermions_diagonalization.cpp \
-fqhe_sphere/pseudopotential_hamiltonian/pseudopotential_hamiltonian.cpp \
-fqhe_sphere/pseudopotential_hamiltonian/two_level_pseudopotential_hamiltonian.cpp \
-fqhe_sphere/pseudopotential_hamiltonian/pseudopotential_hamiltonian_data.cpp \
-fqhe_sphere/pseudopotential_hamiltonian/lookup_tables.cpp \
+fqhe_sphere/pseudopotential_model/pseudopotential_model.cpp \
+fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.cpp \
+fqhe_sphere/pseudopotential_model/pseudopotential_model_data.cpp \
+fqhe_sphere/pseudopotential_model/lookup_tables.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp \
 basis/two_level_fermion_fock_basis.cpp \
 utilities/wrappers/mpi_wrapper.cpp \
 utilities/wrappers/arpack_wrapper.cpp \
 utilities/mathematics/binary_number_tools.cpp \
-utilities/mathematics/binomial_table.cpp \
+utilities/mathematics/binomials.cpp \
 utilities/mathematics/clebsch_gordan_coefficients.cpp \
 utilities/mathematics/murmur_hash2.cpp \
 utilities/mathematics/murmur_hash3.cpp
@@ -445,24 +445,24 @@ fqhe_sphere/main/$(DEPDIR)/$(am__dirstamp):
 fqhe_sphere/main/fqhe_sphere_spinless_fermions_diagonalization.$(OBJEXT):  \
 	fqhe_sphere/main/$(am__dirstamp) \
 	fqhe_sphere/main/$(DEPDIR)/$(am__dirstamp)
-fqhe_sphere/pseudopotential_hamiltonian/$(am__dirstamp):
-	@$(MKDIR_P) fqhe_sphere/pseudopotential_hamiltonian
-	@: > fqhe_sphere/pseudopotential_hamiltonian/$(am__dirstamp)
-fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)
-	@: > fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-fqhe_sphere/pseudopotential_hamiltonian/pseudopotential_hamiltonian.$(OBJEXT):  \
-	fqhe_sphere/pseudopotential_hamiltonian/$(am__dirstamp) \
-	fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-fqhe_sphere/pseudopotential_hamiltonian/two_level_pseudopotential_hamiltonian.$(OBJEXT):  \
-	fqhe_sphere/pseudopotential_hamiltonian/$(am__dirstamp) \
-	fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-fqhe_sphere/pseudopotential_hamiltonian/pseudopotential_hamiltonian_data.$(OBJEXT):  \
-	fqhe_sphere/pseudopotential_hamiltonian/$(am__dirstamp) \
-	fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-fqhe_sphere/pseudopotential_hamiltonian/lookup_tables.$(OBJEXT):  \
-	fqhe_sphere/pseudopotential_hamiltonian/$(am__dirstamp) \
-	fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/$(am__dirstamp)
+fqhe_sphere/pseudopotential_model/$(am__dirstamp):
+	@$(MKDIR_P) fqhe_sphere/pseudopotential_model
+	@: > fqhe_sphere/pseudopotential_model/$(am__dirstamp)
+fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) fqhe_sphere/pseudopotential_model/$(DEPDIR)
+	@: > fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
+fqhe_sphere/pseudopotential_model/pseudopotential_model.$(OBJEXT):  \
+	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
+	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
+fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.$(OBJEXT):  \
+	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
+	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
+fqhe_sphere/pseudopotential_model/pseudopotential_model_data.$(OBJEXT):  \
+	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
+	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
+fqhe_sphere/pseudopotential_model/lookup_tables.$(OBJEXT):  \
+	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
+	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
 hamiltonians/$(am__dirstamp):
 	@$(MKDIR_P) hamiltonians
 	@: > hamiltonians/$(am__dirstamp)
@@ -502,7 +502,7 @@ utilities/mathematics/$(DEPDIR)/$(am__dirstamp):
 utilities/mathematics/binary_number_tools.$(OBJEXT):  \
 	utilities/mathematics/$(am__dirstamp) \
 	utilities/mathematics/$(DEPDIR)/$(am__dirstamp)
-utilities/mathematics/binomial_table.$(OBJEXT):  \
+utilities/mathematics/binomials.$(OBJEXT):  \
 	utilities/mathematics/$(am__dirstamp) \
 	utilities/mathematics/$(DEPDIR)/$(am__dirstamp)
 utilities/mathematics/clebsch_gordan_coefficients.$(OBJEXT):  \
@@ -527,16 +527,18 @@ optical_flux_lattice/main/$(DEPDIR)/$(am__dirstamp):
 optical_flux_lattice/main/optical_flux_lattice_diagonalization.$(OBJEXT):  \
 	optical_flux_lattice/main/$(am__dirstamp) \
 	optical_flux_lattice/main/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/optical_flux_lattice_hamiltonian/$(am__dirstamp):
-	@$(MKDIR_P) optical_flux_lattice/optical_flux_lattice_hamiltonian
-	@: > optical_flux_lattice/optical_flux_lattice_hamiltonian/$(am__dirstamp)
-optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)
-	@: > optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian.$(OBJEXT): optical_flux_lattice/optical_flux_lattice_hamiltonian/$(am__dirstamp) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/optical_flux_lattice_hamiltonian/linear_momentum_constraints_2D.$(OBJEXT): optical_flux_lattice/optical_flux_lattice_hamiltonian/$(am__dirstamp) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/interacting_ofl_model/$(am__dirstamp):
+	@$(MKDIR_P) optical_flux_lattice/interacting_ofl_model
+	@: > optical_flux_lattice/interacting_ofl_model/$(am__dirstamp)
+optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) optical_flux_lattice/interacting_ofl_model/$(DEPDIR)
+	@: > optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/interacting_ofl_model/interacting_ofl_model.$(OBJEXT):  \
+	optical_flux_lattice/interacting_ofl_model/$(am__dirstamp) \
+	optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/interacting_ofl_model/linear_momentum_constraints_2D.$(OBJEXT):  \
+	optical_flux_lattice/interacting_ofl_model/$(am__dirstamp) \
+	optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
 optical_flux_lattice/observables_manager/$(am__dirstamp):
 	@$(MKDIR_P) optical_flux_lattice/observables_manager
 	@: > optical_flux_lattice/observables_manager/$(am__dirstamp)
@@ -546,22 +548,27 @@ optical_flux_lattice/observables_manager/$(DEPDIR)/$(am__dirstamp):
 optical_flux_lattice/observables_manager/observables_manager.$(OBJEXT):  \
 	optical_flux_lattice/observables_manager/$(am__dirstamp) \
 	optical_flux_lattice/observables_manager/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian_data.$(OBJEXT): optical_flux_lattice/optical_flux_lattice_hamiltonian/$(am__dirstamp) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/single_particle_hamiltonian/$(am__dirstamp):
-	@$(MKDIR_P) optical_flux_lattice/single_particle_hamiltonian
-	@: > optical_flux_lattice/single_particle_hamiltonian/$(am__dirstamp)
-optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)
-	@: > optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian.$(OBJEXT): optical_flux_lattice/single_particle_hamiltonian/$(am__dirstamp) \
-	optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/single_particle_hamiltonian/single_particle_hamiltonian_array.$(OBJEXT): optical_flux_lattice/single_particle_hamiltonian/$(am__dirstamp) \
-	optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/single_particle_hamiltonian/single_particle_parameters.$(OBJEXT): optical_flux_lattice/single_particle_hamiltonian/$(am__dirstamp) \
-	optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/optical_flux_lattice_hamiltonian/lookup_tables.$(OBJEXT): optical_flux_lattice/optical_flux_lattice_hamiltonian/$(am__dirstamp) \
-	optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.$(OBJEXT):  \
+	optical_flux_lattice/interacting_ofl_model/$(am__dirstamp) \
+	optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp):
+	@$(MKDIR_P) optical_flux_lattice/noninteracting_ofl_model
+	@: > optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp)
+optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)
+	@: > optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.$(OBJEXT):  \
+	optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp) \
+	optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.$(OBJEXT):  \
+	optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp) \
+	optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.$(OBJEXT):  \
+	optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp) \
+	optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+optical_flux_lattice/interacting_ofl_model/lookup_tables.$(OBJEXT):  \
+	optical_flux_lattice/interacting_ofl_model/$(am__dirstamp) \
+	optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
 utilities/wrappers/fftw_wrapper.$(OBJEXT):  \
 	utilities/wrappers/$(am__dirstamp) \
 	utilities/wrappers/$(DEPDIR)/$(am__dirstamp)
@@ -572,13 +579,13 @@ utilities/wrappers/sqlite_wrapper.$(OBJEXT):  \
 optical_flux_lattice_diagonalization$(EXEEXT): $(optical_flux_lattice_diagonalization_OBJECTS) $(optical_flux_lattice_diagonalization_DEPENDENCIES) $(EXTRA_optical_flux_lattice_diagonalization_DEPENDENCIES) 
 	@rm -f optical_flux_lattice_diagonalization$(EXEEXT)
 	$(AM_V_GEN)$(optical_flux_lattice_diagonalization_LINK) $(optical_flux_lattice_diagonalization_OBJECTS) $(optical_flux_lattice_diagonalization_LDADD) $(LIBS)
-optical_flux_lattice/main/optical_flux_lattice_single_particle_model.$(OBJEXT):  \
+optical_flux_lattice/main/optical_flux_lattice_noninteracting_model.$(OBJEXT):  \
 	optical_flux_lattice/main/$(am__dirstamp) \
 	optical_flux_lattice/main/$(DEPDIR)/$(am__dirstamp)
 
-optical_flux_lattice_single_particle_model$(EXEEXT): $(optical_flux_lattice_single_particle_model_OBJECTS) $(optical_flux_lattice_single_particle_model_DEPENDENCIES) $(EXTRA_optical_flux_lattice_single_particle_model_DEPENDENCIES) 
-	@rm -f optical_flux_lattice_single_particle_model$(EXEEXT)
-	$(AM_V_GEN)$(optical_flux_lattice_single_particle_model_LINK) $(optical_flux_lattice_single_particle_model_OBJECTS) $(optical_flux_lattice_single_particle_model_LDADD) $(LIBS)
+optical_flux_lattice_noninteracting_model$(EXEEXT): $(optical_flux_lattice_noninteracting_model_OBJECTS) $(optical_flux_lattice_noninteracting_model_DEPENDENCIES) $(EXTRA_optical_flux_lattice_noninteracting_model_DEPENDENCIES) 
+	@rm -f optical_flux_lattice_noninteracting_model$(EXEEXT)
+	$(AM_V_GEN)$(optical_flux_lattice_noninteracting_model_LINK) $(optical_flux_lattice_noninteracting_model_OBJECTS) $(optical_flux_lattice_noninteracting_model_LDADD) $(LIBS)
 optical_flux_lattice/main/optical_flux_lattice_sql_gen.$(OBJEXT):  \
 	optical_flux_lattice/main/$(am__dirstamp) \
 	optical_flux_lattice/main/$(DEPDIR)/$(am__dirstamp)
@@ -591,12 +598,12 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f basis/*.$(OBJEXT)
 	-rm -f fqhe_sphere/main/*.$(OBJEXT)
-	-rm -f fqhe_sphere/pseudopotential_hamiltonian/*.$(OBJEXT)
+	-rm -f fqhe_sphere/pseudopotential_model/*.$(OBJEXT)
 	-rm -f hamiltonians/*.$(OBJEXT)
+	-rm -f optical_flux_lattice/interacting_ofl_model/*.$(OBJEXT)
 	-rm -f optical_flux_lattice/main/*.$(OBJEXT)
+	-rm -f optical_flux_lattice/noninteracting_ofl_model/*.$(OBJEXT)
 	-rm -f optical_flux_lattice/observables_manager/*.$(OBJEXT)
-	-rm -f optical_flux_lattice/optical_flux_lattice_hamiltonian/*.$(OBJEXT)
-	-rm -f optical_flux_lattice/single_particle_hamiltonian/*.$(OBJEXT)
 	-rm -f utilities/mathematics/*.$(OBJEXT)
 	-rm -f utilities/wrappers/*.$(OBJEXT)
 
@@ -606,24 +613,24 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@basis/$(DEPDIR)/fermion_fock_basis.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@basis/$(DEPDIR)/two_level_fermion_fock_basis.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/main/$(DEPDIR)/fqhe_sphere_spinless_fermions_diagonalization.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/lookup_tables.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/pseudopotential_hamiltonian.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/pseudopotential_hamiltonian_data.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/two_level_pseudopotential_hamiltonian.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/lookup_tables.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/pseudopotential_model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/pseudopotential_model_data.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/two_level_pseudopotential_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@hamiltonians/$(DEPDIR)/hamiltonian_data.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/interacting_ofl_model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/interacting_ofl_model_data.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/linear_momentum_constraints_2D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/lookup_tables.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_diagonalization.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_single_particle_model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_noninteracting_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_sql_gen.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/noninteracting_ofl_model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/noninteracting_ofl_model_data.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/noninteracting_ofl_model_grid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/observables_manager/$(DEPDIR)/observables_manager.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/linear_momentum_constraints_2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/lookup_tables.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/optical_flux_lattice_hamiltonian.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/optical_flux_lattice_hamiltonian_data.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/single_particle_hamiltonian.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/single_particle_hamiltonian_array.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/single_particle_parameters.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@utilities/mathematics/$(DEPDIR)/binary_number_tools.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@utilities/mathematics/$(DEPDIR)/binomial_table.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@utilities/mathematics/$(DEPDIR)/binomials.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@utilities/mathematics/$(DEPDIR)/clebsch_gordan_coefficients.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@utilities/mathematics/$(DEPDIR)/murmur_hash2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@utilities/mathematics/$(DEPDIR)/murmur_hash3.Po@am__quote@
@@ -767,18 +774,18 @@ distclean-generic:
 	-rm -f basis/$(am__dirstamp)
 	-rm -f fqhe_sphere/main/$(DEPDIR)/$(am__dirstamp)
 	-rm -f fqhe_sphere/main/$(am__dirstamp)
-	-rm -f fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-	-rm -f fqhe_sphere/pseudopotential_hamiltonian/$(am__dirstamp)
+	-rm -f fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
+	-rm -f fqhe_sphere/pseudopotential_model/$(am__dirstamp)
 	-rm -f hamiltonians/$(DEPDIR)/$(am__dirstamp)
 	-rm -f hamiltonians/$(am__dirstamp)
+	-rm -f optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+	-rm -f optical_flux_lattice/interacting_ofl_model/$(am__dirstamp)
 	-rm -f optical_flux_lattice/main/$(DEPDIR)/$(am__dirstamp)
 	-rm -f optical_flux_lattice/main/$(am__dirstamp)
+	-rm -f optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp)
+	-rm -f optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp)
 	-rm -f optical_flux_lattice/observables_manager/$(DEPDIR)/$(am__dirstamp)
 	-rm -f optical_flux_lattice/observables_manager/$(am__dirstamp)
-	-rm -f optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-	-rm -f optical_flux_lattice/optical_flux_lattice_hamiltonian/$(am__dirstamp)
-	-rm -f optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR)/$(am__dirstamp)
-	-rm -f optical_flux_lattice/single_particle_hamiltonian/$(am__dirstamp)
 	-rm -f utilities/mathematics/$(DEPDIR)/$(am__dirstamp)
 	-rm -f utilities/mathematics/$(am__dirstamp)
 	-rm -f utilities/wrappers/$(DEPDIR)/$(am__dirstamp)
@@ -792,7 +799,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf basis/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR) optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
+	-rm -rf basis/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_model/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/interacting_ofl_model/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -838,7 +845,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf basis/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_hamiltonian/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) optical_flux_lattice/optical_flux_lattice_hamiltonian/$(DEPDIR) optical_flux_lattice/single_particle_hamiltonian/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
+	-rm -rf basis/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_model/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/interacting_ofl_model/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
