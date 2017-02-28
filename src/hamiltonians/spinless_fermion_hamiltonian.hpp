@@ -71,19 +71,16 @@ namespace diagonalization
                     std::cerr<<"\n\tERROR: MUST SPECIFY nbr particles > 0"<<std::endl;
                     mpi.m_exitFlag=true;
                 }
-                
                 if(0 >= this->m_data.m_nbrOrbitals)
                 {
                     std::cerr<<"\n\tERROR: MUST SPECIFY nbr orbitals > 0"<<std::endl;
                     mpi.m_exitFlag=true;
                 }
-
                 if(this->m_data.m_nbrParticles >= 64)
                 {
                     std::cerr<<"\n\n\tERROR: CANNOT ADDRESS 64 PARTICLES OR MORE.\n"<<std::endl;
                     mpi.m_exitFlag=true;
                 }
-                
                 if(this->m_data.m_nbrParticles > this->m_data.m_nbrOrbitals)
                 {
 	                std::cerr<<"\n\n\tERROR: NBR PARTICLES > NBR ORBITALS - NOT ALLOWED\n"<<std::endl;

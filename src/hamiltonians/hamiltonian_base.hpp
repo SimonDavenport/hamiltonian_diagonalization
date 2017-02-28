@@ -86,8 +86,6 @@ namespace diagonalization
         utilities::linearAlgebra::ArpackWrapper m_arpackWrapper;
                                             //!<    Wrapper class for ARPACK options
         protected:
-        //  Functions dealing with internal memory management to store the matrix
-        //  in various formats and to change between them
 
         ////////////////////////////////////////////////////////////////////////////////
         //! \brief Allocate memory to store the full matrix representation of the 
@@ -112,8 +110,6 @@ namespace diagonalization
                 {
 	                if(utilities::_DENSE_ == storageMethod)
 	                {
-		                //  Allocate memory to store the full matrix representation of the 
-		                //  Hamiltonian, if not already done. 
                         if(0 == mpi.m_id)	// FOR THE MASTER NODE
                         {
                             utilities::cout.DebuggingInfo()<<"\n\t- ALLOCATING "<<(m_data.m_fockSpaceDim*m_data.m_fockSpaceDim*(sizeof(T))/(1024.0*1024.0));
