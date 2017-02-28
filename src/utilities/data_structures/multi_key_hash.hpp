@@ -470,7 +470,7 @@ namespace utilities
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class  
         {
             //  Create a copy of the map for the MPI gather operation to modify
-            temp_map = map.copy();
+            M temp_map = map.copy();
             this->MpiGatherBase(temp_map, 0, mpi);
             if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
@@ -479,18 +479,19 @@ namespace utilities
                 {
                     if("binary" == format)
                     {   
-                        std::vector<uint64_t> keys(temp_map.size());
-                        std::vector<T> values(temp_map.size());
+                        unsigned int size = temp_map.size();
+                        std::vector<uint64_t> keys(size);
+                        std::vector<T> values(size);
                         std::vector<uint64_t>::iterator keys_it = keys.begin();
-                        std::vector<T>::iterator values_it = values.begin();
+                        typename std::vector<T>::iterator values_it = values.begin();
                         for(auto it = temp_map.begin(); it != temp_map.end(); ++it, ++keys_it, ++values_it)
                         {
                             *keys_it = it->first;
                             *values_it = it->second;
                         }
-                        f_out.write((char*)&dim, sizeof(iSize_t));
-                        f_out.write((char*)keys.data(), dim*sizeof(uint64_t));
-                        f_out.write((char*)values.data(), dim*sizeof(T));
+                        f_out.write((char*)&size, sizeof(unsigned int));
+                        f_out.write((char*)keys.data(), size*sizeof(uint64_t));
+                        f_out.write((char*)values.data(), size*sizeof(T));
                     }
                     else
                     {
@@ -536,7 +537,7 @@ namespace utilities
                                     uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
                                     utilities::Unpack8x8(it->first, key1, key2, key3, key4, key5, key6, key7, key8);
                                     f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t" << key5<< "\t" << key6;
-                                    f_out << "\t" << key7; << "\t" << key8 << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    f_out << "\t" << key7 << "\t" << key8 << "\t" << std::setprecision(15) << it->second<<"\n";
                                     break;
                                 }
                             }
@@ -553,6 +554,7 @@ namespace utilities
         //! Write the contents of the map to a file using the set number
         //! of key labels
         //!
+        template <class M>
         void FromFileBase(
             M& map,                         //!<    Map containing data to write to the file
             const std::string fileName,     //!<    Name of file
@@ -561,30 +563,30 @@ namespace utilities
         {
             if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
-                std::ifstream f_out = utilities::GenFileStream<std::ifstream>(fileName, format, mpi);
+                std::ifstream f_in = utilities::GenFileStream<std::ifstream>(fileName, format, mpi);
                 if(!mpi.m_exitFlag)
                 {
                     std::vector<std::pair<uint64_t, T> > pairList;
                     if("binary" == format)
                     {
-                        iSize_t dim = 0;
-                        f_in.read(reinterpret_cast<char*>(&dim), sizeof(iSize_t));
-                        pairList.resize(dim);
-                        std::vector<uint64_t> keys(dim);
-                        std::vector<T> values(dim);
-                        f_in.read(reinterpret_cast<char*>(keys.data()), dim*sizeof(uint64_t));
-                        f_in.read(reinterpret_cast<char*>(values.data()), dim*sizeof(T));
+                        unsigned int size = 0;
+                        f_in.read(reinterpret_cast<char*>(&size), sizeof(unsigned int));
+                        pairList.resize(size);
+                        std::vector<uint64_t> keys(size);
+                        std::vector<T> values(size);
+                        f_in.read(reinterpret_cast<char*>(keys.data()), size*sizeof(uint64_t));
+                        f_in.read(reinterpret_cast<char*>(values.data()), size*sizeof(T));
                         std::vector<uint64_t>::iterator keys_it = keys.begin();
-                        std::vector<T>::iterator values_it = values.begin();
+                        typename std::vector<T>::iterator values_it = values.begin();
                         for(auto it = pairList.begin(); it != map.end(); ++it, ++keys_it, ++values_it)
                         {
                             it->first = *keys_it;
-                            it_second = *values_it;
+                            it->second = *values_it;
                         }
                     }
                     else
                     {
-                        iSize_t size;
+                        unsigned int size;
                         f_in >> size;
                         uint64_t nbrLabels; 
                         f_in >> nbrLabels;
@@ -648,7 +650,7 @@ namespace utilities
                         }
                     }
                     f_in.close();
-                    m_map.insert(pairList.begin(), pairList.end());
+                    map.insert(pairList.begin(), pairList.end());
                 }
             }
             mpi.ExitFlagTest();
@@ -977,7 +979,7 @@ namespace utilities
             const unsigned int nbrLabels,   //!<    Number of map key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            this->ToFileBase(m_map, f_out, format, nbrLabels, mpi);
+            this->ToFileBase(fileName, format, nbrLabels, mpi);
         }
 
         //!
