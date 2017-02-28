@@ -55,7 +55,7 @@ namespace diagonalization
         //!
         //! Default constructor
         //!
-        LookUpTables()
+        TermTables()
         :
             m_kMax(0)
         {}
@@ -63,7 +63,7 @@ namespace diagonalization
         //!
         //! Destructor
         //!
-        ~LookUpTables()
+        ~TermTables()
         {
             this->Clear();
         }
@@ -98,14 +98,18 @@ namespace diagonalization
 
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2, 
                            const kState_t k3, const kState_t k4) const{};
+        virtual void SetK1(const kState_t k1, const kState_t k2, 
+                           const kState_t k3, const kState_t k4){};
         virtual T GetVkkkk(const kState_t k1, const kState_t k2, const kState_t k3, 
                            const kState_t k4) const{ return 0.0;};
+        virtual void SetVkkkk(const T Vkkkk, const kState_t k1, const kState_t k2, const kState_t k3, 
+                              const kState_t k4){};
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const{};
         virtual T GetEkk(const kState_t k1, const kState_t k2) const{ return 0.0;};
-        virtual void ToFile(const std::string fileName, std::string format, 
-                                 utilities::MpiWrapper& mpi) const=0;
-        virtual void FromFile(const std::string fileName, std::string format,
-                                   utilities::MpiWrapper& mpi)=0;
+        virtual void ToFile(const std::string fileName, const std::string format, 
+                            utilities::MpiWrapper& mpi) const=0;
+        virtual void FromFile(const std::string fileName, const std::string format,
+                              utilities::MpiWrapper& mpi)=0;
 
         //!
         //! Only allow for a single k value to be returned
@@ -174,17 +178,19 @@ namespace diagonalization
             const std::string format,           //!<    Format of file (e.g. "binary", "text")
             const iSize_t nbrLabels,            //!<    Number of quantum number labels
             utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
+            const
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
-                std::ofstream f_out = utilities::GenFileStream<std::ofstream>(fileName, format, mpi);
+                std::ofstream f_out;
+                utilities::GenFileStream(f_out, fileName, format, mpi);
                 if(!mpi.m_exitFlag)
                 {
                     iSize_t dim = this->CalculateDim(m_kMax);
                     if("binary" == format)
                     {
-                        f_out.write((char*)&dim, sizeof(iSize_t));
                         f_out.write((char*)&nbrLabels, sizeof(iSize_t));
+                        f_out.write((char*)&dim, sizeof(iSize_t));
                         if(2 == nbrLabels)
                         {
                             f_out.write((char*)m_vTable.data(), dim*sizeof(T));
@@ -197,13 +203,14 @@ namespace diagonalization
                     }
                     else
                     {
-                        f_out << dim << "\n";
                         f_out << nbrLabels << "\n";
+                        f_out << dim << "\n";
                         if(2 == nbrLabels)
                         {
                             for(kState_t k1=0; k1<m_kMax; ++k1)
                             {
-                                f_out << k1 << "\t" << k1 << "\t" << std::setprecision(15) << m_vTable[k1]<<"\n";
+                                std::string streamData = utilities::ToStream(m_vTable[k1]);
+                                f_out << k1 << "\t" << k1 << "\t" << streamData <<"\n";
                             }
                         }
                         else if(4 == nbrLabels)
@@ -215,9 +222,11 @@ namespace diagonalization
                                 {
                                     for(kState_t k2=0; k2<m_kMax; ++k2)
                                     {
-                                        this->GetK1(&k1, 1, k2, k3, k4);
+                                        iSize_t dummy;
+                                        this->GetK1(&k1, dummy, k2, k3, k4);
                                         f_out << k1 << "\t" << k2 << "\t" << k3 << "\t" << k4;
-                                        f_out << "\t" << std::setprecision(15) << this->GetVkkkk(k1, k2, k3, k4)<<"\n";
+                                        std::string streamData = utilities::ToStream(this->GetVkkkk(k1, k2, k3, k4));
+                                        f_out << "\t" << streamData <<"\n";
                                     }
                                 }
                             }
@@ -240,15 +249,16 @@ namespace diagonalization
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
-                std::ifstream f_in = utilities::OpenReadFile(fileName, format, mpi);
+                std::ifstream f_in;
+                utilities::GenFileStream(f_in, fileName, format, mpi);
                 if(!mpi.m_exitFlag)
                 {
                     iSize_t dim = 0;
                     iSize_t nbrLabels = 0;
                     if("binary" == format)
                     {
-                        f_in.read(reinterpret_cast<char*>(&dim), sizeof(iSize_t));
                         f_in.read(reinterpret_cast<char*>(&nbrLabels), sizeof(iSize_t));
+                        f_in.read(reinterpret_cast<char*>(&dim), sizeof(iSize_t));
                         m_kTable.resize(dim);
                         m_vTable.resize(dim);
                         if(2 == nbrLabels)
@@ -263,8 +273,8 @@ namespace diagonalization
                     }
                     else
                     {
-                        f_in >> dim;
                         f_in >> nbrLabels;
+                        f_in >> dim;
                         m_kTable.resize(dim);
                         m_vTable.resize(dim);
                         if(2 == nbrLabels)
@@ -273,18 +283,26 @@ namespace diagonalization
                             kState_t k2;
                             for(iSize_t i=0; i<dim; ++i)
                             {
-                                f_in >> k1 >> k2 >> m_vTable[i];
+                                f_in >> k1 >> k2;
+                                utilities::FromStream(f_in, m_vTable[i]);
                             }
                         }
                         else if(4 == nbrLabels)
                         {
-                            for(iSize_t i=0; i<dim; ++i)
+                            for(kState_t k4=0; k4<m_kMax; ++k4)
                             {
-                                f_in >> m_kTable[i];
-                            }
-                            for(iSize_t i=0; i<dim; ++i)
-                            {
-                                f_in >> m_vTable[i];
+                                for(kState_t k3=0; k3<m_kMax; ++k3)
+                                {
+                                    for(kState_t k2=0; k2<m_kMax; ++k2)
+                                    {
+                                        kState_t k1, dummy;
+                                        f_in >> k1 >> dummy >> dummy >> dummy;
+                                        T Vkkkk;
+                                        utilities::FromStream(f_in, Vkkkk);
+                                        this->SetK1(k1, k2, k3, k4);
+                                        this->SetVkkkk(Vkkkk, k1, k2, k3, k4);
+                                    }
+                                }
                             }
                         }
                     }

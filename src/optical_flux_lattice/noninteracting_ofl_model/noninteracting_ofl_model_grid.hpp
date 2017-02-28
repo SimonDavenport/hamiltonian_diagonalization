@@ -48,7 +48,7 @@
 namespace diagonalization
 {
     //////////////////////////////////////////////////////////////////////////////////
-    //! \brief The NoninteractingOflModelGrid class contains functions that act
+    //! \brief The NonInteractingOflModelGrid class contains functions that act
     //! on arrays of NoninteractingOflModel objects. No data is contained in the
     //! class itself, and default constructors/destructors are always used. 
     //! Writing the functions in this way allows us to group them together in 
@@ -57,7 +57,7 @@ namespace diagonalization
     //! For instance, an array of single particle energy levels at different
     //! positions in k-space would represent a single-particle band structure
     //////////////////////////////////////////////////////////////////////////////////
-    class NoninteractingOflModelGrid
+    class NonInteractingOflModelGrid
     {
         private:
 	    kState_t CombineIndexes(const kState_t x, const kState_t y, const iSize_t dim) const;
@@ -65,17 +65,17 @@ namespace diagonalization
         void CalculateBandstructure(double* lowerBand, double* secondBand, double& bandWidth,
              double& bandGap, const bool getEnergyData, double* magnetization, const bool getMagnetizationData,
              const iSize_t dimX, const iSize_t dimY, const double offsetX, const double offsetY,
-             SingleParticleHamiltonian* ham, utilities::MpiWrapper& mpi);  
+             NonInteractingOflModel* ham, utilities::MpiWrapper& mpi);  
         void PlotBandstructure(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
         void PlotBandWidth(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
         void PlotMagnetization(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
         void CalculateSpatialWaveFunctions(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
         void GenerateBlochWaveFunctionTable(const iSize_t cutOff, const iSize_t dimX, const iSize_t dimY, 
-                                            const double offsetX, const double offsetY, SingleParticleHamiltonian* blochTable,
-                                            const SingleParticleParameters* params, utilities::MpiWrapper& mpi);
+                                            const double offsetX, const double offsetY, NonInteractingOflModel* blochTable,
+                                            const NonInteractingOflModelData* params, utilities::MpiWrapper& mpi);
         void GenerateWannierCoefficients(const iSize_t dimX, const iSize_t dimY, const double offsetX,
-                                         SingleParticleHamiltonian* blochTable, dcmplx* M, const utilities::MpiWrapper& mpi);
-        void CalcualteSigmaZMap(const iSize_t dimX, const iSize_t dimY, SingleParticleHamiltonian* blochTable, double* map);   
+                                         NonInteractingOflModel* blochTable, dcmplx* M, const utilities::MpiWrapper& mpi);
+        void CalcualteSigmaZMap(const iSize_t dimX, const iSize_t dimY, NonInteractingOflModel* blochTable, double* map);   
     };
 }   //  End namespace diagonalization
 #endif

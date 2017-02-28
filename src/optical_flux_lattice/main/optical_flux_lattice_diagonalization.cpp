@@ -49,21 +49,25 @@ int main(int argc, char *argv[])
     bool diagonalizeFlag;
     bool eigenvaluesFlag;
     bool eigenvectorsFlag;
-    bool termsFlag;
+    bool storeTermsFlag;
     bool retrieveTermsFlag;
+    diagonalization::iSize_t fileFormatCode;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
 	    diagonalizeFlag  = optionList["diagonalize"].as<bool>();
 	    eigenvaluesFlag  = optionList["eigenvalues-file"].as<bool>();
 	    eigenvectorsFlag = optionList["eigenvectors-file"].as<bool>();
-	    termsFlag = optionList["terms-file"].as<bool>();
+	    storeTermsFlag = optionList["store-terms"].as<bool>();
 	    retrieveTermsFlag = optionList["retrieve-terms"].as<bool>();
+	    fileFormatCode = optionList["file-format"].as<diagonalization::iSize_t>();
 	}
     mpi.Sync(&diagonalizeFlag, 1, 0);
     mpi.Sync(&eigenvaluesFlag, 1, 0);
     mpi.Sync(&eigenvectorsFlag, 1, 0);
-    mpi.Sync(&termsFlag, 1, 0);
+    mpi.Sync(&storeTermsFlag, 1, 0);
     mpi.Sync(&retrieveTermsFlag, 1, 0);
+    mpi.Sync(&fileFormatCode, 1, 0);
+    std::string fileFormat = diagonalization::myOptions::GetFileFormat(fileFormatCode);
     //  Make a list of observables to calculate
     diagonalization::ObservablesManager observables;
     observables.AddObservables(&optionList, mpi);
@@ -75,7 +79,7 @@ int main(int argc, char *argv[])
         diagonalization::InteractingOflModel model(&optionList, mpi);
         if(retrieveTermsFlag)
         {
-            model.TermTablesFromFile(&optionList, mpi);
+            model.TermsFromFile(fileFormat, mpi);
         }
         else
         {
@@ -86,7 +90,7 @@ int main(int argc, char *argv[])
             model.BuildFockBasis(mpi);
             model.BuildHamiltonian(mpi);
             model.Diagonalize(mpi);
-            model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+            model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, fileFormat, mpi);
             observables.CalculateAllObservables(&model, mpi);
         }
         else    //  Diagonalize selected sectors
@@ -98,7 +102,7 @@ int main(int argc, char *argv[])
                 model.BuildFockBasis(mpi);
                 model.BuildHamiltonian(mpi);
                 model.Diagonalize(mpi);
-                model.EigensystemToFile(eigenvaluesFlag,eigenvectorsFlag, mpi);
+                model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, fileFormat, mpi);
                 observables.CalculateAllObservables(&model, mpi);
                 model.ClearHamiltonian();
             }
@@ -115,29 +119,28 @@ int main(int argc, char *argv[])
         }
         std::vector<std::complex<diagonalization::iSize_t> > sectorList = GenerateSectorList(&optionList, mpi);
         diagonalization::InteractingOflModel model(&optionList, mpi);
-
-        bool calcualteSusceptibilityFlag = false;
+        bool calculateSusceptibilityFlag = false;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        calcualteSusceptibilityFlag = optionList["calculate-susceptibility"].as<bool>();
+	        calculateSusceptibilityFlag = optionList["calculate-susceptibility"].as<bool>();
 	    }
-        mpi.Sync(&calcualteSusceptibilityFlag, 1, 0);
-        if(calcualteSusceptibilityFlag)
+        mpi.Sync(&calculateSusceptibilityFlag, 1, 0);
+        if(calculateSusceptibilityFlag)
         {
             if(retrieveTermsFlag)
             {
-                model.TermTablesFromFile(&optionList, mpi);
+                model.TermsFromFile(fileFormat, mpi);
             }
             else
             {
                 model.BuildTermTables(&optionList, mpi);
             }
         }
-        eigenvaluesFlag  = true;
+        eigenvaluesFlag = true;
         eigenvectorsFlag = true;
         if(0 == sectorList.size())
         {
-            model.EigensystemFromFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+            model.EigensystemFromFile(eigenvaluesFlag, eigenvectorsFlag, fileFormat, mpi);
             model.BuildFockBasis(mpi);
             observables.CalculateAllObservables(&model, mpi);
         }
@@ -147,7 +150,7 @@ int main(int argc, char *argv[])
             it != sectorList.end(); ++it)
             {
                 model.SetSector(it->real(),it->imag());
-                model.EigensystemFromFile(eigenvaluesFlag,eigenvectorsFlag, mpi);
+                model.EigensystemFromFile(eigenvaluesFlag, eigenvectorsFlag, fileFormat, mpi);
                 model.BuildFockBasis(mpi);
                 observables.CalculateAllObservables(&model, mpi);
             }
@@ -156,11 +159,11 @@ int main(int argc, char *argv[])
         observables.UpdateSqlFlags(&optionList, mpi);
     }
     //////      GENERATE AND STORE TERM TABLES       ///////////////////////////
-    if(termsFlag)
+    if(storeTermsFlag)
     {
         diagonalization::InteractingOflModel model(&optionList, mpi);
         model.BuildTermTables(&optionList, mpi);
-        model.TermTablesToFile(mpi);
+        model.TermsToFile(fileFormat, mpi);
     }
     return 0;
 }
@@ -181,12 +184,12 @@ boost::program_options::variables_map ParseCommandLine(
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
     {
         po::options_description modelOpt(diagonalization::myOptions::GetCommonInteractingModelOptions());
-        diagonalization::myOptions::AddMatrixElementOptions(modelOpt);
+        diagonalization::myOptions::AddTermOptions(modelOpt);
         diagonalization::myOptions::AddMoreInteractingModelOptions(modelOpt);
         po::options_description sqlOpt(diagonalization::myOptions::GetCommonSqlOptions());
         diagonalization::myOptions::AddRunSqlOptions(sqlOpt);
         po::options_description allOpt("\n\tThis program generates the interacting Hamiltonian due to k-dependent interactions\n\tin the lowest lying band of an optical flux lattice model.\n\tSee e.g. PRL109,265301 (2013)\n\n\tThe program input options are as follows");
-        allOpt.add(diagonalization::myOptions::GetGeneralOptions()).add(diagonalization::myOptions::GetCommonSingleParticleOptions()).add(modelOpt).add(diagonalization::myOptions::GetInteractingModelPlotOptions()).add(diagonalization::myOptions::GetObservablesOptions()).add(sqlOpt).add(diagonalization::myOptions::GetArpackOptions());
+        allOpt.add(diagonalization::myOptions::GetGeneralOptions()).add(diagonalization::myOptions::GetCommonNonInteractingOflModelOptions()).add(modelOpt).add(diagonalization::myOptions::GetInteractingModelPlotOptions()).add(diagonalization::myOptions::GetObservablesOptions()).add(sqlOpt).add(diagonalization::myOptions::GetArpackOptions());
         try
         {
             po::store(po::command_line_parser(argc, argv).options(allOpt).run(), vm);

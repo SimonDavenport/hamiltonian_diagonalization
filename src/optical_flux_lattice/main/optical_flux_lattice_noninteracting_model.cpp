@@ -40,11 +40,11 @@ int main(int argc, char *argv[])
 {
 	mpi.Init(argc, argv);
     boost::program_options::variables_map optionList;
-    optionList = ParseCommandLine(argc,argv,mpi);
+    optionList = ParseCommandLine(argc, argv, mpi);
     //////      GENERATE SINGLE PARTICLE MODEL DATA     ////////////////////////
     diagonalization::iSize_t spatialWaveFunctionsFlag = 0;
     bool calculateBandstructureFlag = false;
-    bool calculateBandWidthFlag     = false;
+    bool calculateBandWidthFlag = false;
     bool calculateMagnetizationFlag = false;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
@@ -59,23 +59,23 @@ int main(int argc, char *argv[])
     mpi.Sync(&calculateMagnetizationFlag, 1, 0);
     if(spatialWaveFunctionsFlag)
     {
-        diagonalization::NoninteractingOflModelGrid modelArray;
-        modelArray.CalculateSpatialWaveFunctions(&optionList, mpi);
+        diagonalization::NonInteractingOflModelGrid modelGrid;
+        modelGrid.CalculateSpatialWaveFunctions(&optionList, mpi);
     }
     if(calculateBandstructureFlag)
     {
-        diagonalization::NoninteractingOflModelGrid modelArray;
-        modelArray.PlotBandstructure(&optionList, mpi);
+        diagonalization::NonInteractingOflModelGrid modelGrid;
+        modelGrid.PlotBandstructure(&optionList, mpi);
     }
     if(calculateBandWidthFlag)
     {
-        diagonalization::NoninteractingOflModelGrid modelArray;
-        modelArray.PlotBandWidth(&optionList, mpi);
+        diagonalization::NonInteractingOflModelGrid modelGrid;
+        modelGrid.PlotBandWidth(&optionList, mpi);
     }
     if(calculateMagnetizationFlag)
     {
-        diagonalization::NoninteractingOflModelGrid modelArray;
-        modelArray.PlotMagnetization(&optionList, mpi);
+        diagonalization::NonInteractingOflModelGrid modelGrid;
+        modelGrid.PlotMagnetization(&optionList, mpi);
     }
 }
 
@@ -94,10 +94,10 @@ boost::program_options::variables_map ParseCommandLine(
     po::variables_map vm;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    po::options_description noninteractingOflModelOpt(diagonalization::myOptions::GetCommonNoninteractingOflModelOptions());
-	    diagonalization::myOptions::AddNoninteractingOflModelGridOptions(sinlgeParticleOpt);
+	    po::options_description noninteractingOflModelOpt(diagonalization::myOptions::GetCommonNonInteractingOflModelOptions());
+	    diagonalization::myOptions::AddNonInteractingOflModelGridOptions(noninteractingOflModelOpt);
 	    po::options_description allOpt("\n\tThis program generates the Hamiltonian describing a non-interacting optical flux lattice model.\n\tSee e.g. PRL109,265301 (2013)\n\n\tThe program input options are as follows");
-	    allOpt.add(diagonalization::myOptions::GetGeneralOptions()).add(noninteractingOflModelOpt).add(diagonalization::myOptions::GetNoninteractingOflModelPlotOptions()).add(diagonalization::myOptions::GetCommonSqlOptions());
+	    allOpt.add(diagonalization::myOptions::GetGeneralOptions()).add(noninteractingOflModelOpt).add(diagonalization::myOptions::GetNonInteractingOflModelPlotOptions()).add(diagonalization::myOptions::GetCommonSqlOptions());
 	    try
         {
             po::store(po::command_line_parser(argc,argv).options(allOpt).run(),vm);
@@ -122,7 +122,7 @@ boost::program_options::variables_map ParseCommandLine(
 	{
 	    utilities::cout.SetVerbosity(vm["verbose"].as<int>());
     }
-    utilities::cout.MpiSync(0,mpi.m_comm);
+    utilities::cout.MpiSync(0, mpi.m_comm);
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
     {
         utilities::cout.MainOutput()<<"\n\tRun with -h option to see program options"<<std::endl;

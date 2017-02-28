@@ -347,9 +347,9 @@ namespace diagonalization
     {
         if(mpi.m_id == 0)
         {
-            std::ifstream f_param = GenFileStream<std::ifstream>(filename, "text", mpi);
-            std::ifstream f_param;			//	file stream to read in parameter file
-            f_param.open(fileName.c_str());
+            std::ifstream f_param;
+            std::string format = "text";
+            utilities::GenFileStream(f_param, fileName, format, mpi);
             if(mpi.m_exitFlag)
             {
                 return;

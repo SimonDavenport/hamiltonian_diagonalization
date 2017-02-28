@@ -33,7 +33,7 @@
 #include "../general/cout_tools.hpp"
 #include "../wrappers/mpi_wrapper.hpp"
 #include "../algorithms/quick_sort.hpp"
-#include "../general/serialize.hpp"
+#include "../wrappers/io_wrapper.hpp"
 #include <vector>
 #include <algorithm>
 #include <limits>
@@ -659,27 +659,95 @@ namespace utilities
         //!
         //! Place matrix data in a file
         //!
-        void DataToFile(std::ofstream& f_out)
+        void ToFile(
+            const std::string fileName,     //!<    Name of output file
+            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
             const
         {
-            f_out<<m_data.size()<<"\n";
-            f_out<<m_rowStarts.size()-1<<"\n";
-
-            for(int i=0; i<m_rowStarts.size()-1; ++i)
+            // Open a separate file stream on each node for parallel write
+            std::ofstream f_out;
+            utilities::GenFileStream(f_out, fileName, format, mpi);
+            mpi.ExitFlagTest();
+            if("text" == format)
             {
-                for(int j = m_rowStarts[i]; j<m_rowStarts[i+1]; ++j)
+                f_out << m_data.size() << "\n";
+                f_out << m_rowStarts.size()-1 << "\n";
+                for(int i=0; i<m_rowStarts.size()-1; ++i)
                 {
-                    if(utilities::is_same<double, T>::value)
+                    f_out << m_rowStarts[i] << "\n";
+                }
+                for(int i=0; i<m_rowStarts.size()-1; ++i)
+                {
+                    for(int j = m_rowStarts[i]; j<m_rowStarts[i+1]; ++j)
                     {
-                        f_out<<i<<" "<<m_cols[j]<<" "<<m_data[j]<<"\n";
-                    }
-                    else if(utilities::is_same<dcmplx, T>::value)
-                    {
-                        f_out<<i<<" "<<m_cols[j]<<" "<<std::real(m_data[j])<<" "<<std::imag(m_data[j])<<"\n";
+                        std::string streamData = utilities::ToStream(m_data[j]);
+                        f_out << i << " " << m_cols[j] << " " << streamData << "\n";
                     }
                 }
             }
+            else if("binary" == format)
+            {
+                unsigned int dataSize = m_data.size();
+                unsigned int rowStartsSize = m_rowStarts.size()-1;
+                f_out.write((char*)&dataSize, sizeof(unsigned int));
+                f_out.write((char*)&rowStartsSize, sizeof(unsigned int));
+                f_out.write((char*)m_rowStarts.data(), (rowStartsSize+1)*sizeof(int));
+                f_out.write((char*)m_cols.data(), dataSize*sizeof(int));
+                f_out.write((char*)m_data.data(), dataSize*sizeof(T));
+            }
+            f_out.close();
             return;
+        }
+        
+        //!
+        //! Read matrix data from a file
+        //!
+        void FromFile(
+            const std::string fileName,     //!<    Name of output file
+            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
+        {
+            // Open a separate file stream on each node for parallel write
+            std::ifstream f_in;
+            utilities::GenFileStream(f_in, fileName, format, mpi);
+            mpi.ExitFlagTest();
+            if("text" == format)
+            {
+                unsigned int dataSize = 0;
+                unsigned int rowStartsSize = 0;
+                f_in >> dataSize >> rowStartsSize;
+                m_data.resize(dataSize);
+                m_cols.resize(dataSize);
+                m_rowStarts.resize(rowStartsSize+1);
+                for(int i=0; i<m_rowStarts.size()-1; ++i)
+                {
+                    f_in >> m_rowStarts[i];
+                }
+                for(int i=0; i<m_rowStarts.size()-1; ++i)
+                {
+                    for(int j = m_rowStarts[i]; j<m_rowStarts[i+1]; ++j)
+                    {
+                        int temp;
+                        f_in >> temp >> m_cols[j];
+                        utilities::FromStream(f_in, m_data[j]);
+                    }
+                }
+            }
+            else if("binary" == format)
+            {
+                unsigned int dataSize = 0;
+                unsigned int rowStartsSize = 0;
+                f_in.read(reinterpret_cast<char*>(&dataSize), sizeof(unsigned int));
+                f_in.read(reinterpret_cast<char*>(&rowStartsSize), sizeof(unsigned int));
+                m_data.resize(dataSize);
+                m_cols.resize(dataSize);
+                m_rowStarts.resize(rowStartsSize+1);
+                f_in.read(reinterpret_cast<char*>(m_rowStarts.data()), (rowStartsSize+1)*sizeof(int));
+                f_in.read(reinterpret_cast<char*>(m_cols.data()), dataSize*sizeof(int));
+                f_in.read(reinterpret_cast<char*>(m_data.data()), dataSize*sizeof(T));
+            }
+            f_in.close();
         }
 
         ////////////////////////////////////////////////////////////////////////////////

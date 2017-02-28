@@ -39,7 +39,6 @@ namespace diagonalization
     //! V_{k1,k2,k3,k4}. This version uses an underlying hash table
     //! data structure.
     ////////////////////////////////////////////////////////////////////////////////
-
     template <typename T>
     class TermHashTables
     {
@@ -85,13 +84,13 @@ namespace diagonalization
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2,
                            const kState_t k3, const kState_t k4) const{};
         virtual T GetVkkkk(const kState_t k1, const kState_t k2, const kState_t k3,
-                           const kState_t k4) const{ return 0.0;};
+                           const kState_t k4) const{return 0.0;};
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const{};
-        virtual T GetEkk(const kState_t k1, const kState_t k2) const{ return 0.0;};
+        virtual T GetEkk(const kState_t k1, const kState_t k2) const{return 0.0;};
         virtual iSize_t GetMaxKCount() const{return 1;};
-        virtual void TableToFile(const std::string fileName, std::string format, 
-                                 utilities::MpiWrapper& mpi) const=0;
-        virtual void TableFromFile(const std::string fileName, std::string format,
+        virtual void ToFile(const std::string fileName, const std::string format, 
+                                 utilities::MpiWrapper& mpi)=0;
+        virtual void FromFile(const std::string fileName, const std::string format,
                                    utilities::MpiWrapper& mpi)=0;
         //!
         //! Get the address of the quantum number hash table
@@ -134,7 +133,7 @@ namespace diagonalization
         //!
         //! Output the table to a file
         //!
-        void TableToFileBase(
+        void ToFileBase(
             const std::string fileName,         //!<    File name
             const std::string format,           //!<    Format of file (e.g. "binary", "text")
             const iSize_t nbrLabels,            //!<    Number of quantum number labels
@@ -146,7 +145,7 @@ namespace diagonalization
         //!
         //! Import the term table from a file
         //!
-        void TableFromFileBase(
+        void FromFileBase(
             const std::string fileName,         //!<    File name
             const std::string format,           //!<    Format of file (e.g. "binary", "text")
             utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class

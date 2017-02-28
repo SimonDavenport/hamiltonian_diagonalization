@@ -46,7 +46,7 @@ namespace diagonalization
         m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
-        m_lookupTablesBuilt(false),
+        m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
@@ -72,7 +72,7 @@ namespace diagonalization
         m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
-        m_lookupTablesBuilt(false),
+        m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
@@ -102,7 +102,7 @@ namespace diagonalization
         m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
-        m_lookupTablesBuilt(false),
+        m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
@@ -137,7 +137,7 @@ namespace diagonalization
         m_method(other.m_method),
         m_initialVectorFile(other.m_initialVectorFile),
         m_finalVectorFile(other.m_finalVectorFile),
-        m_lookupTablesBuilt(other.m_lookupTablesBuilt),
+        m_termTablesBuilt(other.m_termTablesBuilt),
         m_fockBasisBuilt(other.m_fockBasisBuilt),
         m_hamiltonianBuilt(other.m_hamiltonianBuilt),
         m_hamiltonianDiagonalized(other.m_hamiltonianDiagonalized)
@@ -165,7 +165,7 @@ namespace diagonalization
         m_method = other.m_method;
         m_initialVectorFile = other.m_initialVectorFile;
         m_finalVectorFile = other.m_finalVectorFile;
-        m_lookupTablesBuilt = other.m_lookupTablesBuilt;
+        m_termTablesBuilt = other.m_termTablesBuilt;
         m_fockBasisBuilt = other.m_fockBasisBuilt;
         m_hamiltonianBuilt = other.m_hamiltonianBuilt;
         m_hamiltonianDiagonalized = other.m_hamiltonianDiagonalized;
@@ -212,7 +212,7 @@ namespace diagonalization
         }
         mpi.Sync(m_initialVectorFile, nodeId);
         mpi.Sync(m_finalVectorFile, nodeId);
-        mpi.Sync(&m_lookupTablesBuilt, 1, nodeId);
+        mpi.Sync(&m_termTablesBuilt, 1, nodeId);
         mpi.Sync(&m_fockBasisBuilt, 1, nodeId);
         mpi.Sync(&m_hamiltonianBuilt, 1, nodeId);
         mpi.Sync(&m_hamiltonianDiagonalized, 1, nodeId);
@@ -230,7 +230,7 @@ namespace diagonalization
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
         :
         m_totalLz(0),
-	    m_lookupTablesBuilt(false),
+	    m_termTablesBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
     {

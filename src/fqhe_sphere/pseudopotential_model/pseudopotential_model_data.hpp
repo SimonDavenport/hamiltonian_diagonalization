@@ -72,7 +72,7 @@ namespace diagonalization
         diagonalizationMethod_t m_method;   //!<    Store the diagonalization method
         std::string m_initialVectorFile;    //!<    Name of ARPACK initial vector file
         std::string m_finalVectorFile;      //!<    Name of ARPACK final vector file  
-        bool m_lookupTablesBuilt;           //!<    Set to true once the look-up tables are built
+        bool m_termTablesBuilt;             //!<    Set to true once the look-up tables are built
         bool m_fockBasisBuilt;              //!<    Set to true once the Fock basis has been constructed
         bool m_hamiltonianBuilt;            //!<    Set to true once the Hamiltonian is built
         bool m_hamiltonianDiagonalized;     //!<    Set to true once Hamiltonian is diagonalized

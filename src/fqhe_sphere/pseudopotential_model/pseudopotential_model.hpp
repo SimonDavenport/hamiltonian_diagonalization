@@ -36,7 +36,7 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "pseudopotential_model_base.hpp"
 #include "../../hamiltonians/spinless_fermion_hamiltonian.hpp"
-#include "lookup_tables.hpp"
+#include "term_tables.hpp"
 #include "angular_momentum_constraint.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
@@ -62,10 +62,10 @@ namespace diagonalization
                                    const std::vector<double>& pseudopotentials);
         SpherePseudopotentialModel(boost::program_options::variables_map* optionList,
                                    utilities::MpiWrapper& mpi);
-        ~SpherePseudopotentialHamiltonian();
+        ~SpherePseudopotentialModel();
         void BuildTermTables(const utilities::MpiWrapper& mpi);
-        void TermTablesToFile(const utilities::MpiWrapper& mpi);
-        void TermTablesFromFile(const utilities::MpiWrapper& mpi);
+        void TermsToFile(const std::string format, utilities::MpiWrapper& mpi) const;
+        void TermsFromFile(const std::string format, utilities::MpiWrapper& mpi);
         void SetOccupationEnergies(double* energyLevels, const iSize_t dim, const utilities::MpiWrapper& mpi);
         void BuildFockBasis(utilities::MpiWrapper& mpi);
         void SetFockBasis(fock_t* buffer, const fock_t dim);

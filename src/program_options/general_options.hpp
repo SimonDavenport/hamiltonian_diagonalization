@@ -50,22 +50,42 @@ namespace myOptions
 	     "Set to 1 to generate and diagonalize the model's Hamiltonian.\n")
 	    ("block-diagonalize,b",po::value<bool>()->default_value(false),
 	     "Set to 1 in order to enable block diagonalization of all available quantum number sectors.\n")
-	    ("method", po::value<iSize_t>()->default_value(0),
+	    ("method", po::value<int>()->default_value(0),
 	     "Specify the diagonalization method:\n\t 0 Full (LAPACK) \n\t 1 Lanczos (ARPACK)\n")
-	    ("nbr-eigenvalues,e", po::value<iSize_t>()->default_value(4),
+	    ("nbr-eigenvalues,e", po::value<int>()->default_value(4),
 	     "Specify number of lowest lying eigenvalues of the interacting Hamiltonian that will be calculated\n")
+	    ("file-format,f", po::value<int>()->default_value(0),
+	     "Specify the file format used throughout:\n\t 0 Text files \n\t 1 Binary files\n")
 	    ("eigenvalues-file", po::value<bool>()->default_value(false),
 	     "Set to 1 to store/retrieve eigenvalues in/from a file\n")
 	    ("eigenvectors-file", po::value<bool>()->default_value(false),
 	     "Set to 1 to additionally store/retrieve eigenvectors in/from a file (eigenvalues also stored/retrieved if this option is set)\n")
         ("hamiltonian-file", po::value<bool>()->default_value(false),
          "Set to 1 to store Hamiltonian matrix in a data file\n")
-        ("terms-file", po::value<bool>()->default_value(false),
+        ("store-terms", po::value<bool>()->default_value(false),
          "Set to 1 to generate and store Hamiltonian terms in a file")
         ("retrieve-terms", po::value<bool>()->default_value(false),
          "Set to 1 to retrieve Hamiltonian terms from existing file");
         return generalOpt;
     };
+    
+    inline std::string GetFileFormat(int formatCode)
+    {
+        if(1==formatCode)
+        {
+            return "text";
+        }
+        else if(2==formatCode)
+        {
+            return "binary";
+        }
+        else
+        {   
+            std::cerr << "ERROR Unknown file format code " << formatCode <<std::endl;
+            exit(EXIT_FAILURE);
+            return "";
+        }
+    }
 }   //  End namespace myOptions
 }   //  End namespace diagonalization
 #endif

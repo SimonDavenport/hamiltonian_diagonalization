@@ -60,7 +60,7 @@ enum diagonalizationMethod_t {_FULL_=0, _LANCZOS_=1};
 //! \brief A data structure to contain all of the principle model parameters
 ////////////////////////////////////////////////////////////////////////////////
 
-struct OpticalFluxLatticeHamiltonianData
+struct InteractingOflModelData
 {
     iSize_t m_dimX;                 //!<    Number of k-space samples in x direction
 	iSize_t m_dimY;                 //!<    Number of k-space samples in y direction
@@ -93,11 +93,11 @@ struct OpticalFluxLatticeHamiltonianData
     bool m_fockBasisBuilt;          //!<    Set to true once the Fock basis has been constructed
     bool m_hamiltonianBuilt;        //!<    Set to true once the Hamiltonian is built
     bool m_hamiltonianDiagonalized; //!<    Set to true once Hamiltonian is diagonalized
-    OpticalFluxLatticeHamiltonianData();
-    ~OpticalFluxLatticeHamiltonianData();
-    OpticalFluxLatticeHamiltonianData(const OpticalFluxLatticeHamiltonianData& other);
-    OpticalFluxLatticeHamiltonianData(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
-    OpticalFluxLatticeHamiltonianData& operator=(const OpticalFluxLatticeHamiltonianData& other);
+    InteractingOflModelData();
+    ~InteractingOflModelData();
+    InteractingOflModelData(const InteractingOflModelData& other);
+    InteractingOflModelData(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
+    InteractingOflModelData& operator=(const InteractingOflModelData& other);
     void MpiSynchronize(const int nodeId, const utilities::MpiWrapper& mpi);
     void ReadFromFile(const std::string fileName, utilities::MpiWrapper& mpi);
     void ReadFromSql(const std::string tableName, const std::string fileName, const iSize_t sqlId, 

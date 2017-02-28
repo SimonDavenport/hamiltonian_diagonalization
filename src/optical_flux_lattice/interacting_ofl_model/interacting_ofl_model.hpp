@@ -33,13 +33,14 @@
 #include <functional>
 #include <string.h>
 #include "../program_options/interacting_ofl_model_options.hpp"
-#include "../program_options/non_interacting_ofl_model_options.hpp"
-#include "../non_interacting_ofl_model/non_interacting_ofl_model.hpp"
-#include "../non_interacting_ofl_model/non_interacting_ofl_model_grid.hpp"
-#include "ofl_data.hpp"
+#include "../program_options/noninteracting_ofl_model_options.hpp"
+#include "../noninteracting_ofl_model/noninteracting_ofl_model.hpp"
+#include "../noninteracting_ofl_model/noninteracting_ofl_model_grid.hpp"
+#include "interacting_ofl_model_data.hpp"
 #include "../../hamiltonians/spinless_fermion_hamiltonian.hpp"
 #include "../../observables/fermion_observables.hpp"
-#include "lookup_tables.hpp"
+#include "term_tables.hpp"
+#include "term_hash_tables.hpp"
 #include "linear_momentum_constraints_2D.hpp"
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 #include "../../hamiltonians/matrix_vector_routines.hpp"
@@ -93,19 +94,21 @@ namespace diagonalization
                                             //!<    Change of basis matrix;
         std::vector<double> m_magnetization;//!<  A list of the magnetization values
         void Generate2KTable(utilities::MultiHashMultiMap<kState_t>* kHashTable, const utilities::MpiWrapper& mpi);
-        void Generate4KTable(std::vector<kState_t>* kTable,std::vector<int>* gxTable,std::vector<int>* gyTable, const utilities::MpiWrapper& mpi);    
-        void Generate4KTable(std::vector<kState_t>* kTable,utilities::MultiHashMultiMap<kState_t>* kHashTable, const utilities::MpiWrapper& mpi);
+        void Generate4KTable(std::vector<kState_t>* kTable,std::vector<int>* gxTable,std::vector<int>* gyTable, 
+                             const utilities::MpiWrapper& mpi);    
+        void Generate4KTable(std::vector<kState_t>* kTable,utilities::MultiHashMultiMap<kState_t>* kHashTable, 
+                             const utilities::MpiWrapper& mpi);
         kState_t FindK1(const kState_t k2, const kState_t k3, const kState_t k4, int& gTot1, int& gTot2) const;
         kState_t FindK1(const kState_t k2y, const kState_t k3y, const kState_t k4y, int& gTot2) const;
-        void GenerateQuarticTerms(std::vector<dcmplx>* table, const iSize_t dimension,SingleParticleHamiltonian* blochTable,std::vector<int>* gxTable, std::vector<int>* gyTable, utilities::MpiWrapper& mpi) const;
+        void GenerateQuarticTerms(std::vector<dcmplx>* table, const iSize_t dimension, NonInteractingOflModel* blochTable, 
+                                  std::vector<int>* gxTable, std::vector<int>* gyTable, utilities::MpiWrapper& mpi) const;
         void ConvertTableFormat(const utilities::MpiWrapper& mpi);
-	    void TermsToFile(utilities::MpiWrapper& mpi);
-	    void TermsFromFile(utilities::MpiWrapper& mpi);
-        void ChangeToWannierBasis(SingleParticleHamiltonian* blochTable, const double matrixElementTol, utilities::MpiWrapper& mpi);
-	    void StoreSigmaZMap(SingleParticleHamiltonian* blochTable, const utilities::MpiWrapper& mpi);
+        void ChangeToWannierBasis(NonInteractingOflModel* blochTable, const double matrixElementTol, 
+                                  utilities::MpiWrapper& mpi);
+	    void StoreSigmaZMap(NonInteractingOflModel* blochTable, const utilities::MpiWrapper& mpi);
         bool CalculateOccupations(utilities::MpiWrapper& mpi) const;
         bool CalculateSusceptibility(utilities::MpiWrapper& mpi) const;
-        bool PlotHamiltonian(const utilities::MpiWrapper& mpi) const;
+        bool PlotHamiltonian(utilities::MpiWrapper& mpi);
         bool ListMostProbable(const iSize_t nbrStates,utilities::MpiWrapper& mpi) const;
         bool CalculateDensityDensityFunction(utilities::MpiWrapper& mpi) const;
         bool CalculateParticipationRatio(utilities::MpiWrapper& mpi) const;
@@ -118,12 +121,14 @@ namespace diagonalization
         ~InteractingOflModel();
         void UpdateSqlStatus(const utilities::MpiWrapper& mpi);
         void BuildTermTables(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
+        void TermsToFile(const std::string format, utilities::MpiWrapper& mpi);
+	    void TermsFromFile(const std::string format, utilities::MpiWrapper& mpi);
         void SetSector(const kState_t kxTot,const kState_t kyTot);
         void BuildFockBasis(utilities::MpiWrapper& mpi);
         void BuildHamiltonian(utilities::MpiWrapper& mpi);
         void Diagonalize(utilities::MpiWrapper& mpi);
-        void HamiltonianToFile(utilities::MpiWrapper& mpi);
-        void HamiltonianFromFile(utilities::MpiWrapper& mpi);
+        void HamiltonianToFile(const std::string format, utilities::MpiWrapper& mpi);
+        void HamiltonianFromFile(const std::string format, utilities::MpiWrapper& mpi);
         void ClearHamiltonian();
         void EigensystemToFile(const bool writeEigenvalues, const bool writeEigenvectors, 
                                const std::string format, utilities::MpiWrapper& mpi);    

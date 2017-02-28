@@ -23,8 +23,8 @@
 //!                                                                             
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _PSEUDOPOTENTIAL_HAMILTONIAN_OPTIONS_HPP_INCLUDED_
-#define _PSEUDOPOTENTIAL_HAMILTONIAN_OPTIONS_HPP_INCLUDED_
+#ifndef _PSEUDOPOTENTIAL_MODEL_OPTIONS_HPP_INCLUDED_
+#define _PSEUDOPOTENTIAL_MODEL_OPTIONS_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <boost/program_options.hpp>
@@ -35,7 +35,7 @@ namespace diagonalization
 namespace myOptions
 {
     namespace po = boost::program_options;
-    inline po::options_description GetPseudopotentialHamiltonianOptions()
+    inline po::options_description GetPseudopotentialModelOptions()
     {
         po::options_description modelOpt("Pseudopotential Hamiltonian options");
 	    modelOpt.add_options()
@@ -50,7 +50,7 @@ namespace myOptions
 	    ("two-body-pseudopotentials-2ll", po::value<std::vector<double> >()->multitoken(),
 	     "A list of 2nd Landau level 2-body pseudopotential coefficients in order of lz value. e.g. 0.0 1.0 specifies V1=1 and all other pseudopotentials 0 (default).\n")
 	    ("lz-sectors", po::value<std::vector<iSize_t> >()->multitoken(),
-	     "Specify (2x) the total angular momentum sector to be diagonalized. Multiple sectors are specified as a list of integers.\n")
+	     "Specify (2x) the total angular momentum sector to be diagonalized. Multiple sectors are specified as a list of integers.\n");
         return modelOpt;
     };
 }   //  End namespace myOptions

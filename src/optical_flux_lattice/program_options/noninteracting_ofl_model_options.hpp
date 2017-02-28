@@ -36,7 +36,7 @@ namespace diagonalization
 namespace myOptions
 {
     namespace po = boost::program_options;
-    inline po::options_description GetCommonNoninteractingOflModelOptions()
+    inline po::options_description GetCommonNonInteractingOflModelOptions()
     {
         po::options_description singleParticleOpt("Noninteracting optical flux lattice model options");
         singleParticleOpt.add_options()
@@ -45,7 +45,7 @@ namespace myOptions
         return singleParticleOpt;
     };
     
-    inline void AddNoninteractingOflModelGridOptions(po::options_description& singleParticleOpt)
+    inline void AddNonInteractingOflModelGridOptions(po::options_description& singleParticleOpt)
     {
         singleParticleOpt.add_options()
         ("calculate-spatial-wavefunctions",po::value<iSize_t>()->default_value(0),
@@ -64,7 +64,7 @@ namespace myOptions
          "Set to 1 to calculate single particle magnetization (automatically set if plot-magnetization option is set).\n");
     }
     
-    inline po::options_description GetNoninteractingOflModelPlotOptions()
+    inline po::options_description GetNonInteractingOflModelPlotOptions()
     {
         po::options_description plotOpt("Plot Options");
 	    plotOpt.add_options()

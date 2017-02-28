@@ -466,15 +466,16 @@ namespace utilities
             const M& map,                   //!<    Map containing data to write to the file
             const std::string fileName,     //!<    Name of file
             const std::string format,       //!<    Format of file (e.g. "binary", "text")
-            const unsigned int nbrLabels,   //!<  Number of key labels
+            const unsigned int nbrLabels,   //!<    Number of key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class  
         {
             //  Create a copy of the map for the MPI gather operation to modify
-            M temp_map = map.copy();
+            M temp_map = map;
             this->MpiGatherBase(temp_map, 0, mpi);
             if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
-                std::ofstream f_out = utilities::GenFileStream<std::ofstream>(fileName, format, mpi);
+                std::ofstream f_out;
+                utilities::GenFileStream(f_out, fileName, format, mpi);
                 if(!mpi.m_exitFlag)
                 {
                     if("binary" == format)
@@ -503,25 +504,26 @@ namespace utilities
                         //  values if found)
                         for(auto it = temp_map.begin(); it != temp_map.end(); ++it)
                         {
+                            std::string streamData = utilities::ToStream(it->second);
                             switch(nbrLabels)
                             {
                                 case 1:
                                 {
-                                    f_out << it->first << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    f_out << it->first << "\t" << streamData <<"\n";
                                     break;
                                 }
                                 case 2:
                                 {    
                                     uint32_t key1, key2;
                                     utilities::Unpack2x32(it->first, key1, key2);
-                                    f_out << key1 << "\t" << key2 << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    f_out << key1 << "\t" << key2 << "\t" << streamData <<"\n";
                                     break;
                                 }
                                 case 3:
                                 {    
                                     uint16_t key1, key2, key3, key4;
                                     utilities::Unpack4x16(it->first, key1, key2, key3, key4);
-                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << streamData <<"\n";
                                     break;
                                 }
                                 case 4:
@@ -529,7 +531,7 @@ namespace utilities
                                     uint16_t key1, key2, key3, key4;
                                     utilities::Unpack4x16(it->first, key1, key2, key3, key4);           
                                     f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t";
-                                    f_out << std::setprecision(15) << it->second<<"\n";
+                                    f_out << streamData <<"\n";
                                     break;
                                 }
                                 case 8:
@@ -537,7 +539,7 @@ namespace utilities
                                     uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
                                     utilities::Unpack8x8(it->first, key1, key2, key3, key4, key5, key6, key7, key8);
                                     f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t" << key5<< "\t" << key6;
-                                    f_out << "\t" << key7 << "\t" << key8 << "\t" << std::setprecision(15) << it->second<<"\n";
+                                    f_out << "\t" << key7 << "\t" << key8 << "\t" << streamData <<"\n";
                                     break;
                                 }
                             }
@@ -563,7 +565,8 @@ namespace utilities
         {
             if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
-                std::ifstream f_in = utilities::GenFileStream<std::ifstream>(fileName, format, mpi);
+                std::ifstream f_in;
+                utilities::GenFileStream(f_in, fileName, format, mpi);
                 if(!mpi.m_exitFlag)
                 {
                     std::vector<std::pair<uint64_t, T> > pairList;
@@ -578,7 +581,7 @@ namespace utilities
                         f_in.read(reinterpret_cast<char*>(values.data()), size*sizeof(T));
                         std::vector<uint64_t>::iterator keys_it = keys.begin();
                         typename std::vector<T>::iterator values_it = values.begin();
-                        for(auto it = pairList.begin(); it != map.end(); ++it, ++keys_it, ++values_it)
+                        for(auto it = pairList.begin(); it < pairList.end(); ++it, ++keys_it, ++values_it)
                         {
                             it->first = *keys_it;
                             it->second = *values_it;
@@ -590,17 +593,15 @@ namespace utilities
                         f_in >> size;
                         uint64_t nbrLabels; 
                         f_in >> nbrLabels;
-                        std::string line;
                         pairList.reserve(size);
                         for(uint64_t i=0; i<size; ++i)
                         {
                             uint64_t key;
-                            T val; 
                             switch(nbrLabels)
                             {
                                 case 1:
                                 {
-                                    f_in>>key;
+                                    f_in >> key;
                                     break;
                                 }
                                 case 2:
@@ -645,7 +646,8 @@ namespace utilities
                                     break;
                                 }
                             }
-                            f_in >> val;
+                            T val;
+                            utilities::FromStream(f_in, val);
                             pairList.push_back(std::pair<uint64_t, T>(key, val));
                         }
                     }
@@ -654,7 +656,7 @@ namespace utilities
                 }
             }
             mpi.ExitFlagTest();
-            this->MpiSynchronize(0, mpi);
+            this->MpiSynchronizeBase(map, 0, mpi);
             return;
         }
         public:
@@ -690,7 +692,7 @@ namespace utilities
                                                 //!<    A memory efficient hash table
                                                 //!     container to represent the matrix
         #else
-        std::unordered_map<uint64_t,T> m_map;   //!<     Default to using the STL
+        std::unordered_map<uint64_t, T> m_map;  //!<     Default to using the STL
                                                 //!      unordered map
         #endif
         ////////////////////////////////////////////////////////////////////////////////
@@ -803,7 +805,7 @@ namespace utilities
             const unsigned int nbrLabels,   //!<    Number of map key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            this->ToFileBase(m_map, format, nbrLabels, mpi);
+            this->ToFileBase(m_map, fileName, format, nbrLabels, mpi);
         }
 
         //!
@@ -979,7 +981,7 @@ namespace utilities
             const unsigned int nbrLabels,   //!<    Number of map key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            this->ToFileBase(fileName, format, nbrLabels, mpi);
+            this->ToFileBase(m_map, fileName, format, nbrLabels, mpi);
         }
 
         //!
@@ -991,7 +993,7 @@ namespace utilities
             MpiWrapper& mpi)            //!<    Instance of the MPI wrapper class
         {
             this->Clear();
-            this->FromFileBase(fileName, fileName, format, mpi);
+            this->FromFileBase(m_map, fileName, format, mpi);
         }
 
         //!

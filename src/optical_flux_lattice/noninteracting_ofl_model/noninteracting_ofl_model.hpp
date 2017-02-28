@@ -94,7 +94,7 @@ namespace diagonalization
     class NonInteractingOflModel
     {
         private:
-        friend class NonInteractingOflModelArray;
+        friend class NonInteractingOflModelGrid;
         dcmplx* m_matrix;   //!<    Pointer to a memory address to store the matrix 
                             //!     representation of the difference equation
                             //!     relating Block wave function coefficients

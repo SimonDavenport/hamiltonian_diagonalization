@@ -327,7 +327,7 @@ namespace utilities
     void MpiWrapper::ExitFlagTest()
     {
         MPI_Barrier(m_comm);
-        MPI_Bcast(&m_exitFlag,1,MPI_C_BOOL,0,m_comm);
+        MPI_Bcast(&m_exitFlag, 1, MPI_C_BOOL, 0, m_comm);
         if(m_exitFlag)
         {
             exit(EXIT_FAILURE);

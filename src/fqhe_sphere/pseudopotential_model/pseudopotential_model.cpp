@@ -82,7 +82,7 @@ namespace diagonalization
 	    {
             utilities::cout.AdditionalInfo()<<"\n\t- GENERATING 2-BODY PSEUDOPOTENTIAL COEFFICIENTS"<<std::endl;
         }
-        this->BaseGetCoefficientsFromPseudopotentials(m_quarticTables.GetVTable(), 0, mpi);
+        this->BaseTermsFromPseudopotentials(m_quarticTables.GetVTable(), 0, mpi);
 	    MPI_Barrier(mpi.m_comm);
         //  Synchronize with the master node
         if(0 == mpi.m_id)    // FOR THE MASTER NODE
@@ -90,37 +90,50 @@ namespace diagonalization
             utilities::cout.AdditionalInfo()<<"\n\t- MPI SYNC TERM TABLES"<<std::endl;
         }
         m_quarticTables.MpiSynchronize(0, mpi);
-        m_params.m_lookupTablesBuilt = true;
+        m_params.m_termTablesBuilt = true;
         return;
     }
     
     //!
     //! Store term tables in a file
     //!
-    SpherePseudopotentialModel::TermTablesToFile(
-        const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
+    void SpherePseudopotentialModel::TermsToFile(
+        const std::string format,           //!<    Format of file (e.g. "binary", "text")
+        utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
+        const
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    { 
             utilities::cout.MainOutput()<<"\n\t============ WRITING TERM LOOK-UP TABLES TO FILE ============"<<std::endl;
         }
-        m_quadraticTables.ToFile();
-        m_quarticTables.ToFile();
+        std::stringstream fileNameQuadratic, filenameQuartic;
+        fileNameQuadratic.str("");
+        filenameQuartic.str("");
+        fileNameQuadratic << m_params.m_outPath << "/quadratic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
+        filenameQuartic << m_params.m_outPath << "/quartic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
+        m_quadraticTables.ToFile(fileNameQuadratic.str(), format, mpi);
+        m_quarticTables.ToFile(filenameQuartic.str(), format, mpi);
         return;
     }
     
     //!
     //! Retrieve term tables from a file
     //!
-    SpherePseudopotentialModel::TermTablesFromFile(
-        const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
+    void SpherePseudopotentialModel::TermsFromFile(
+        const std::string format,           //!<    Format of file (e.g. "binary", "text")
+        utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    { 
             utilities::cout.MainOutput()<<"\n\t============ RETRIEVING TERM LOOK-UP TABLES FROM FILE ============"<<std::endl;
         }
-        m_quadraticTables.FromFile();
-        m_quarticTables.FromFile();
+        std::stringstream fileNameQuadratic, filenameQuartic;
+        fileNameQuadratic.str("");
+        filenameQuartic.str("");
+        fileNameQuadratic << m_params.m_outPath << "/quadratic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
+        filenameQuartic << m_params.m_outPath << "/quartic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
+        m_quadraticTables.FromFile(fileNameQuadratic.str(), format, mpi);
+        m_quarticTables.FromFile(filenameQuartic.str(), format, mpi);
         return;
     }
     
@@ -220,7 +233,7 @@ namespace diagonalization
     void SpherePseudopotentialModel::BuildHamiltonian(
         utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
     {
-        if(m_params.m_lookupTablesBuilt && m_params.m_fockBasisBuilt && !m_params.m_hamiltonianBuilt)
+        if(m_params.m_termTablesBuilt && m_params.m_fockBasisBuilt && !m_params.m_hamiltonianBuilt)
         {
             //////  GENERATE THE HAMILTONIAN        //////
             if(0 == mpi.m_id)	// FOR THE MASTER NODE

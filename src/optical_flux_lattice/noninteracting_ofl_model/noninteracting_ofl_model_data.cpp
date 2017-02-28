@@ -115,7 +115,9 @@ namespace diagonalization
         std::string fileName,           //!<    Name of file where parameters are contained
         utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
-        std::ifstream f_param utilities::GenFileStream<std::ifstream>(fileName, "text", mpi);
+        std::ifstream f_param;
+        std::string format = "text";
+        utilities::GenFileStream(f_param, fileName, format, mpi);
 	    if(mpi.m_exitFlag)
 	    {
 		    return;

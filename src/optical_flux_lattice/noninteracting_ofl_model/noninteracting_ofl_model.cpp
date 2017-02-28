@@ -62,7 +62,7 @@ namespace diagonalization
             m_differenceMatrixPopulated(false),
             m_bandsCalculated(false)
     {
-        m_params = SingleParticleParameters(optionList,mpi);
+        m_params = NonInteractingOflModelData(optionList,mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             m_xBandCutOff = (*optionList)["x-cut"].as<iSize_t>();
@@ -81,7 +81,7 @@ namespace diagonalization
     //! Uses a pre-declared SingleParticleParameters struct to initialize the class.
     ////////////////////////////////////////////////////////////////////////////////
     NonInteractingOflModel::NonInteractingOflModel(
-        SingleParticleParameters params)     //!<    An instance of the SingleParticleParameters 
+        NonInteractingOflModelData params)   //!<    An instance of the SingleParticleParameters 
                                              //!     struct to initialize the class
     :   m_matrix(0),
         m_eigenvalues(0),
