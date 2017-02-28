@@ -25,8 +25,7 @@ utilities/wrappers/fftw_wrapper.cpp \
 utilities/wrappers/sqlite_wrapper.cpp \
 utilities/mathematics/binary_number_tools.cpp \
 utilities/mathematics/binomials.cpp \
-utilities/mathematics/murmur_hash2.cpp \
-utilities/mathematics/murmur_hash3.cpp
+utilities/mathematics/murmur_hash2.cpp
 
 optical_flux_lattice_diagonalization_LINK = $(FC) $(LDFLAGS) -o optical_flux_lattice_diagonalization
 
@@ -40,8 +39,7 @@ optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp 
 utilities/wrappers/mpi_wrapper.cpp \
 utilities/wrappers/fftw_wrapper.cpp \
 utilities/wrappers/sqlite_wrapper.cpp \
-utilities/mathematics/murmur_hash2.cpp \
-utilities/mathematics/murmur_hash3.cpp
+utilities/mathematics/murmur_hash2.cpp
 
 optical_flux_lattice_noninteracting_model_LINK = $(FC) $(LDFLAGS) -o optical_flux_lattice_noninteracting_model
 
@@ -67,8 +65,7 @@ utilities/wrappers/arpack_wrapper.cpp \
 utilities/mathematics/binary_number_tools.cpp \
 utilities/mathematics/binomials.cpp \
 utilities/mathematics/clebsch_gordan_coefficients.cpp \
-utilities/mathematics/murmur_hash2.cpp \
-utilities/mathematics/murmur_hash3.cpp
+utilities/mathematics/murmur_hash2.cpp
 
 
 fqhe_sphere_spinless_fermions_diagonalization_LINK = $(FC) $(LDFLAGS) -o fqhe_sphere_spinless_fermions_diagonalization
