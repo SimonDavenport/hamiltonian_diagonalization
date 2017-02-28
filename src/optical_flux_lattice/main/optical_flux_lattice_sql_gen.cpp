@@ -4,8 +4,7 @@
 //!                                                                             
 //!	 \file
 //!     This code generates an SQL database that is designed to keep track of
-//!     a large set of diagonalizations performed by the 
-//!     optical_flux_lattice_diag program                         
+//!     a large set of diagonalizations using different model parameters                       
 //!                                                                             
 //!                    Copyright (C) Simon C Davenport
 //!                                                                             
@@ -30,7 +29,7 @@
 #include "../../utilities/general/load_bar.hpp"
 #include "../../program_options/general_options.hpp"
 #include "../program_options/sql_options.hpp"
-#include "../program_options/optical_flux_lattice_hamiltonian_options.hpp"
+#include "../program_options/interacting_ofl_model_options.hpp"
 ///////     GLOBAL DATA STRUCTURES      ////////////////////////////////////////
 utilities::Cout utilities::cout;
 ///////		FUNCTION FORWARD DECLARATIONS		    ////////////////////////////
@@ -114,7 +113,7 @@ int main(int argc, char *argv[])
             if(x&1) //  Snake one way if odd
             {
                 double currInteraction = (interactionMin+interactionStep*(yGrid-1));
-                for(diagonalization::iSize_t y=0;y<yGrid;y++,currInteraction-=interactionStep,++idCounter)
+                for(diagonalization::iSize_t y=0; y<yGrid; y++, currInteraction-=interactionStep, ++idCounter)
                 {
                     std::stringstream ss;
                     ss.str("");
@@ -134,7 +133,7 @@ int main(int argc, char *argv[])
             else    //  Snake the other way if even
             {
                 double currInteraction = interactionMin;
-                for(diagonalization::iSize_t y=0;y<yGrid;++y,currInteraction+=interactionStep,++idCounter)
+                for(diagonalization::iSize_t y=0; y<yGrid; ++y, currInteraction+=interactionStep, ++idCounter)
                 {
                     std::stringstream ss;
                     ss.str("");

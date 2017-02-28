@@ -4,7 +4,7 @@
 //!                                                                             
 //!	 \file
 //!     This code performs exact diagonalization of a FQHE pseudopotential
-//!     Hamiltonian for spinless fermions in the sphere geometry
+//!     model for spinless fermions in the sphere geometry
 //!             
 //!                    Copyright (C) Simon C Davenport
 //!                                                                             
@@ -26,8 +26,8 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/general/cout_tools.hpp"
-#include "../pseudopotential_hamiltonian/pseudopotential_hamiltonian.hpp"
-#include "../pseudopotential_hamiltonian/two_level_pseudopotential_hamiltonian.hpp"
+#include "../pseudopotential_model/pseudopotential_model.hpp"
+#include "../pseudopotential_model/two_level_pseudopotential_model.hpp"
 #include "../../program_options/general_options.hpp"
 #include "../../program_options/arpack_options.hpp"
 ///////     GLOBAL DATA STRUCTURES      ////////////////////////////////////////
@@ -36,6 +36,8 @@ utilities::MpiWrapper mpi(utilities::cout);
 ///////		FUNCTION FORWARD DECLARATIONS		    ////////////////////////////
 boost::program_options::variables_map ParseCommandLine(int argc, char *argv[], 
                                                        utilities::MpiWrapper& mpi);
+std::vector<diagonalization::iSize_t> GenerateSectorList(boost::program_options::variables_map* optionList,
+                                                         utilities::MpiWrapper& mpi);
 ///////		START OF MAIN FUNCTION      ////////////////////////////////////////
 int main(int argc, char *argv[])
 {
@@ -46,137 +48,122 @@ int main(int argc, char *argv[])
     bool diagonalizeFlag;
     bool eigenvaluesFlag;
     bool eigenvectorsFlag;
-    bool hamiltonianWriteFlag;
+    bool hamiltonianFlag;
     diagonalization::iSize_t nbrLevels;
+    bool genTermFlag;
+    bool retrieveTermsFlag;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
 	    diagonalizeFlag  = optionList["diagonalize"].as<bool>();
 	    eigenvaluesFlag  = optionList["eigenvalues-file"].as<bool>();
 	    eigenvectorsFlag = optionList["eigenvectors-file"].as<bool>();
-	    hamiltonianWriteFlag = optionList["hamiltonian-to-file"].as<bool>();
+	    hamiltonianFlag = optionList["hamiltonian-file"].as<bool>();
 	    nbrLevels = optionList["nbr-levels"].as<diagonalization::iSize_t>();
+	    termsFlag = optionList["terms-file"].as<bool>();
+	    retrieveTermsFlag = optionList["retrieve-terms"].as<bool>();
 	}
     //  MPI sync the flags from node 0
     mpi.Sync(&diagonalizeFlag, 1, 0);
     mpi.Sync(&eigenvaluesFlag, 1, 0);
     mpi.Sync(&eigenvectorsFlag, 1, 0);
-    mpi.Sync(&hamiltonianWriteFlag, 1, 0);
+    mpi.Sync(&hamiltonianFlag, 1, 0);
     mpi.Sync(&nbrLevels, 1, 0);
+    mpi.Sync(&termsFlag, 1, 0);
+    mpi.Sync(&retrieveTermsFlag, 1, 0);
     //////      BUILD AND DIAGONALIZE HAMILTONIAN       ////////////////////////
     if(diagonalizeFlag)
     {
-        //  Determine angular momentum sectors to be diagonalized
-        std::vector<diagonalization::iSize_t> sectorList;
-        if(0 == mpi.m_id)	// FOR THE MASTER NODE
-        {   
-            if(optionList.count("lz-sectors"))
-            {
-                sectorList = optionList["lz-sectors"].as<std::vector<diagonalization::iSize_t> >();
-            }
-            else if(optionList["block-diagonalize"].as<bool>())
-            {
-                diagonalization::iSize_t startLz = 0;
-                bool nbrParticlesOdd = optionList["nbr-particles"].as<diagonalization::iSize_t>() & 1;
-                bool nbrOrbitalsOdd  = optionList["nbr-orbitals"].as<diagonalization::iSize_t>() & 1;
-                if(!nbrOrbitalsOdd && nbrParticlesOdd)
-                {
-                    startLz = 1;
-                }
-                diagonalization::iSize_t nbrOrbitals =  optionList["nbr-orbitals"].as<diagonalization::iSize_t>();
-                diagonalization::iSize_t nbrParticles = optionList["nbr-particles"].as<diagonalization::iSize_t>();
-                diagonalization::iSize_t nbrLevels = optionList["nbr-levels"].as<diagonalization::iSize_t>();
-                diagonalization::iSize_t max=0;
-                if(nbrLevels==1)
-                {
-                    max = nbrParticles*(nbrOrbitals-nbrParticles);
-                }
-                else if(nbrLevels==2)
-                {
-                    max = (nbrOrbitals-2)/2+1;
-                    for(unsigned int i=2; i<=nbrParticles; ++i)
-                    {
-                        max += ((nbrOrbitals-2)/2+1-2*(i/2));
-                    }
-                }
-                for(diagonalization::iSize_t lz = startLz; lz<=max; lz+=1)
-                {
-                    sectorList.push_back(lz);
-                }
-            }
-        }
-        mpi.ExitFlagTest();
-        mpi.Sync(&sectorList, 0);
+        std::vector<diagonalization::iSize_t> sectorList = GenerateSectorList(&optionList, mpi);
         if(nbrLevels==1)
         {
-            diagonalization::SpherePseudopotentialHamiltonian hamiltonian(&optionList, mpi);
-            //  Generate look-up tables
-            hamiltonian.BuildLookUpTables(mpi);
+            diagonalization::SpherePseudopotentialModel model(&optionList, mpi);
+            if(retrieveTermsFlag)
+            {
+                model.TermTablesFromFile(&optionList, mpi);
+            }
+            else
+            {
+                model.BuildTermTables(&optionList, mpi);
+            }
             if(0 == sectorList.size())
             {
-                //  Construct the full Hamiltonian
-                hamiltonian.BuildFockBasis(mpi);
-                hamiltonian.BuildHamiltonian(mpi);
-                if(hamiltonianWriteFlag)
+                //  Construct and diagonalizae the full Hamiltonian
+                model.BuildFockBasis(mpi);
+                model.BuildHamiltonian(mpi);
+                if(hamiltonianFlag)
                 {
-                    hamiltonian.HamiltonianToFile(mpi);
+                    model.HamiltonianToFile(mpi);
                 }
-                hamiltonian.Diagonalize(mpi);
-                hamiltonian.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+                model.Diagonalize(mpi);
+                model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
             }
             else
             {
                 //  Construct and diagonalize the Hamiltonian for each specified sector
                 for(auto& sector : sectorList)
                 {
-                    //  Build and diagonalize selected sectors
-                    hamiltonian.SetSector(sector);
-                    hamiltonian.BuildFockBasis(mpi);
-                    hamiltonian.BuildHamiltonian(mpi);
-                    if(hamiltonianWriteFlag)
+                    model.SetSector(sector);
+                    model.BuildFockBasis(mpi);
+                    model.BuildHamiltonian(mpi);
+                    if(hamiltonianFlag)
                     {
-                        hamiltonian.HamiltonianToFile(mpi);
+                        model.HamiltonianToFile(mpi);
                     }
-                    hamiltonian.Diagonalize(mpi);
-                    hamiltonian.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
-                    hamiltonian.ClearHamiltonian();
+                    model.Diagonalize(mpi);
+                    model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+                    model.ClearHamiltonian();
                 }
             }
         }
         else if(nbrLevels==2)
         {
-            diagonalization::SphereTwoLevelPseudopotentialHamiltonian hamiltonian(&optionList, mpi);
-            //  Generate look-up tables
-            hamiltonian.BuildLookUpTables(mpi);
+            diagonalization::SphereTwoLevelPseudopotentialModel model(&optionList, mpi);
+            model.BuildTermTables(mpi);
+            //  Construct and diagonalizae the full Hamiltonian
             if(0 == sectorList.size())
             {
-                //  Construct the full Hamiltonian
-                hamiltonian.BuildHamiltonian(mpi);
-                if(hamiltonianWriteFlag)
+                model.BuildHamiltonian(mpi);
+                if(hamiltonianFlag)
                 {
-                    hamiltonian.HamiltonianToFile(mpi);
+                    model.HamiltonianToFile(mpi);
                 }
-                hamiltonian.Diagonalize(mpi);
-                hamiltonian.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+                model.Diagonalize(mpi);
+                model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
             }
             else
             {
                 //  Construct and diagonalize the Hamiltonian for each specified sector
                 for(auto& sector : sectorList)
                 {
-                    //  Build and diagonalize selected sectors
-                    hamiltonian.SetSector(sector);
-                    hamiltonian.BuildHamiltonian(mpi);
-                    if(hamiltonianWriteFlag)
+                    model.SetSector(sector);
+                    model.BuildHamiltonian(mpi);
+                    if(hamiltonianFlag)
                     {
-                        hamiltonian.HamiltonianToFile(mpi);
+                        model.HamiltonianToFile(mpi);
                     }
-                    hamiltonian.Diagonalize(mpi);
-                    hamiltonian.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
-                    hamiltonian.ClearHamiltonian();
+                    model.Diagonalize(mpi);
+                    model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+                    model.ClearHamiltonian();
                 }
             }
         }
-    }  
+    }
+    //////      GENERATE AND STORE TERM TABLES       ///////////////////////////
+    if(termsFlag)
+    {
+        if(nbrLevels==1)
+        {
+            diagonalization::SpherePseudopotentialHamiltonian model(&optionList, mpi);
+            model.BuildTermTables(mpi);
+            model.TermTablesToFile(mpi);
+        }
+        else if(nbrLevels==2)
+        {
+            diagonalization::SphereTwoLevelPseudopotentialHamiltonian model(&optionList, mpi);
+            model.BuildTermTables(mpi);
+            model.TermTablesToFile(mpi);
+        }
+    }
     return 0;
 }
 
@@ -233,4 +220,57 @@ boost::program_options::variables_map ParseCommandLine(
         utilities::cout.MainOutput()<<"\n\tRun with -h option to see program options"<<std::endl;
     }
     return vm;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//! \brief A function to generate a list of Lz sectors to be diagonalized
+//!
+//! \return a list of Lz values
+//////////////////////////////////////////////////////////////////////////////////
+std::vector<diagonalization::iSize_t> GenerateSectorList(
+    boost::program_options::variables_map* optionList,
+                                //!<    Import command line option list to set sectors
+    utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
+{
+    std::vector<diagonalization::iSize_t> sectorList;
+    if(0 == mpi.m_id)	// FOR THE MASTER NODE
+    {
+        if(optionList.count("lz-sectors"))
+        {
+            sectorList = optionList["lz-sectors"].as<std::vector<diagonalization::iSize_t> >();
+        }
+        else if(optionList["block-diagonalize"].as<bool>())
+        {
+            diagonalization::iSize_t startLz = 0;
+            bool nbrParticlesOdd = optionList["nbr-particles"].as<diagonalization::iSize_t>() & 1;
+            bool nbrOrbitalsOdd  = optionList["nbr-orbitals"].as<diagonalization::iSize_t>() & 1;
+            if(!nbrOrbitalsOdd && nbrParticlesOdd)
+            {
+                startLz = 1;
+            }
+            diagonalization::iSize_t nbrOrbitals =  optionList["nbr-orbitals"].as<diagonalization::iSize_t>();
+            diagonalization::iSize_t nbrParticles = optionList["nbr-particles"].as<diagonalization::iSize_t>();
+            diagonalization::iSize_t nbrLevels = optionList["nbr-levels"].as<diagonalization::iSize_t>();
+            diagonalization::iSize_t max=0;
+            if(nbrLevels==1)
+            {
+                max = nbrParticles*(nbrOrbitals-nbrParticles);
+            }
+            else if(nbrLevels==2)
+            {
+                max = (nbrOrbitals-2)/2+1;
+                for(unsigned int i=2; i<=nbrParticles; ++i)
+                {
+                    max += ((nbrOrbitals-2)/2+1-2*(i/2));
+                }
+            }
+            for(diagonalization::iSize_t lz = startLz; lz<=max; lz+=1)
+            {
+                sectorList.push_back(lz);
+            }
+        }
+    }
+    mpi.ExitFlagTest();
+    mpi.Sync(&sectorList, 0);
+    return sectorList
 }

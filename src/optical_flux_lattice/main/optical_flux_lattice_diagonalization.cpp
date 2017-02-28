@@ -28,7 +28,7 @@
 #include <vector>
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/general/cout_tools.hpp"
-#include "../optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian.hpp"
+#include "../interacting_ofl_model/interacting_ofl_model.hpp"
 #include "../../program_options/general_options.hpp"
 #include "../program_options/sql_options.hpp"
 #include "../observables_manager/observables_manager.hpp"
@@ -49,49 +49,64 @@ int main(int argc, char *argv[])
     bool diagonalizeFlag;
     bool eigenvaluesFlag;
     bool eigenvectorsFlag;
+    bool termsFlag;
+    bool retrieveTermsFlag;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
 	    diagonalizeFlag  = optionList["diagonalize"].as<bool>();
 	    eigenvaluesFlag  = optionList["eigenvalues-file"].as<bool>();
 	    eigenvectorsFlag = optionList["eigenvectors-file"].as<bool>();
+	    termsFlag = optionList["terms-file"].as<bool>();
+	    retrieveTermsFlag = optionList["retrieve-terms"].as<bool>();
 	}
     mpi.Sync(&diagonalizeFlag, 1, 0);
     mpi.Sync(&eigenvaluesFlag, 1, 0);
     mpi.Sync(&eigenvectorsFlag, 1, 0);
+    mpi.Sync(&termsFlag, 1, 0);
+    mpi.Sync(&retrieveTermsFlag, 1, 0);
     //  Make a list of observables to calculate
     diagonalization::ObservablesManager observables;
     observables.AddObservables(&optionList, mpi);
     observables.Print(mpi);
-    //  Build and diagonalize Hamiltonian
+    //////      BUILD AND DIAGONALIZE HAMILTONIAN       ////////////////////////
     if(diagonalizeFlag)
     {
         std::vector<std::complex<diagonalization::iSize_t> > sectorList = GenerateSectorList(&optionList, mpi);
-        diagonalization::OpticalFluxLatticeHamiltonian hamiltonian(&optionList, mpi);
-        hamiltonian.BuildLookUpTables(&optionList, mpi);
+        diagonalization::InteractingOflModel model(&optionList, mpi);
+        if(retrieveTermsFlag)
+        {
+            model.TermTablesFromFile(&optionList, mpi);
+        }
+        else
+        {
+            model.BuildTermTables(&optionList, mpi);
+        }
         if(0 == sectorList.size())  //  Diagonalize all sectors
         {
-            hamiltonian.BuildFockBasis(mpi);
-            hamiltonian.BuildHamiltonian(mpi);
-            hamiltonian.Diagonalize(mpi);
-            hamiltonian.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
-            observables.CalculateAllObservables(&hamiltonian, mpi);
+            model.BuildFockBasis(mpi);
+            model.BuildHamiltonian(mpi);
+            model.Diagonalize(mpi);
+            model.EigensystemToFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+            observables.CalculateAllObservables(&model, mpi);
         }
         else    //  Diagonalize selected sectors
         {
             for(std::vector<std::complex<diagonalization::iSize_t> >::const_iterator it = sectorList.begin(); 
             it != sectorList.end(); ++it)
             {
-                hamiltonian.SetSector(it->real(),it->imag());
-                hamiltonian.BuildFockBasis(mpi);
-                hamiltonian.BuildHamiltonian(mpi);
-                hamiltonian.Diagonalize(mpi);
-                hamiltonian.EigensystemToFile(eigenvaluesFlag,eigenvectorsFlag, mpi);
-                observables.CalculateAllObservables(&hamiltonian, mpi);
-                hamiltonian.ClearHamiltonian();
+                model.SetSector(it->real(),it->imag());
+                model.BuildFockBasis(mpi);
+                model.BuildHamiltonian(mpi);
+                model.Diagonalize(mpi);
+                model.EigensystemToFile(eigenvaluesFlag,eigenvectorsFlag, mpi);
+                observables.CalculateAllObservables(&model, mpi);
+                model.ClearHamiltonian();
             }
         }
-        hamiltonian.UpdateSqlStatus(mpi);
+        model.UpdateSqlStatus(mpi);
+        observables.UpdateSqlFlags(&optionList, mpi);
     }
+    //////      COMPUTE OBSERVABLES USING STORED EIGENSTATES       /////////////
     else if(observables.GetNbrSetObservables()>0)   // Use existing results for analysis
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
@@ -99,7 +114,7 @@ int main(int argc, char *argv[])
             utilities::cout.MainOutput()<<"\n\tLooking for existing eigensystem data to analyse."<<std::endl;
         }
         std::vector<std::complex<diagonalization::iSize_t> > sectorList = GenerateSectorList(&optionList, mpi);
-        diagonalization::OpticalFluxLatticeHamiltonian hamiltonian(&optionList, mpi);
+        diagonalization::InteractingOflModel model(&optionList, mpi);
 
         bool calcualteSusceptibilityFlag = false;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
@@ -107,34 +122,46 @@ int main(int argc, char *argv[])
 	        calcualteSusceptibilityFlag = optionList["calculate-susceptibility"].as<bool>();
 	    }
         mpi.Sync(&calcualteSusceptibilityFlag, 1, 0);
-
         if(calcualteSusceptibilityFlag)
         {
-            hamiltonian.BuildLookUpTables(&optionList, mpi);
+            if(retrieveTermsFlag)
+            {
+                model.TermTablesFromFile(&optionList, mpi);
+            }
+            else
+            {
+                model.BuildTermTables(&optionList, mpi);
+            }
         }
-
         eigenvaluesFlag  = true;
         eigenvectorsFlag = true;
         if(0 == sectorList.size())
         {
-            hamiltonian.EigensystemFromFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
-            hamiltonian.BuildFockBasis(mpi);
-            observables.CalculateAllObservables(&hamiltonian, mpi);
+            model.EigensystemFromFile(eigenvaluesFlag, eigenvectorsFlag, mpi);
+            model.BuildFockBasis(mpi);
+            observables.CalculateAllObservables(&model, mpi);
         }
         else
         {
             for(std::vector<std::complex<diagonalization::iSize_t> >::const_iterator it = sectorList.begin(); 
             it != sectorList.end(); ++it)
             {
-                hamiltonian.SetSector(it->real(),it->imag());
-                hamiltonian.EigensystemFromFile(eigenvaluesFlag,eigenvectorsFlag, mpi);
-                hamiltonian.BuildFockBasis(mpi);
-                observables.CalculateAllObservables(&hamiltonian, mpi);
+                model.SetSector(it->real(),it->imag());
+                model.EigensystemFromFile(eigenvaluesFlag,eigenvectorsFlag, mpi);
+                model.BuildFockBasis(mpi);
+                observables.CalculateAllObservables(&model, mpi);
             }
         }
-        hamiltonian.UpdateSqlStatus(mpi);
+        model.UpdateSqlStatus(mpi);
+        observables.UpdateSqlFlags(&optionList, mpi);
     }
-    observables.UpdateSqlFlags(&optionList, mpi);
+    //////      GENERATE AND STORE TERM TABLES       ///////////////////////////
+    if(termsFlag)
+    {
+        diagonalization::InteractingOflModel model(&optionList, mpi);
+        model.BuildTermTables(&optionList, mpi);
+        model.TermTablesToFile(mpi);
+    }
     return 0;
 }
 

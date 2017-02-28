@@ -142,40 +142,40 @@ namespace diagonalization
     //! flag is overwritten as false.
     //!
     void ObservablesManager::CalculateAllObservables(
-        OpticalFluxLatticeHamiltonian* hamiltonian, //!<    Address of Hamiltonian class
+        InteractingOflModel* model, //!<    Address of interacting model class
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
     {
         if(m_observablesList["calculate-occupations"])
         {
-            m_observablesList["calculate-occupations"] = hamiltonian->CalculateOccupations(mpi);
+            m_observablesList["calculate-occupations"] = model->CalculateOccupations(mpi);
         }
         if(m_observablesList["calculate-susceptibility"])
         {
-            m_observablesList["calculate-susceptibility"] = hamiltonian->CalculateSusceptibility(mpi);
+            m_observablesList["calculate-susceptibility"] = model->CalculateSusceptibility(mpi);
         }
         if(m_observablesList["plot-hamiltonian"])
         {
-            m_observablesList["plot-hamiltonian"] = hamiltonian->PlotHamiltonian(mpi);
+            m_observablesList["plot-hamiltonian"] = model->PlotHamiltonian(mpi);
         }
         if(m_observablesList["most-probable-list"])
         {
-            m_observablesList["most-probable-list"] = hamiltonian->ListMostProbable(m_nbrMostProbable,mpi);
+            m_observablesList["most-probable-list"] = model->ListMostProbable(m_nbrMostProbable,mpi);
         }
         if(m_observablesList["calculate-density-density"])
         {
-            m_observablesList["calculate-density-density"] = hamiltonian->CalculateDensityDensityFunction(mpi);
+            m_observablesList["calculate-density-density"] = model->CalculateDensityDensityFunction(mpi);
         }
         if(m_observablesList["calculate-participation-ratio"])
         {
-            m_observablesList["calculate-participation-ratio"] = hamiltonian->CalculateParticipationRatio(mpi);
+            m_observablesList["calculate-participation-ratio"] = model->CalculateParticipationRatio(mpi);
         }
         if(m_observablesList["calculate-translational-density-density"])
         {
-            m_observablesList["calculate-translational-density-density"] = hamiltonian->CalculateTranslationalDensityDensityFunction(mpi);
+            m_observablesList["calculate-translational-density-density"] = model->CalculateTranslationalDensityDensityFunction(mpi);
         }
         if(m_observablesList["calculate-rotational-density-density"])
         {
-            m_observablesList["calculate-rotational-density-density"] = hamiltonian->CalculateRotationalDensityDensityFunction(mpi);
+            m_observablesList["calculate-rotational-density-density"] = model->CalculateRotationalDensityDensityFunction(mpi);
         }
         m_calcualtedObservables = true;
         return;

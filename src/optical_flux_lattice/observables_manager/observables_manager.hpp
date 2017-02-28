@@ -31,7 +31,7 @@
 #include <vector>
 #include <boost/program_options.hpp>
 #include <map>
-#include "../optical_flux_lattice_hamiltonian/optical_flux_lattice_hamiltonian.hpp"
+#include "../interacting_ofl_model/interacting_ofl_model.hpp"
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/general/cout_tools.hpp"
 #include "../program_options/observables_options.hpp"
@@ -56,7 +56,7 @@ namespace diagonalization
             void AddObservables(boost::program_options::variables_map* optionList, 
                                 utilities::MpiWrapper& mpi);
             int GetNbrSetObservables() const;
-            void CalculateAllObservables(OpticalFluxLatticeHamiltonian* hamiltonian, 
+            void CalculateAllObservables(InteractingOflModel* model, 
                                          utilities::MpiWrapper& mpi);
             void UpdateSqlFlags(boost::program_options::variables_map* optionList, 
                                 const utilities::MpiWrapper& mpi);
