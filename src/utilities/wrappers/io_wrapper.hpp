@@ -46,7 +46,7 @@ namespace utilities
             std::cerr << "Could not open file " << fileName << std::endl;
             mpi.m_exitFlag=true;
         }
-        return F;
+        return stream;
     }
 }   //  End namespace utilities
 #endif 
