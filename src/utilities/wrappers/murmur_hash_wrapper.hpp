@@ -34,27 +34,12 @@
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../mathematics/murmur_hash2.hpp"
-#include "../mathematics/murmur_hash3.hpp"
 #if _DEBUG_
 #include "../general/debug.hpp"
 #endif
 
 namespace utilities
 {
-    //!
-    //! Template wrapper class for interfacing with SparseHash
-    //!
-    template<typename T>
-    struct MurmurHasher128Wrapper
-    {
-        uint64_t operator()(const T& t) const 
-        {
-            uint64_t out;
-            MurmurHash3_x64_128(&t, sizeof(t), 0, &out);
-            return out;
-        }
-    };
-
     //!
     //! Template wrapper class for interfacing with SparseHash
     //!
@@ -78,18 +63,7 @@ namespace utilities
             return MurmurHash64A(&t, sizeof(t), 0);
         }
     };
-
-    //!
-    //! Template wrapper function for general use of seeded hash functions
-    //!
-    template<typename T>
-    uint64_t MurmurHasher128(const T& t, const unsigned int seed) 
-    {
-        uint64_t out;
-        MurmurHash3_x64_128(&t, sizeof(t), seed, &out);
-        return out;
-    }
-
+    
     //!
     //! Template wrapper function for general use of seeded hash functions
     //!
