@@ -38,6 +38,7 @@
 #include "../../utilities/general/load_bar.hpp"
 #include "../../utilities/general/cout_tools.hpp"
 #include "../../utilities/wrappers/io_wrapper.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
 #endif
@@ -117,9 +118,9 @@ namespace diagonalization
         utilities::LatticeVector2D<double> m_G;
                             //!<    Value in k-space where the Hamiltonian
                             //!     is to be evaluated
-        int m_xBandCutOff;  //!<    Momentum space cut-off (in units of reciprocal 
+        iSize_t m_xBandCutOff;//!<    Momentum space cut-off (in units of reciprocal 
                             //!     lattice vector) in the x-direction 
-        int m_yBandCutOff;  //!<    Momentum space cut-off (in units of reciprocal 
+        iSize_t m_yBandCutOff;//!<    Momentum space cut-off (in units of reciprocal 
                             //!     lattice vector) in the y-direction         
         iSize_t m_nbrBands;     
                             //!<    Number of bands to calculate

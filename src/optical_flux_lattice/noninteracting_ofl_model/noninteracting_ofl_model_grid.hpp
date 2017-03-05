@@ -38,6 +38,7 @@
 #include "../../utilities/wrappers/blas_wrapper.hpp"
 #include "../../utilities/general/run_script.hpp"
 #include "../../utilities/data_structures/multi_key_hash.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
 #endif

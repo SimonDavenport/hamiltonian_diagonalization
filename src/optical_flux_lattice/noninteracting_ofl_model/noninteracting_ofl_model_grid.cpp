@@ -300,10 +300,10 @@ namespace diagonalization
         double offsetY;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            dimX    = (*optionList)["x-grid"].as<iSize_t>();
-            dimY    = (*optionList)["y-grid"].as<iSize_t>();
-            offsetX = (*optionList)["x-grid-shift"].as<double>();
-            offsetY = (*optionList)["y-grid-shift"].as<double>();
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+	        GetOption(optionList, offsetY, "x-grid-shift", _AT_, mpi);
         }
         mpi.Sync(&dimX, 1, 0);
         mpi.Sync(&dimY, 1, 0);
@@ -336,12 +336,18 @@ namespace diagonalization
 	    {
             std::stringstream dataFileName;
             dataFileName.str("");
-            dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_structure_kx_"<<dimX<<"_ky_"<<dimY;
-            if((*optionList)["use-sql"].as<bool>())
+            std::string outPath;
+            GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            dataFileName << optionList << "/band_structure_kx_" << dimX << "_ky_" << dimY;
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            iSize_t sqlId;
+            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            if(useSql)
             {
-                dataFileName<<"_id_"<<(*optionList)["sql-id"].as<iSize_t>();
+                dataFileName << "_id_" << sqlId;
             }
-            dataFileName<<".dat";
+            dataFileName << ".dat";
             std::ofstream f_tmp;
             f_tmp.open(dataFileName.str().c_str(), std::ios::out);
             double* p_lower = lowerBand;
@@ -361,12 +367,16 @@ namespace diagonalization
             }
             f_tmp.close();
             utilities::cout.SecondaryOutput()<<"\n\tData output to file "<<dataFileName.str()<<std::endl;
-            if((*optionList)["plot-bandstructure"].as<bool>())
+            bool plotBandstructure;
+            GetOption(optionList, plotBandstructure, "plot-bandstructure", _AT_, mpi);
+            if(plotBandstructure)
             {
                 utilities::cout.AdditionalInfo()<<"\n\tMAKING PLOT..."<<std::endl;
                 std::stringstream plotFileName;
                 plotFileName.str("");
-                plotFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_structure_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
+                std::string outPath;
+                GetOption(optionList, outPath, "out-path", _AT_, mpi);
+                plotFileName<<outPath<<"/band_structure_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
                 std::stringstream pythonScript;
                 pythonScript.str();
                 pythonScript<<"#! //usr//bin//env python"<<_PYTHON_VERSION_<<"\n"
@@ -408,9 +418,9 @@ namespace diagonalization
         return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Make a plot of the band width as a function of the lattice depth V0
-    ////////////////////////////////////////////////////////////////////////////////
+    //!
+    //! Make a plot of the band width as a function of the lattice depth V0
+    //!
     void NonInteractingOflModelGrid::PlotBandWidth(
         boost::program_options::variables_map* optionList,     
                                             //!<    Command line arguments
@@ -427,19 +437,32 @@ namespace diagonalization
         std::stringstream dataFileName;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        dimX = (*optionList)["x-grid"].as<iSize_t>();
-            dimY = (*optionList)["y-grid"].as<iSize_t>();
-	        if((*optionList)["use-sql"].as<bool>())
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        bool useSql;
+	        GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+	        std::string outPath;
+	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
+	        if(useSql)
             {
-                iSize_t sqlId = (*optionList)["sql-id"].as<iSize_t>();
                 std::stringstream fileName;
 	            fileName.str("");
                 //  If sql option is set, then look for model data in an sqlite file
-                fileName<<(*optionList)["in-path"].as<std::string>()<<(*optionList)["sql-name"].as<std::string>();
-                std::string tableName = (*optionList)["sql-table-name"].as<std::string>();
-                utilities::Sqlite sql(fileName.str(), _READ_EXISTING_);
-                mpi.m_exitFlag = !sql.IsOpen();
-                utilities::SqliteRow sqlRow = sql.RetrieveIdFromTable(tableName, sqlId); 
+                std::string inPath;
+                std::string sqlName;
+                std::string sqlTableName;
+                GetOption(optionList, inPath, "in-path", _AT_, mpi);
+                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
+                fileName << inPath << sqlName;
+                utilities::Sqlite sql(fileName.str(), sql::_READ_EXISTING_);
+                if(!mpi.m_exitFlag)
+                {
+                    mpi.m_exitFlag = !sql.IsOpen();
+                }
+                iSize_t sqlId;
+                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                utilities::SqliteRow sqlRow = sql.RetrieveIdFromTable(sqlTableName, sqlId); 
                 if(sqlRow.GetLength() == 0)
                 {
                     mpi.m_exitFlag = true;
@@ -458,14 +481,14 @@ namespace diagonalization
                 mpi.m_exitFlag = sqlRow.GetValue("OffsetX",offsetX);	
                 mpi.m_exitFlag = sqlRow.GetValue("OffsetY",offsetY);	
                 dataFileName.str("");
-                dataFileName<<(*optionList)["out-path"].as<std::string>()<<outFileName<<".dat";;
+                dataFileName << outPath << outFileName << ".dat";
             }
             else
             {
-                offsetX = (*optionList)["x-grid-shift"].as<double>();
-                offsetY = (*optionList)["y-grid-shift"].as<double>();
+                GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+                GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
                 dataFileName.str("");
-                dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_width_kx_"<<dimX<<"_ky_"<<dimY<<".dat";
+                dataFileName << outPath << "/band_width_kx_" << dimX << "_ky_" << dimY << ".dat";
             }
         }
         mpi.ExitFlagTest();
@@ -521,12 +544,16 @@ namespace diagonalization
         }
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            if((*optionList)["plot-band-width"].as<bool>())
+	        bool plotBandWidth;
+	        GetOption(optionList, plotBandWidth, "plot-band-width", _AT_, mpi);
+	        std::string outPath;
+	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            if(plotBandWidth)
             {
                 utilities::cout.SecondaryOutput()<<"\n\tMAKING PLOT..."<<std::endl;
                 std::stringstream plotFileName;
                 plotFileName.str("");
-                plotFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_width_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
+                plotFileName<<outPath<<"/band_width_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
                 std::stringstream pythonScript;
                 pythonScript.str();
                 pythonScript<<"#! //usr//bin//env python"<<_PYTHON_VERSION_<<"\n"
@@ -562,36 +589,44 @@ namespace diagonalization
         }
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        if((*optionList)["use-sql"].as<bool>())
+	        bool useSql;
+	        GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+	        std::string inPath;
+	        GetOption(optionList, inPath, "in-path", _AT_, mpi);
+	        if(useSql)
             {
                 std::stringstream fileName;
 	            fileName.str("");
                 //  If sql option is set, then look for model data in an sqlite file
-                fileName<<(*optionList)["in-path"].as<std::string>()<<(*optionList)["sql-name"].as<std::string>();
-                utilities::Sqlite sql(fileName.str(),_EDIT_EXISTING_);
-                std::string tableName = (*optionList)["sql-table-name"].as<std::string>();
-                iSize_t sqlId = (*optionList)["sql-id"].as<iSize_t>();
+                std::string sqlName;
+                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+                fileName << inPath << sqlName;
+                std::string sqlTableName;
+                iSize_t sqlId;
+                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
+                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                utilities::Sqlite sql(fileName.str(), sql::_EDIT_EXISTING_);
                 {
                     utilities::SqliteVariable var;
                     var.SetValues("Completed", (int)1);
-                    sql.UpdateTableEntry(tableName, sqlId, var);
+                    sql.UpdateTableEntry(sqlTableName, sqlId, var);
                 }
                 //  Record the PBS job id, if known
                 if(getenv("PBS_JOBID")!=NULL)
                 {
                     utilities::SqliteVariable var;
                     var.SetValues("jobId",(int)atoi(getenv("PBS_JOBID")));
-                    sql.UpdateTableEntry(tableName, sqlId, var);
+                    sql.UpdateTableEntry(sqlTableName, sqlId, var);
                 }
                 //  Record the SLURM job id, if known
 		        if(getenv("SLURM_JOB_ID")!=NULL)
                 {
                     utilities::SqliteVariable var;
                     var.SetValues("jobId", (int)atoi(getenv("SLURM_JOB_ID")));
-                    sql.UpdateTableEntry(tableName, sqlId, var);
+                    sql.UpdateTableEntry(sqlTableName, sqlId, var);
                 }
                 //  Update the text copy of the table
-                sql.CopyTableToTextFile(tableName, fileName.str());
+                sql.CopyTableToTextFile(sqlTableName, fileName.str());
             }
         }
         return;
@@ -602,7 +637,6 @@ namespace diagonalization
     //!
     //! Note: This function is parallelized
     ////////////////////////////////////////////////////////////////////////////////
-
     void NonInteractingOflModelGrid::PlotMagnetization(
         boost::program_options::variables_map* optionList,  
                                                 //!<    Command line arguments
@@ -618,10 +652,10 @@ namespace diagonalization
         double offsetY;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            dimX    = (*optionList)["x-grid"].as<iSize_t>();
-            dimY    = (*optionList)["y-grid"].as<iSize_t>();
-            offsetX = (*optionList)["x-grid-shift"].as<double>();
-            offsetY = (*optionList)["y-grid-shift"].as<double>();
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+	        GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
         }
         mpi.Sync(&dimX, 1, 0);
         mpi.Sync(&dimY, 1, 0);
@@ -643,12 +677,18 @@ namespace diagonalization
 	    {
             std::stringstream dataFileName;
             dataFileName.str("");
-            dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/magnetization_map_kx_"<<dimX<<"_ky_"<<dimY;
-            if((*optionList)["use-sql"].as<bool>())
+            std::string outPath;
+            GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            dataFileName << outPath << "/magnetization_map_kx_" << dimX << "_ky_" << dimY;
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            iSize_t sqlId;
+            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            if(useSql)
             {
-                dataFileName<<"_id_"<<(*optionList)["sql-id"].as<iSize_t>();
+                dataFileName << "_id_" << sqlId;
             }
-            dataFileName<<".dat";
+            dataFileName << ".dat";
             std::ofstream f_tmp;
             f_tmp.open(dataFileName.str().c_str(), std::ios::out);
             double* p_magnetization = magnetization;
@@ -667,12 +707,16 @@ namespace diagonalization
             }
             f_tmp.close();
             utilities::cout.SecondaryOutput()<<"\n\tData output to file "<<dataFileName.str()<<std::endl;
-            if((*optionList)["plot-magnetization"].as<bool>())
+            bool plotMagnetization;
+            GetOption(optionList, plotMagnetization, "plot-magnetization", _AT_, mpi);
+            if(plotMagnetization)
             {
                 utilities::cout.AdditionalInfo()<<"\n\tMAKING PLOT..."<<std::endl;
+                std::string outPath;
+                GetOption(optionList, outPath, "out-path", _AT_, mpi);
                 std::stringstream plotFileName;
                 plotFileName.str("");
-                plotFileName<<(*optionList)["out-path"].as<std::string>()<<"/magnetization_map_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
+                plotFileName << outPath << "/magnetization_map_kx_" << dimX << "_ky_" << dimY << ".pdf";
                 std::stringstream pythonScript; 
                 pythonScript.str();
                 pythonScript<<"#! //usr//bin//env python"<<_PYTHON_VERSION_<<"\n"
@@ -734,9 +778,7 @@ namespace diagonalization
     //! V_{(x,ky)_1,...,(x,ky)_4} = sum_{(kx,ky)_1,...,(kx,ky)_4)} V_{(kx,ky)_1,...,(kx,ky)_4}
     //!                           * U^-1_{(kx,ky)_1,(x,ky)_1} U^-1_{(kx,ky)_2,(x,ky)_2} 
     //!                           * U_{(x,ky)_3,(kx,ky)_3} U_{(x,ky)_4,(kx,ky)_4}
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
     void NonInteractingOflModelGrid::GenerateWannierCoefficients(
         const iSize_t dimX,             //!<    X-dimension of k-space grid
         const iSize_t dimY,             //!<    Y-dimension of k-space grid
@@ -758,13 +800,13 @@ namespace diagonalization
         //  phase factor phi and the coefficients in the change of basis definition
         //////  Here we implement Eq 26     ////////////////////////////////////////////
         dcmplx* Ax = new dcmplx[dimX*dimY];
-        for(kState_t kx=0;kx<dimX;++kx)
+        for(kState_t kx=0; kx<dimX; ++kx)
         {
-            for(kState_t ky=0;ky<dimY;++ky)
+            for(kState_t ky=0; ky<dimY; ++ky)
             {
                 kState_t kxPlusOnePeriodic = kx==(dimX-1) ? 0 : kx+1;
                 dcmplx aTempX = utilities::linearAlgebra::DotProduct<dcmplx>(blochTable[kx*dimY+ky].m_blochCoefficients,
-                                blochTable[kxPlusOnePeriodic*dimY+ky].m_blochCoefficients,blochTable->m_dim);
+                                blochTable[kxPlusOnePeriodic*dimY+ky].m_blochCoefficients, blochTable->m_dim);
                 //  Set the Berry connection to the normalized accumulated value
                 //  as defined in Eq. 27:
                 Ax[kx*dimY+ky] = aTempX/abs(aTempX);
@@ -772,7 +814,7 @@ namespace diagonalization
         }
         //  As defined in Eq. 30:
         dcmplx* lambdaX = new dcmplx[dimY];
-        for(kState_t ky=0;ky<dimY;++ky)
+        for(kState_t ky=0; ky<dimY; ++ky)
         {
             lambdaX[ky] = 1.0;
         }
@@ -940,15 +982,16 @@ namespace diagonalization
         double gridSpacing;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            matrixElementTol = (*optionList)["tol"].as<double>();
-            realGridDim      = (*optionList)["calculate-spatial-wavefunctions"].as<iSize_t>();
-            dimX             = (*optionList)["x-grid"].as<iSize_t>();
-            dimY             = (*optionList)["y-grid"].as<iSize_t>();    
-            int getBasis     = (*optionList)["sptial-basis"].as<int>();
-            minBlochCutOff   = (*optionList)["x-cut"].as<iSize_t>();
-            offsetX          = (*optionList)["x-grid-shift"].as<double>();
-            offsetY          = (*optionList)["y-grid-shift"].as<double>();
-            gridSpacing      = (*optionList)["grid-spacing"].as<double>();
+	        int getBasis;
+	        GetOption(optionList, matrixElementTol, "tol", _AT_, mpi);
+	        GetOption(optionList, realGridDim, "calculate-spatial-wavefunctions", _AT_, mpi);
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        GetOption(optionList, getBasis, "sptial-basis", _AT_, mpi);
+	        GetOption(optionList, minBlochCutOff, "x-cut", _AT_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+	        GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
+	        GetOption(optionList, gridSpacing, "grid-spacing", _AT_, mpi);
             if(1 == getBasis)
             {
                 useWannierBasis = true;
@@ -1100,22 +1143,38 @@ namespace diagonalization
         //////      Output spatial wave function data to a text file        ////////        
         std::stringstream dataFileName;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
-	    {
+	    {   
+	        std::string outPath;
+	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
             dataFileName.str("");
-            dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/spatial_wave_function_kx_"<<dimX<<"_ky_"<<dimY;
-            if((*optionList)["use-sql"].as<bool>())
+            dataFileName << outPath << "/spatial_wave_function_kx_" << dimX << "_ky_" << dimY;
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            if(useSql)
             {
-                dataFileName<<"_id_"<<(*optionList)["sql-id"].as<iSize_t>();
+                iSize_t sqlId;
+                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                dataFileName << "_id_" << sqlId;
             }
-            dataFileName<<"_grid_size_"<<realGridDim;
+            dataFileName << "_grid_size_" << realGridDim;
             if(useWannierBasis)
             {
-                dataFileName<<"_wannier_basis";
+                dataFileName << "_wannier_basis";
             }
-            dataFileName<<".dat";
+            dataFileName << ".dat";
         }
-        std::string format = "text";
-        spatialWaveFunctionTable.ToFile(dataFileName.str(), format, 3, mpi);
+        io::fileFormat_t format = io::_TEXT_;
+        std::ofstream f_out;
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
+	    {
+            GenFileStream(f_out, dataFileName.str(), format, mpi);
+        }
+        mpi.ExitFlagTest();
+        spatialWaveFunctionTable.ToFile(f_out, format, 3, mpi);
+        if(f_out.is_open())
+        {
+            f_out.close();
+        }
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {   
             utilities::cout.SecondaryOutput()<<"\n\tFinished writing spatial wave funciton values to a file. See the file here: "<<dataFileName.str()<<std::endl;

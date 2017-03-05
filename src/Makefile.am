@@ -17,8 +17,10 @@ optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp 
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
 optical_flux_lattice/interacting_ofl_model/term_tables.cpp \
 optical_flux_lattice/interacting_ofl_model/term_hash_tables.cpp \
+optical_flux_lattice/program_options/interacting_ofl_model_options.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp  \
+program_options/general_options.cpp  \
 utilities/wrappers/mpi_wrapper.cpp \
 utilities/wrappers/arpack_wrapper.cpp \
 utilities/wrappers/fftw_wrapper.cpp \
@@ -36,6 +38,7 @@ optical_flux_lattice/main/optical_flux_lattice_noninteracting_model.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
+program_options/general_options.cpp  \
 utilities/wrappers/mpi_wrapper.cpp \
 utilities/wrappers/fftw_wrapper.cpp \
 utilities/wrappers/sqlite_wrapper.cpp \
@@ -60,6 +63,7 @@ fqhe_sphere/pseudopotential_model/term_tables.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp \
 basis/two_level_fermion_fock_basis.cpp \
+program_options/general_options.cpp  \
 utilities/wrappers/mpi_wrapper.cpp \
 utilities/wrappers/arpack_wrapper.cpp \
 utilities/mathematics/binary_number_tools.cpp \

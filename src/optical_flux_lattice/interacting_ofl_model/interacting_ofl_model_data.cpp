@@ -225,32 +225,31 @@ namespace diagonalization
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
 	        {
-                m_dimX                =  (*optionList)["kx"].as<iSize_t>();
-                m_dimY                =  (*optionList)["ky"].as<iSize_t>();
-                m_offsetX             =  (*optionList)["kx-shift"].as<double>();
-                m_offsetY             =  (*optionList)["ky-shift"].as<double>();
-                //  Note the offset values set from the command line will be overrided
+	            bool diagonalize;
+	            GetOption(optionList, diagonalize, "diagonalize", _AT_, mpi);
+	            GetOption(optionList, m_dimX, "kx", _AT_, mpi);
+	            GetOption(optionList, m_dimY, "ky", _AT_, mpi);
+	            GetOption(optionList, m_offsetX, "kx-shift", _AT_, mpi);
+	            GetOption(optionList, m_offsetY, "ky-shift", _AT_, mpi);
+	            //  Note the offset values set from the command line will be overrided
                 //  by the values optionally provided from an SQL database
-                m_nbrParticles        =  (*optionList)["nbr"].as<iSize_t>();
-                m_outPath             =  (*optionList)["out-path"].as<std::string>();
-                m_inPath              =  (*optionList)["in-path"].as<std::string>();
-                m_nbrEigenvaluesToFind = (*optionList)["nbr-eigenvalues"].as<iSize_t>();
-                m_useSql              =  (*optionList)["use-sql"].as<bool>();
-                m_sqlId               =  (*optionList)["sql-id"].as<iSize_t>();
-                m_sqlName             =  (*optionList)["sql-name"].as<std::string>();
-                m_sqlTableName        =  (*optionList)["sql-table-name"].as<std::string>();
-                m_initialVectorFile   =  (*optionList)["initial-file"].as<std::string>();
-                m_finalVectorFile     =  (*optionList)["final-file"].as<std::string>();
-                bool useHash          =  (*optionList)["coefficient-hash"].as<bool>();
-                if(useHash)
-                {
-                    m_setTableFormat = _HASH_;
-                }
-                else
-                {
-                    m_setTableFormat = _ARRAY_;
-                }
-                bool diagonalize =  (*optionList)["diagonalize"].as<bool>();
+	            GetOption(optionList, m_nbrParticles, "nbr", _AT_, mpi);
+	            GetOption(optionList, m_outPath, "out-path", _AT_, mpi);
+	            GetOption(optionList, m_inPath, "in-path", _AT_, mpi);
+	            GetOption(optionList, m_nbrEigenvaluesToFind, "nbr-eigenvalues", _AT_, mpi);
+	            GetOption(optionList, m_useSql, "use-sql", _AT_, mpi);
+	            GetOption(optionList, m_sqlName, "sql-name", _AT_, mpi);
+	            GetOption(optionList, m_sqlId, "sql-id", _AT_, mpi);
+	            GetOption(optionList, m_sqlTableName, "sql-table-name", _AT_, mpi);
+	            GetOption(optionList, m_initialVectorFile, "initial-file", _AT_, mpi);
+	            GetOption(optionList, m_finalVectorFile, "final-file", _AT_, mpi);
+	            bool useHash;
+	            GetOption(optionList, useHash, "use-hash", _AT_, mpi);
+	            m_setTableFormat = myOptions::GetTermStorageType(useHash, mpi);
+	            if(mpi.m_exitFlag) 
+	            {
+	                goto escape;
+	            }
                 //  Need to read the mass parameter and interaction strength parameter
                 //  from a text or sql file.
                 std::stringstream fileName;
@@ -258,19 +257,24 @@ namespace diagonalization
                 if(m_useSql)
                 {
                     //  If sql option is set, then look for model data in an sqllite file
-                    fileName<<m_inPath<<m_sqlName;
-                    this->ReadFromSql(m_sqlTableName,fileName.str(),m_sqlId,diagonalize,mpi);
-                    if(mpi.m_exitFlag) goto escape;
+                    fileName << m_inPath << m_sqlName;
+                    this->ReadFromSql(m_sqlTableName,fileName.str(), m_sqlId,diagonalize, mpi);
+                    if(mpi.m_exitFlag) 
+                    {
+                        goto escape;
+                    }
                 }
                 else
                 {
                     //  Default to look for model data in the specified text file
-                    fileName<<m_inPath<<(*optionList)["params-file"].as<std::string>();
-                    this->ReadFromFile(fileName.str(),mpi);
+                    std::string paramsFileName;
+                    GetOption(optionList, paramsFileName, "params-file", _AT_, mpi);
+                    fileName << m_inPath << paramsFileName;
+                    this->ReadFromFile(fileName.str(), mpi);
                     if(mpi.m_exitFlag) goto escape;
                     //  Generate a generic output file name  
-                    fileName.str("");   
-                    fileName<<"optical_flux_model_n_"<<m_nbrParticles<<"_kx_"<<m_dimX<<"_ky_"<<m_dimY;
+                    fileName.str("");
+                    fileName << "optical_flux_model_n_" << m_nbrParticles << "_kx_" << m_dimX << "_ky_" << m_dimY;
                     m_outFileName = fileName.str();
                 }
                 //  Update the interaction strength with a factor 2*Pi/m as required
@@ -293,14 +297,9 @@ namespace diagonalization
                 {
                     utilities::cout.SecondaryOutput()<<"\t\tOut file name \t\t"<<m_outFileName<<std::endl;
                 }
-                int tmp = (*optionList)["method"].as<int>();
-                if(0==tmp)	    m_method = _FULL_;
-                else if(1==tmp)	m_method = _LANCZOS_;
-                else 
-                {
-                    std::cerr<<"\n\tERROR: INVALID METHOD : "<<tmp<<std::endl;
-                    mpi.m_exitFlag = true;
-                }
+                int methodCode;
+                GetOption(optionList, methodCode, "method", _AT_, mpi);
+                m_method = myOptions::GetDiagonalizationMethod(methodCode, mpi);
                 if(mpi.m_exitFlag) 
                 {
                     goto escape;
@@ -313,21 +312,16 @@ namespace diagonalization
                 {
                     utilities::cout.SecondaryOutput()<<"\n\tDiagonalization method: Lanczos (ARPACK)"<<std::endl;
                 }
-                tmp = (*optionList)["basis"].as<int>();
-                if(0==tmp)      m_useWannierBasis = false;
-                else if(1==tmp) m_useWannierBasis = true;
-                else
-                {
-                    std::cerr<<"\n\tERROR: INVALID BASIS : "<<tmp<<std::endl;
-                    mpi.m_exitFlag = true;
-                }
+                int basisCode;
+                GetOption(optionList, basisCode, "basis" , _AT_, mpi);
+                m_useWannierBasis = myOptions::GetBasisType(basisCode, mpi);
                 if(mpi.m_exitFlag) 
                 {
                     goto escape;
                 }
                 if(m_useWannierBasis)
                 {           
-                    utilities::cout.SecondaryOutput()<<"\n\tUsing Hybrid Localized Wannier basis"<<std::endl;
+                    utilities::cout.SecondaryOutput()<<"\n\tUsing Hybrid Localized Wannier basis (forces hash type term storage)"<<std::endl;
                     m_setTableFormat = _HASH_;
                 }
             }
@@ -348,14 +342,14 @@ namespace diagonalization
         if(mpi.m_id == 0)
         {
             std::ifstream f_param;
-            std::string format = "text";
+            io::fileFormat_t format = io::_TEXT_;
             utilities::GenFileStream(f_param, fileName, format, mpi);
             if(mpi.m_exitFlag)
             {
                 return;
             }
             std::string line;
-            while(getline(f_param,line))
+            while(getline(f_param, line))
             {
                 if(line[0]!='#')	break;
             }
@@ -382,10 +376,13 @@ namespace diagonalization
         const bool diagonalize,         //!<    Option to diagonalize the Hamiltonian or not
         utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
-        utilities::Sqlite sql(fileName,_READ_EXISTING_);
+        utilities::Sqlite sql(fileName, sql::_READ_EXISTING_);
         mpi.m_exitFlag = !sql.IsOpen();
-        if(mpi.m_exitFlag)    return;
-        utilities::SqliteRow sqlRow = sql.RetrieveIdFromTable(tableName,sqlId); 
+        if(mpi.m_exitFlag)    
+        {
+            return;
+        }
+        utilities::SqliteRow sqlRow = sql.RetrieveIdFromTable(tableName, sqlId); 
         if(sqlRow.GetLength() == 0)
         {
             mpi.m_exitFlag = true;
@@ -454,16 +451,16 @@ namespace diagonalization
     //! Generate an output file name base, using struct parameters
     //!
     std::string InteractingOflModelData::MakeBaseFileName(
-        const io_t io)  //!<    Specify the creation of an input or output file name
+        const io::io_t io)  //!<    Specify the creation of an input or output file name
         const
     {
         std::stringstream fileName;   
         fileName.str("");
-        if(_OUT_ == io)
+        if(io::_OUT_ == io)
         {
             fileName<<m_outPath;
         }
-        else if(_IN_ == io)
+        else if(io::_IN_ == io)
         {
             fileName<<m_inPath;
         }
@@ -496,7 +493,7 @@ namespace diagonalization
             std::stringstream fileName;
             fileName.str("");
             fileName<<m_inPath<<m_sqlName;
-            utilities::Sqlite sql(fileName.str(), _EDIT_EXISTING_);
+            utilities::Sqlite sql(fileName.str(), sql::_EDIT_EXISTING_);
             {
                 utilities::SqliteVariable var;
                 var.SetValues("Completed", (int)1);

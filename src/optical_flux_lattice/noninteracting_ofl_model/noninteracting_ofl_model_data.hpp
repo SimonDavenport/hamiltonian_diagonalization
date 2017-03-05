@@ -31,6 +31,7 @@
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/wrappers/sqlite_wrapper.hpp"
 #include "../../utilities/wrappers/io_wrapper.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 #include <string>
 #include <sstream>
 #include <fstream>

@@ -27,6 +27,7 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/general/cout_tools.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 #include "../noninteracting_ofl_model/noninteracting_ofl_model_grid.hpp"
 #include "../../program_options/general_options.hpp"
 #include "../program_options/sql_options.hpp"
@@ -48,10 +49,19 @@ int main(int argc, char *argv[])
     bool calculateMagnetizationFlag = false;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    spatialWaveFunctionsFlag   = optionList["calculate-spatial-wavefunctions"].as<diagonalization::iSize_t>();
-        calculateBandstructureFlag = optionList["calculate-bandstructure"].as<bool>() || optionList["plot-bandstructure"].as<bool>();
-        calculateBandWidthFlag     = optionList["calculate-band-width"].as<bool>() || optionList["plot-band-width"].as<bool>();
-        calculateMagnetizationFlag = optionList["calculate-magnetization"].as<bool>() || optionList["plot-magnetization"].as<bool>();
+	    GetOption(&optionList, spatialWaveFunctionsFlag, "calculate-spatial-wavefunctions", _AT_, mpi);
+	    GetOption(&optionList, calculateBandstructureFlag, "calculate-bandstructure", _AT_, mpi);
+	    GetOption(&optionList, calculateBandWidthFlag, "calculate-band-width", _AT_, mpi);
+	    GetOption(&optionList, calculateMagnetizationFlag, "calculate-magnetization", _AT_, mpi);
+	    bool plotBandStructureFlag;
+	    bool plotBandWidthFlag;
+	    bool plotMagnetizationFlag;
+	    GetOption(&optionList, plotBandStructureFlag, "plot-bandstructure", _AT_, mpi);
+	    GetOption(&optionList, plotBandWidthFlag, "plot-band-width", _AT_, mpi);
+	    GetOption(&optionList, plotMagnetizationFlag, "plot-magnetization", _AT_, mpi);
+	    calculateBandstructureFlag = calculateBandstructureFlag || plotBandStructureFlag;
+	    calculateBandWidthFlag = calculateBandWidthFlag || plotBandWidthFlag;
+	    calculateMagnetizationFlag = calculateMagnetizationFlag || plotMagnetizationFlag;
     }
     mpi.Sync(&spatialWaveFunctionsFlag, 1, 0);
     mpi.Sync(&calculateBandstructureFlag, 1, 0);
@@ -119,8 +129,10 @@ boost::program_options::variables_map ParseCommandLine(
     }
     mpi.ExitFlagTest();
 	if(0 == mpi.m_id)	// FOR THE MASTER NODE
-	{
-	    utilities::cout.SetVerbosity(vm["verbose"].as<int>());
+	{   
+	    int verbosity;
+	    GetOption(&vm, verbosity, "verbose", _AT_, mpi);
+	    utilities::cout.SetVerbosity(verbosity);
     }
     utilities::cout.MpiSync(0, mpi.m_comm);
     if(0 == mpi.m_id)	// FOR THE MASTER NODE

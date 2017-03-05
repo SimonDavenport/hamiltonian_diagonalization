@@ -32,6 +32,7 @@
 #include "../../program_options/general_options.hpp"
 #include "../program_options/sql_options.hpp"
 #include "../observables_manager/observables_manager.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 ///////     GLOBAL DATA STRUCTURES      ////////////////////////////////////////
 utilities::Cout utilities::cout;
 utilities::MpiWrapper mpi(utilities::cout);
@@ -51,27 +52,31 @@ int main(int argc, char *argv[])
     bool eigenvectorsFlag;
     bool storeTermsFlag;
     bool retrieveTermsFlag;
-    diagonalization::iSize_t fileFormatCode;
+    int formatCode;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    diagonalizeFlag  = optionList["diagonalize"].as<bool>();
-	    eigenvaluesFlag  = optionList["eigenvalues-file"].as<bool>();
-	    eigenvectorsFlag = optionList["eigenvectors-file"].as<bool>();
-	    storeTermsFlag = optionList["store-terms"].as<bool>();
-	    retrieveTermsFlag = optionList["retrieve-terms"].as<bool>();
-	    fileFormatCode = optionList["file-format"].as<diagonalization::iSize_t>();
+	    GetOption(&optionList, diagonalizeFlag, "diagonalize", _AT_, mpi);
+	    GetOption(&optionList, eigenvaluesFlag, "eigenvalues-file", _AT_, mpi);
+	    GetOption(&optionList, eigenvectorsFlag, "eigenvectors-file", _AT_, mpi);
+	    GetOption(&optionList, storeTermsFlag, "store-terms", _AT_, mpi);
+	    GetOption(&optionList, retrieveTermsFlag, "retrieve-terms", _AT_, mpi);
+	    GetOption(&optionList, formatCode, "file-format", _AT_, mpi);
 	}
+	mpi.ExitFlagTest();
     mpi.Sync(&diagonalizeFlag, 1, 0);
     mpi.Sync(&eigenvaluesFlag, 1, 0);
     mpi.Sync(&eigenvectorsFlag, 1, 0);
     mpi.Sync(&storeTermsFlag, 1, 0);
     mpi.Sync(&retrieveTermsFlag, 1, 0);
-    mpi.Sync(&fileFormatCode, 1, 0);
-    std::string fileFormat = diagonalization::myOptions::GetFileFormat(fileFormatCode);
+    mpi.Sync(&formatCode, 1, 0);
+    io::fileFormat_t fileFormat = diagonalization::myOptions::GetFileFormat(formatCode, mpi);
     //  Make a list of observables to calculate
     diagonalization::ObservablesManager observables;
     observables.AddObservables(&optionList, mpi);
-    observables.Print(mpi);
+    if(observables.GetNbrSetObservables()>0)
+    {
+        observables.Print(mpi);
+    }
     //////      BUILD AND DIAGONALIZE HAMILTONIAN       ////////////////////////
     if(diagonalizeFlag)
     {
@@ -122,7 +127,7 @@ int main(int argc, char *argv[])
         bool calculateSusceptibilityFlag = false;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        calculateSusceptibilityFlag = optionList["calculate-susceptibility"].as<bool>();
+	        GetOption(&optionList, calculateSusceptibilityFlag, "calculate-susceptibility", _AT_, mpi);
 	    }
         mpi.Sync(&calculateSusceptibilityFlag, 1, 0);
         if(calculateSusceptibilityFlag)
@@ -212,7 +217,9 @@ boost::program_options::variables_map ParseCommandLine(
     mpi.ExitFlagTest();
 	if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    utilities::cout.SetVerbosity(vm["verbose"].as<int>());
+	    int verbosity;
+	    GetOption(&vm, verbosity, "verbose", _AT_, mpi);
+	    utilities::cout.SetVerbosity(verbosity);
     }
     utilities::cout.MpiSync(0, mpi.m_comm);
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
@@ -238,16 +245,21 @@ std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
 	    std::vector<diagonalization::iSize_t> tempList;
+	    bool blockDiagonalize;
+	    GetOption(optionList, blockDiagonalize, "block-diagonalize", _AT_, mpi);
 	    if(optionList->count("sectors"))
 	    {
-            tempList = (*optionList)["sectors"].as<std::vector<diagonalization::iSize_t> >();
+	        utilities::GetOption(optionList, tempList, "sectors", _AT_, mpi);
         }
-        else if((*optionList)["block-diagonalize"].as<bool>())
+        else if(blockDiagonalize)
         {
-            diagonalization::iSize_t kx = (*optionList)["kx"].as<diagonalization::iSize_t>();
-            diagonalization::iSize_t ky = (*optionList)["ky"].as<diagonalization::iSize_t>();
-            int basis = (*optionList)["basis"].as<int>();
-            if(0 == basis)  // use kx,ky basis
+            diagonalization::iSize_t kx;
+            diagonalization::iSize_t ky;
+            int basisCode;
+            GetOption(optionList, kx, "kx", _AT_, mpi);
+            GetOption(optionList, ky, "ky", _AT_, mpi);
+            GetOption(optionList, basisCode, "basis", _AT_, mpi);
+            if(0 == basisCode)  // use kx,ky basis
             {
                 for(diagonalization::iSize_t x=0;x<kx;++x)
                 {
@@ -258,7 +270,7 @@ std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(
                     }
                 }
             }
-            else if(1 == basis) //  use ky,x basis
+            else if(1 == basisCode) //  use ky,x basis
             {
                 diagonalization::iSize_t x = 0;
                 for(diagonalization::iSize_t y=0;y<ky;++y)

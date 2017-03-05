@@ -64,8 +64,8 @@ namespace diagonalization
                                    utilities::MpiWrapper& mpi);
         ~SpherePseudopotentialModel();
         void BuildTermTables(const utilities::MpiWrapper& mpi);
-        void TermsToFile(const std::string format, utilities::MpiWrapper& mpi) const;
-        void TermsFromFile(const std::string format, utilities::MpiWrapper& mpi);
+        void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi) const;
+        void TermsFromFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi);
         void SetOccupationEnergies(double* energyLevels, const iSize_t dim, const utilities::MpiWrapper& mpi);
         void BuildFockBasis(utilities::MpiWrapper& mpi);
         void SetFockBasis(fock_t* buffer, const fock_t dim);

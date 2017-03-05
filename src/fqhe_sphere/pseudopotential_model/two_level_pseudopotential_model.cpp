@@ -233,7 +233,7 @@ namespace diagonalization
     //! Store term tables in a file
     //!
     void SphereTwoLevelPseudopotentialModel::TermsToFile(
-        const std::string format,           //!<    Format of file (e.g. "binary", "text")
+        const io::fileFormat_t format,      //!<    Format of file
         utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
         const
     {
@@ -262,7 +262,7 @@ namespace diagonalization
     //! Retrieve term tables from a file
     //!
     void SphereTwoLevelPseudopotentialModel::TermsFromFile(
-        const std::string format,           //!<    Format of file (e.g. "binary", "text")
+        const io::fileFormat_t format,      //!<    Format of file
         utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE

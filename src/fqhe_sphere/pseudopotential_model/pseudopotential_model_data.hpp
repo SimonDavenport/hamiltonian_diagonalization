@@ -27,9 +27,11 @@
 #define _PSEUDOPOTENTIAL_MODEL_DATA_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
+#include "../../program_options/general_options.hpp"
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 #include "../../utilities/general/cout_tools.hpp"
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 #include "../../utilities/mathematics/clebsch_gordan_coefficients.hpp"
 #include <vector>
 #include <boost/program_options.hpp>
@@ -39,13 +41,6 @@
 
 namespace diagonalization
 {
-    enum io_t {_IN_,_OUT_};
-    //!<    Define a type for specifying construction of input or output files
-    enum diagonalizationMethod_t {_FULL_=0, _LANCZOS_=1};
-    //!<    Define a list of diagonalization methods:
-    //!     -FULL requires dense matrix storage and uses a QR decomposition
-    //!     -LANCZOS uses the ARPACK library and a compatible sparse matrix storage scheme
-
     //!
     //! A data structure to contain all of the principle model parameters
     //!
@@ -87,7 +82,7 @@ namespace diagonalization
         PseudopotentialModelData(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
         PseudopotentialModelData& operator=(const PseudopotentialModelData& other);
         void MpiSynchronize(const int nodeId, const utilities::MpiWrapper& mpi);
-        std::string MakeBaseFileName(const io_t io) const;
+        std::string MakeBaseFileName(const io::io_t io) const;
         void SetMaxLz(const iSize_t nbrOrbitals, const iSize_t nbrLevels);  
     };
 }   //  End diagonalization namespace

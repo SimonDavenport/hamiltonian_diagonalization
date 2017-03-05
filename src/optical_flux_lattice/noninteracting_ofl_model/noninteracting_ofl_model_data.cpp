@@ -36,7 +36,7 @@ namespace diagonalization
     ////////////////////////////////////////////////////////////////////////////////
     NonInteractingOflModelData::NonInteractingOflModelData()
     :   m_theta(0.3),
-        m_V0(4.0),
+        m_V0(1.0),
         m_epsilon(0.4),
         m_kappa(1.0),
         m_mass(1.0)
@@ -81,23 +81,40 @@ namespace diagonalization
 	    {
             std::stringstream fileName;
 	        fileName.str("");
-            bool useSql = (*optionList)["use-sql"].as<bool>();
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            std::string inPath;
+            GetOption(optionList, inPath, "in-path", _AT_, mpi);
             if(useSql)
             {
                 //  If sql option is set, then look for model data in an sqlite file
-                fileName<<(*optionList)["in-path"].as<std::string>()<<(*optionList)["sql-name"].as<std::string>();
-                this->ReadFromSql((*optionList)["sql-table-name"].as<std::string>(), fileName.str(), (*optionList)["sql-id"].as<iSize_t>(), mpi);
-                if(mpi.m_exitFlag) return;
+                std::string sqlName;
+                std::string sqlTableName;
+                int sqlId;
+                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
+                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                fileName << inPath << sqlName;
+                this->ReadFromSql(sqlTableName, fileName.str(), sqlId, mpi);
+                if(mpi.m_exitFlag) 
+                {
+                    return;
+                }
             }
             else
             { 
                 //  Default to look for model data in the specified text file
-                fileName<<(*optionList)["in-path"].as<std::string>()<<(*optionList)["params-file"].as<std::string>();
-                this->ReadFromFile(fileName.str(),mpi);
-                if(mpi.m_exitFlag) return;
+                std::string paramsFile;
+                GetOption(optionList, paramsFile, "params-file", _AT_, mpi);
+                fileName << inPath << paramsFile;
+                this->ReadFromFile(fileName.str(), mpi);
+                if(mpi.m_exitFlag) 
+                {
+                    return;
+                }
             }
             //  Print out summary of model parameters:
-            utilities::cout.MainOutput()<<"\n\tSINGLE PARTICLE MODEL PARAMETERS:\n"<<std::endl;
+            utilities::cout.MainOutput()<<"\n\tNON-INTERACTING MODEL PARAMETERS:\n"<<std::endl;
             utilities::cout.MainOutput()<<"\t\ttheta: \t\t"<<m_theta<<std::endl;
             utilities::cout.MainOutput()<<"\t\tV0: \t\t"<<m_V0<<std::endl;
             utilities::cout.MainOutput()<<"\t\tepsilon: \t"<<m_epsilon<<std::endl;
@@ -116,7 +133,7 @@ namespace diagonalization
         utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
         std::ifstream f_param;
-        std::string format = "text";
+        io::fileFormat_t format = io::_TEXT_;
         utilities::GenFileStream(f_param, fileName, format, mpi);
 	    if(mpi.m_exitFlag)
 	    {
@@ -144,9 +161,8 @@ namespace diagonalization
         std::stringstream parameters;
         parameters<<
         "####################################################\n"
-        "##    This file contains a set of single particle   \n"
-        "##    Hamiltonian parameters for the optical flux   \n"
-        "##    lattice model.                              \n\n"
+        "##    This file contains a set of non-interacting   \n"
+        "##    model parameters for the optical flux lattice\n\n"
         <<m_theta<<"\n"
 	    <<m_V0<<"\n"
 	    <<m_epsilon<<"\n"
@@ -167,7 +183,7 @@ namespace diagonalization
         const iSize_t sqlId,            //!<    Sql identifier of the parameter set
         utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
-        utilities::Sqlite sql(fileName, _READ_EXISTING_);
+        utilities::Sqlite sql(fileName, sql::_READ_EXISTING_);
         mpi.m_exitFlag = !sql.IsOpen();
         if(mpi.m_exitFlag)    
         {

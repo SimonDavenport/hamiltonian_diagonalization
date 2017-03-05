@@ -661,7 +661,7 @@ namespace utilities
         //!
         void ToFile(
             const std::string fileName,     //!<    Name of output file
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            const io::fileFormat_t format,  //!<    Format of file
             utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
             const
         {
@@ -669,7 +669,7 @@ namespace utilities
             std::ofstream f_out;
             utilities::GenFileStream(f_out, fileName, format, mpi);
             mpi.ExitFlagTest();
-            if("text" == format)
+            if(io::_TEXT_ == format)
             {
                 f_out << m_data.size() << "\n";
                 f_out << m_rowStarts.size()-1 << "\n";
@@ -686,7 +686,7 @@ namespace utilities
                     }
                 }
             }
-            else if("binary" == format)
+            else if(io::_BINARY_ == format)
             {
                 unsigned int dataSize = m_data.size();
                 unsigned int rowStartsSize = m_rowStarts.size()-1;
@@ -705,14 +705,14 @@ namespace utilities
         //!
         void FromFile(
             const std::string fileName,     //!<    Name of output file
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            const io::fileFormat_t format,  //!<    Format of file
             utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
             // Open a separate file stream on each node for parallel write
             std::ifstream f_in;
             utilities::GenFileStream(f_in, fileName, format, mpi);
             mpi.ExitFlagTest();
-            if("text" == format)
+            if(io::_TEXT_ == format)
             {
                 unsigned int dataSize = 0;
                 unsigned int rowStartsSize = 0;
@@ -734,7 +734,7 @@ namespace utilities
                     }
                 }
             }
-            else if("binary" == format)
+            else if(io::_BINARY_ == format)
             {
                 unsigned int dataSize = 0;
                 unsigned int rowStartsSize = 0;

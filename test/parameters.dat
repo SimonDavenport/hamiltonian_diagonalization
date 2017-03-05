@@ -4,15 +4,15 @@
 ##    lattice model:
 ##
 ##    theta                                [0.3]
-##    V0 (lattice depth)                   [1]
+##    V0 (lattice depth)                   [1.0]
 ##    epsilon                              [0.4]
 ##    kappa                                [1]
 ##    mass                                 [1]
 ##    m*g_2D/2Pi (interaction strength)    [0.5]
 
-0.4
+0.3
 1.0
 0.4
 1.0
 1.0
-1.0
+0.5

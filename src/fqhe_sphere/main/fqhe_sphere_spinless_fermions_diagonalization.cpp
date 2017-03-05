@@ -26,6 +26,7 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/general/cout_tools.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 #include "../pseudopotential_model/pseudopotential_model.hpp"
 #include "../pseudopotential_model/two_level_pseudopotential_model.hpp"
 #include "../../program_options/general_options.hpp"
@@ -52,17 +53,17 @@ int main(int argc, char *argv[])
     diagonalization::iSize_t nbrLevels;
     bool storeTermsFlag;
     bool retrieveTermsFlag;
-    diagonalization::iSize_t fileFormatCode;
+    int formatCode;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    diagonalizeFlag  = optionList["diagonalize"].as<bool>();
-	    eigenvaluesFlag  = optionList["eigenvalues-file"].as<bool>();
-	    eigenvectorsFlag = optionList["eigenvectors-file"].as<bool>();
-	    hamiltonianFlag = optionList["hamiltonian-file"].as<bool>();
-	    nbrLevels = optionList["nbr-levels"].as<diagonalization::iSize_t>();
-	    storeTermsFlag = optionList["store-terms"].as<bool>();
-	    retrieveTermsFlag = optionList["retrieve-terms"].as<bool>();
-	    fileFormatCode = optionList["file-format"].as<diagonalization::iSize_t>();
+	    GetOption(&optionList, diagonalizeFlag, "diagonalize", _AT_, mpi);
+	    GetOption(&optionList, eigenvaluesFlag, "eigenvalues-file", _AT_, mpi);
+	    GetOption(&optionList, eigenvectorsFlag, "eigenvectors-file", _AT_, mpi);
+	    GetOption(&optionList, hamiltonianFlag, "hamiltonian-file", _AT_, mpi);
+	    GetOption(&optionList, nbrLevels, "nbr-levels", _AT_, mpi);
+	    GetOption(&optionList, storeTermsFlag, "store-terms", _AT_, mpi);
+	    GetOption(&optionList, retrieveTermsFlag, "retrieve-terms", _AT_, mpi);
+	    GetOption(&optionList, formatCode, "file-format", _AT_, mpi);
 	}
     //  MPI sync the flags from node 0
     mpi.Sync(&diagonalizeFlag, 1, 0);
@@ -72,8 +73,9 @@ int main(int argc, char *argv[])
     mpi.Sync(&nbrLevels, 1, 0);
     mpi.Sync(&storeTermsFlag, 1, 0);
     mpi.Sync(&retrieveTermsFlag, 1, 0);
-    mpi.Sync(&fileFormatCode, 1, 0);
-    std::string fileFormat = diagonalization::myOptions::GetFileFormat(fileFormatCode);
+    mpi.Sync(&formatCode, 1, 0);
+    io::fileFormat_t fileFormat = diagonalization::myOptions::GetFileFormat(formatCode, mpi);
+    mpi.ExitFlagTest();
     //////      BUILD AND DIAGONALIZE HAMILTONIAN       ////////////////////////
     if(diagonalizeFlag)
     {
@@ -222,7 +224,9 @@ boost::program_options::variables_map ParseCommandLine(
     //  Set global verbosity level
 	if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    utilities::cout.SetVerbosity(vm["verbose"].as<int>());
+	    int verbosity;
+	    GetOption(&vm, verbosity, "verbose", _AT_, mpi);
+	    utilities::cout.SetVerbosity(verbosity);
     }
     //  MPI sync verbosity level
     utilities::cout.MpiSync(0, mpi.m_comm);
@@ -246,22 +250,27 @@ std::vector<diagonalization::iSize_t> GenerateSectorList(
     std::vector<diagonalization::iSize_t> sectorList;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
     {
+        bool blockDiagonalize;
+        GetOption(optionList, blockDiagonalize, "block-diagonalize", _AT_, mpi);
         if(optionList->count("lz-sectors"))
         {
-            sectorList = (*optionList)["lz-sectors"].as<std::vector<diagonalization::iSize_t> >();
+            GetOption(optionList, sectorList, "lz_sectors", _AT_, mpi);
         }
-        else if((*optionList)["block-diagonalize"].as<bool>())
+        else if(blockDiagonalize)
         {
             diagonalization::iSize_t startLz = 0;
-            bool nbrParticlesOdd = (*optionList)["nbr-particles"].as<diagonalization::iSize_t>() & 1;
-            bool nbrOrbitalsOdd  = (*optionList)["nbr-orbitals"].as<diagonalization::iSize_t>() & 1;
+            diagonalization::iSize_t nbrParticles;
+            diagonalization::iSize_t nbrOrbitals;
+            diagonalization::iSize_t nbrLevels;
+            GetOption(optionList, nbrParticles, "nbr-particles", _AT_, mpi);
+            GetOption(optionList, nbrOrbitals, "nbr-orbitals", _AT_, mpi);
+            GetOption(optionList, nbrLevels, "nbr-levels", _AT_, mpi);
+            bool nbrParticlesOdd = nbrParticles & 1;
+            bool nbrOrbitalsOdd  = nbrOrbitals & 1;
             if(!nbrOrbitalsOdd && nbrParticlesOdd)
             {
                 startLz = 1;
             }
-            diagonalization::iSize_t nbrOrbitals = (*optionList)["nbr-orbitals"].as<diagonalization::iSize_t>();
-            diagonalization::iSize_t nbrParticles = (*optionList)["nbr-particles"].as<diagonalization::iSize_t>();
-            diagonalization::iSize_t nbrLevels = (*optionList)["nbr-levels"].as<diagonalization::iSize_t>();
             diagonalization::iSize_t max=0;
             if(1==nbrLevels)
             {

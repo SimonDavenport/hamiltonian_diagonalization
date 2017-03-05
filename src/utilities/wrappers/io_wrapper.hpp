@@ -17,19 +17,35 @@
 #include "../general/template_tools.hpp"
 #include "../general/dcmplx_type_def.hpp"
 
+namespace io
+{
+    //////      ENUM DECLARATIONS       ////////////////////////////////////////
+    enum fileFormat_t {_TEXT_=0, _BINARY_=1};
+    //!<    Define a list of file format types
+    enum io_t {_IN_, _OUT_};
+    //!<    Define a type for specifying construction of input or output files
+}
+
 namespace utilities
 {
     //!
     //! Wrapper around file stream opening checks
     //!
     template<typename F>
-    void GenFileStream(F& stream, const std::string fileName, std::string format, utilities::MpiWrapper& mpi)
+    void GenFileStream(F& stream, const std::string fileName, io::fileFormat_t format, utilities::MpiWrapper& mpi)
     {
-        if("binary" == format)
+        if(io::_BINARY_ == format)
         {
-            stream.open(fileName.c_str(), std::ios::binary);
+            if(utilities::is_same<F, std::ifstream>::value)
+            {
+                stream.open(fileName.c_str(), std::ios::in | std::ios::binary);
+            }
+            else if(utilities::is_same<F, std::ofstream>::value)
+            {
+                stream.open(fileName.c_str(), std::ios::out | std::ios::binary);
+            }
         }
-        else if("text" == format)
+        else if(io::_TEXT_ == format)
         {
             if(utilities::is_same<F, std::ifstream>::value)
             {
@@ -66,7 +82,7 @@ namespace utilities
             double re, im;
             re = std::real(variable);
             im = std::imag(variable);
-            ss << std::setprecision(15) << re << std::setprecision(15) << im;
+            ss << std::setprecision(15) << re << "\t" << std::setprecision(15) << im;
         }
         else
         {
@@ -79,6 +95,14 @@ namespace utilities
     //! Read variable from a stream
     //!
     inline void FromStream(std::ifstream& stream, double& value)
+    {
+        stream >> value;
+    }
+    
+    //!
+    //! Read variable from a stream
+    //!
+    inline void FromStream(std::ifstream& stream, short unsigned int& value)
     {
         stream >> value;
     }

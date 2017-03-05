@@ -142,7 +142,7 @@ namespace diagonalization
         ////////////////////////////////////////////////////////////////////////////////
         template <class L>
         void Add_CdC_Terms(
-            L* lookUpTables,            //!<    Class container for look-up tablesClear
+            L* termTables,              //!<    Class container for terms tables
             fock_t minRow,              //!<    Minimum row index to calculate for
             fock_t maxRow,              //!<    Maximum row index to calculate for
             utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
@@ -161,7 +161,7 @@ namespace diagonalization
                 fock_t lowerRowLimit = std::max((fock_t)mpi.m_firstTask, mpi.m_firstTask+minRow);
                 fock_t upperRowLimit = std::min((fock_t)mpi.m_lastTask, mpi.m_firstTask+maxRow);
                 //  Reserve a memory block with which to retrieve the momentum conserving list of k-values
-                kState_t kRetrieveBuffer[lookUpTables->GetMaxKCount()];
+                kState_t kRetrieveBuffer[termTables->GetMaxKCount()];
                 //  Determine the starting Fock state on each node
                 std::vector<fock_t>::const_iterator it_state;
                 fock_t currState = this->m_fockBasis.GetFirstState(lowerRowLimit, this->m_data.m_nbrParticles, it_state);
@@ -181,7 +181,7 @@ namespace diagonalization
                         fock_t k2Occupied = tempK2 & -tempK2; 
                         kState_t k2 = utilities::binary::HammingWeight64(k2Occupied-1);
                         iSize_t nbrK1;
-                        lookUpTables->GetK1(kRetrieveBuffer, nbrK1, k2);                       
+                        termTables->GetK1(kRetrieveBuffer, nbrK1, k2);             
                         //  Loop over the possible k1 values
                         for(iSize_t j=0; j<nbrK1; ++j)
                         {
@@ -190,7 +190,7 @@ namespace diagonalization
                             fock_t outIndex = i;
                             if(k1==k2)    //  Case of diagonal elements
                             {
-                                matrixElement = lookUpTables->GetEkk(k1, k2);
+                                matrixElement = termTables->GetEkk(k1, k2);
                             }
                             else
                             {
@@ -205,8 +205,7 @@ namespace diagonalization
                                     if(0 != sign && outState>=inState)
                                     {
                                         //  If non zero then calculate the matrix element
-                                        //  and find the index of the outState
-                                        matrixElement = lookUpTables->GetEkk(k1, k2)*(double)sign;
+                                        matrixElement = termTables->GetEkk(k1, k2)*(double)sign;
                                         outIndex = this->m_fockBasis.FindFockStateIndex(mpi.m_firstTask, outState);
                                     }
                                 }
@@ -281,7 +280,7 @@ namespace diagonalization
         ////////////////////////////////////////////////////////////////////////////////
         template <class L>
         void Add_CdCdCC_Terms(
-            L* lookUpTables,            //!<    Class container for look-up tables
+            L* termTables,              //!<    Class container for terms tables
             fock_t minRow,              //!<    Minimum row index to calculate for
             fock_t maxRow,              //!<    Maximum row index to calculate for
             utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
@@ -299,7 +298,7 @@ namespace diagonalization
                 fock_t lowerRowLimit = std::max((fock_t)mpi.m_firstTask, mpi.m_firstTask+minRow);
                 fock_t upperRowLimit = std::min((fock_t)mpi.m_lastTask, mpi.m_firstTask+maxRow);
                 //  Reserve a memory block with which to retrieve the momentum conserving list of k-values
-                kState_t kRetrieveBuffer[lookUpTables->GetMaxKCount()];
+                kState_t kRetrieveBuffer[termTables->GetMaxKCount()];
                 std::vector<fock_t>::const_iterator it_state;
                 fock_t currState = this->m_fockBasis.GetFirstState(lowerRowLimit, this->m_data.m_nbrParticles, it_state);
                 utilities::LoadBar progress;
@@ -337,7 +336,7 @@ namespace diagonalization
                                     kState_t k2 = utilities::binary::HammingWeight64(k2Occupied-1);
                                     //  Get the corresponding list of k1 values
                                     iSize_t nbrK1;
-                                    lookUpTables->GetK1(kRetrieveBuffer, nbrK1, k2, k3, k4);
+                                    termTables->GetK1(kRetrieveBuffer, nbrK1, k2, k3, k4);
                                     //  Loop over the possible k1 values
                                     for(iSize_t j=0; j<nbrK1; ++j)
                                     {
@@ -367,7 +366,7 @@ namespace diagonalization
                                                 fock_t outIndex = this->m_fockBasis.FindFockStateIndex(mpi.m_firstTask, outState);
                                                 if(outIndex < this->m_data.m_fockSpaceDim)
                                                 {
-                                                    T matrixElement = (double)sign*lookUpTables->GetVkkkk(k1, k2, k3, k4);
+                                                    T matrixElement = (double)sign*termTables->GetVkkkk(k1, k2, k3, k4);
                                                     //  Add the matrix element to the matrix
                                                     if((utilities::is_same<dcmplx,T>::value && abs(matrixElement)>_SPARSE_ZERO_TOL_) || (utilities::is_same<double, T>::value && fabs(matrixElement)>_SPARSE_ZERO_TOL_))
                                                     {

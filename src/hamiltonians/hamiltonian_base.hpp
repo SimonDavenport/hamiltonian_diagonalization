@@ -1067,7 +1067,7 @@ namespace diagonalization
 	            std::stringstream fileNameStream;
 	            fileNameStream.str("");
 	            fileNameStream<<tmpDir<<"hamiltonianPlotData_id_"<<mpi.m_id<<".tmp";
-	            std::string format = "text";
+	            io::fileFormat_t format = io::_TEXT_;
                 this->HamiltonianToFile(fileNameStream.str(), format, mpi);
 	            //  Generate the python script that will perform the plotting
 	            std::stringstream pythonScript;
@@ -1122,7 +1122,7 @@ namespace diagonalization
         ////////////////////////////////////////////////////////////////////////////////
         void HamiltonianToFile(
             const std::string fileName,     //!<    Name of output file
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            const io::fileFormat_t format,  //!<    Format of file
             utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
             if(m_data.m_matrixAllocated)
@@ -1162,9 +1162,9 @@ namespace diagonalization
         //! different file names)
         ////////////////////////////////////////////////////////////////////////////////
         void HamiltonianFromFile(
-            const std::string fileName,   //!<    Name of input file
-            const std::string format,     //!<    Format of file (e.g. "binary", "text")
-            utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
+            const std::string fileName,     //!<    Name of input file
+            const io::fileFormat_t format,  //!<    Format of file
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
             if(0 == mpi.m_id) //  FOR THE MASTER NODE
             {
@@ -1206,7 +1206,7 @@ namespace diagonalization
             bool writeValues,               //!<    Optionally write eigenvalues
             bool writeVectors,              //!<    Optionally write eigenvectors 
                                             //!     (can be turned off to save disk space)
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            const io::fileFormat_t format,  //!<    Format of file
             utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {   
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
@@ -1254,7 +1254,7 @@ namespace diagonalization
                 {
                     if(writeValues)
                     {
-                        if("text" == format)
+                        if(io::_TEXT_ == format)
                         {
                             f_out << "##  NBR EIGENVALUES\n";
                             f_out << m_data.m_nbrEigenvalues << "\n";
@@ -1264,7 +1264,7 @@ namespace diagonalization
                                 f_out << std::setprecision(15) << m_eigenvalues[i] << "\n";
                             }
                         }
-                        else if("binary" == format)
+                        else if(io::_BINARY_ == format)
                         {
                             f_out.write((char*)&(m_data.m_nbrEigenvalues), sizeof(unsigned int));
                             f_out.write((char*)m_eigenvalues.data(), m_data.m_nbrEigenvalues*sizeof(double));
@@ -1272,7 +1272,7 @@ namespace diagonalization
                     }
                     if(writeVectors)
                     {
-                        if("text" == format)
+                        if(io::_TEXT_ == format)
                         {
                             f_out << "##  FOCK SPACE DIMENSION\n";
                             f_out << m_data.m_fockSpaceDim << "\n";
@@ -1287,7 +1287,7 @@ namespace diagonalization
                                 }
                             }
                         }
-                        else if("binary" == format)
+                        else if(io::_BINARY_ == format)
                         {
                             f_out.write((char*)&(m_data.m_fockSpaceDim), sizeof(unsigned int));
                             f_out.write((char*)eigenvectorsBuffer, m_data.m_fockSpaceDim*m_data.m_nbrEigenvalues*sizeof(T));
@@ -1308,11 +1308,11 @@ namespace diagonalization
         //! and distribute data over program nodes
         //!
         void EigensystemFromFile(
-            const std::string fileName, //!<    Name of input file
-            bool readValues,            //!<    Optionally read eigenvalues
-            bool readVectors,           //!<    Optionally read eigenvectors
-            const std::string format,   //!<    Format of file (e.g. "binary", "text")
-            utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
+            const std::string fileName,     //!<    Name of input file
+            bool readValues,                //!<    Optionally read eigenvalues
+            bool readVectors,               //!<    Optionally read eigenvectors
+            const io::fileFormat_t format,  //!<    Format of file
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
             double* eigenvaluesBuffer = 0;
             T* eigenvectorsBuffer = 0;
@@ -1330,7 +1330,7 @@ namespace diagonalization
                 {
                     if(readValues)
                     {
-                        if("text" == format)
+                        if(io::_TEXT_ == format)
                         {
                             std::string line;
                             while(getline(f_in, line))
@@ -1348,7 +1348,7 @@ namespace diagonalization
                                 f_in >> eigenvaluesBuffer[i];
                             }
                         }
-                        else if("binary" == format)
+                        else if(io::_BINARY_ == format)
                         {
                             f_in.read(reinterpret_cast<char*>(&(m_data.m_nbrEigenvalues)), sizeof(unsigned int));
                             eigenvaluesBuffer = new (std::nothrow) double[m_data.m_nbrEigenvalues];
@@ -1358,7 +1358,7 @@ namespace diagonalization
                     }
                     if(readVectors)
                     {
-                        if("text" == format)
+                        if(io::_TEXT_ == format)
                         {
                             std::string line;
                             while(getline(f_in, line))
@@ -1380,7 +1380,7 @@ namespace diagonalization
                                 }           
                             }
                         }
-                        else if("binary" == format)
+                        else if(io::_BINARY_ == format)
                         {
                             f_in.read(reinterpret_cast<char*>(&(m_data.m_fockSpaceDim)), sizeof(unsigned int));
                             eigenvectorsBuffer = new (std::nothrow) T[m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim];
@@ -1423,7 +1423,7 @@ namespace diagonalization
                     mpi.Scatter<T>(eigenvectorsBuffer+e*m_data.m_fockSpaceDim, m_data.m_fockSpaceDim,
                                    m_eigenvectors.data()+e*eigenvectorNodeDim, eigenvectorNodeDim, 0, mpi.m_comm, status);
                 }
-                if(0!=eigenvectorsBuffer)   
+                if(0!=eigenvectorsBuffer)
                 {
                     delete[] eigenvectorsBuffer;
                 }

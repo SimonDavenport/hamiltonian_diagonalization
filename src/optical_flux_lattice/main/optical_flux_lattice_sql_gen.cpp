@@ -30,6 +30,7 @@
 #include "../../program_options/general_options.hpp"
 #include "../program_options/sql_options.hpp"
 #include "../program_options/interacting_ofl_model_options.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 ///////     GLOBAL DATA STRUCTURES      ////////////////////////////////////////
 utilities::Cout utilities::cout;
 ///////		FUNCTION FORWARD DECLARATIONS		    ////////////////////////////
@@ -38,21 +39,37 @@ boost::program_options::variables_map ParseCommandLine(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
     boost::program_options::variables_map optionList;
-    optionList = ParseCommandLine(argc,argv);
-    if(optionList["build-sql-table"].as<bool>())
+    optionList = ParseCommandLine(argc, argv);
+    bool buildSqlTable = false;
+    utilities::GetOption(&optionList, buildSqlTable, "build-sql-table", _AT_);
+    bool buildSqlTableOffset = false;
+    utilities::GetOption(&optionList, buildSqlTableOffset, "build-sql-table-offset", _AT_);
+    bool buildSqlTableSingleParticle = false;
+    utilities::GetOption(&optionList, buildSqlTableOffset, "build-sql-table-single-particle", _AT_);
+    bool sqlCompleted = false;
+    utilities::GetOption(&optionList, sqlCompleted, "sql-completed", _AT_);
+    if(buildSqlTable)
     {
         //////      GENERATE AN SQL TABLE FOR A CUT THROUGH PARAMETER SPACE     ////////
         utilities::cout.MainOutput()<<"\n\t============ BUILDING SQL TABLE ==========\n"<<std::endl;
         //////      SET PARAMETER CUT VALUES HERE       ////////////
         //  Grid of lattice depth vs interaction strength
-        const diagonalization::iSize_t xGrid  = optionList["sql-v0-nbr"].as<diagonalization::iSize_t>();
-        const diagonalization::iSize_t yGrid  = optionList["sql-g-nbr"].as<diagonalization::iSize_t>();
-        const double v0Min           = optionList["sql-v0-min"].as<double>();
-        const double v0Step          = optionList["sql-v0-step"].as<double>();
-        const double interactionMin  = optionList["sql-g-min"].as<double>();
-        const double interactionStep = optionList["sql-g-step"].as<double>();
-        const double offsetX         = optionList["kx-shift"].as<double>();
-        const double offsetY         = optionList["ky-shift"].as<double>();
+        diagonalization::iSize_t xGrid;
+        diagonalization::iSize_t yGrid;
+        double v0Min;
+        double v0Step;
+        double interactionMin;
+        double interactionStep;
+        double offsetX;
+        double offsetY;
+        utilities::GetOption(&optionList, xGrid, "sql-v0-nbr", _AT_);
+        utilities::GetOption(&optionList, yGrid, "sql-g-nbr", _AT_);
+        utilities::GetOption(&optionList, v0Min, "sql-v0-min", _AT_);
+        utilities::GetOption(&optionList, v0Step, "sql-v0-step", _AT_);
+        utilities::GetOption(&optionList, interactionMin, "sql-g-min", _AT_);
+        utilities::GetOption(&optionList, interactionStep, "sql-g-step", _AT_);
+        utilities::GetOption(&optionList, offsetX, "kx-shift", _AT_);
+        utilities::GetOption(&optionList, offsetY, "ky-shift", _AT_);
         //  Other parameters are fixed
         const double defaultTheta   = 0.3;
         const double defaultEpsilon = 0.4;
@@ -68,41 +85,46 @@ int main(int argc, char *argv[])
         //////      GENERATE SQL FILE       ////////////
         std::stringstream fileName;
         fileName.str("");
+        std::string outPath;
+        utilities::GetOption(&optionList, outPath, "out-path", _AT_);
+        std::string sqlName;
+        utilities::GetOption(&optionList, sqlName, "sql-name", _AT_);
         //  Generate an sql database with the following name
-        fileName<<optionList["out-path"].as<std::string>()<<optionList["sql-name"].as<std::string>();
+        fileName << outPath << sqlName;
         utilities::cout.SecondaryOutput()<<fileName.str()<<std::endl<<std::endl;
-        utilities::Sqlite sql(fileName.str(), _CREATE_NEW_);
+        utilities::Sqlite sql(fileName.str(), sql::_CREATE_NEW_);
         sql.AddTimeUpdatedTrigger("TimeEntered");
         //////      DEFINE TABLE DATA FIELDS        //////
         utilities::SqliteRow sqlRow;
-        sqlRow.AddField("Theta",defaultTheta);       //  Theta 
-        sqlRow.AddField("V0",_REAL_);                //  Lattice depth
-        sqlRow.AddField("Epsilon",defaultEpsilon);   //  Epsilon 
-        sqlRow.AddField("Kappa",defaultKappa);       //  Kappa
-        sqlRow.AddField("Mass",defaultMass);         //  Mass
-        sqlRow.AddField("Interaction",_REAL_);       //  Interaction strength
-        sqlRow.AddField("OutFileName",_TEXT_);       //  Output file name
-        sqlRow.AddField("OffsetX",offsetX);          //  kx offset
-        sqlRow.AddField("OffsetY",offsetY);          //  ky offset
-        sqlRow.AddField("JobId",_INT_);              //  Leave a blank column to record the associated cluster job id
+        sqlRow.AddField("Theta", defaultTheta);       //  Theta 
+        sqlRow.AddField("V0", sql::_REAL_);           //  Lattice depth
+        sqlRow.AddField("Epsilon", defaultEpsilon);   //  Epsilon 
+        sqlRow.AddField("Kappa", defaultKappa);       //  Kappa
+        sqlRow.AddField("Mass", defaultMass);         //  Mass
+        sqlRow.AddField("Interaction", sql::_REAL_);  //  Interaction strength
+        sqlRow.AddField("OutFileName", sql::_TEXT_);  //  Output file name
+        sqlRow.AddField("OffsetX", offsetX);          //  kx offset
+        sqlRow.AddField("OffsetY", offsetY);          //  ky offset
+        sqlRow.AddField("JobId", sql::_INT_);         //  Leave a blank column to record the associated cluster job id
         int completedFlag = 0;
-        if(optionList["sql-completed"].as<bool>())
+        if(sqlCompleted)
         {
             completedFlag = 1;
         }
-        sqlRow.AddField("Completed",completedFlag);
-        sqlRow.AddField("GotOccupations",completedFlag);
-        sqlRow.AddField("GotSusceptibility",completedFlag);
-        sqlRow.AddField("GotMostProbable",completedFlag);
-        sqlRow.AddField("GotDensityDensity",completedFlag);
-        sqlRow.AddField("GotParticipationRatio",completedFlag);
+        sqlRow.AddField("Completed", completedFlag);
+        sqlRow.AddField("GotOccupations", completedFlag);
+        sqlRow.AddField("GotSusceptibility", completedFlag);
+        sqlRow.AddField("GotMostProbable", completedFlag);
+        sqlRow.AddField("GotDensityDensity", completedFlag);
+        sqlRow.AddField("GotParticipationRatio", completedFlag);
         //  Generate a table to contain these data
-        std::string tableName = optionList["sql-table-name"].as<std::string>();
+        std::string tableName;
+        utilities::GetOption(&optionList, tableName, "sql-table-name", _AT_);
         sql.CreateTable(tableName,&sqlRow);
         //////      POPULATE THE TABLE WITH A CUT THROUGH PARAMETER SPACE   ///////
         double currV0 = v0Min;
         diagonalization::iSize_t startCounter = sql.GetMaxId(tableName)+1;
-        diagonalization::iSize_t idCounter    = startCounter;
+        diagonalization::iSize_t idCounter = startCounter;
         utilities::LoadBar progress;
         progress.Initialize(xGrid*yGrid);
         std::vector<utilities::SqliteRow> data;
@@ -124,8 +146,8 @@ int main(int argc, char *argv[])
                     {
                         currInteraction = 0.0;
                     }
-                    sqlRow.UpdateValue("Interaction",currInteraction);
-                    sqlRow.UpdateValue("OutFileName",_TEXT_,ss.str());
+                    sqlRow.UpdateValue("Interaction", currInteraction);
+                    sqlRow.UpdateValue("OutFileName", sql::_TEXT_,ss.str());
                     data.push_back(sqlRow);
                     progress.Display(idCounter-startCounter+1);
                 }
@@ -144,8 +166,8 @@ int main(int argc, char *argv[])
                     {
                         currInteraction = 0.0;
                     }
-                    sqlRow.UpdateValue("Interaction",currInteraction);
-                    sqlRow.UpdateValue("OutFileName",_TEXT_,ss.str());
+                    sqlRow.UpdateValue("Interaction", currInteraction);
+                    sqlRow.UpdateValue("OutFileName", sql::_TEXT_,ss.str());
                     data.push_back(sqlRow);
                     progress.Display(idCounter-startCounter+1);
                 }
@@ -155,19 +177,27 @@ int main(int argc, char *argv[])
         sql.CopyTableToTextFile(tableName,fileName.str());
         utilities::cout.MainOutput()<<"\n\tDONE\n"<<std::endl;
     }
-    else if(optionList["build-sql-table-offset"].as<bool>())
+    else if(buildSqlTableOffset)
     {
         //////      GENERATE AN SQL TABLE FOR A CUT THROUGH OFFSET SPACE     ////////
         utilities::cout.MainOutput()<<"\n\t============ BUILDING SQL TABLE ==========\n"<<std::endl;
         //////      SET PARAMETER CUT VALUES HERE       ////////////
-        const double defaultV0       = optionList["sql-v0-min"].as<double>();
-        const double defaultG        = optionList["sql-g-min"].as<double>();
-        const double offsetXmin      = optionList["sql-kx-shift-min"].as<double>();
-        const diagonalization::iSize_t offsetXnbr = optionList["sql-kx-shift-nbr"].as<diagonalization::iSize_t>();
-        const double offsetXstep     = optionList["sql-kx-shift-step"].as<double>();
-        const double offsetYmin      = optionList["sql-ky-shift-min"].as<double>();
-        const diagonalization::iSize_t offsetYnbr = optionList["sql-ky-shift-nbr"].as<diagonalization::iSize_t>();
-        const double offsetYstep     = optionList["sql-ky-shift-step"].as<double>();
+        double defaultV0;
+        double defaultG;
+        double offsetXmin;
+        diagonalization::iSize_t offsetXnbr;
+        double offsetXstep;
+        double offsetYmin;
+        diagonalization::iSize_t offsetYnbr;
+        double offsetYstep;
+        utilities::GetOption(&optionList, defaultV0, "sql-v0-min", _AT_);
+        utilities::GetOption(&optionList, defaultG, "sql-g-min", _AT_);
+        utilities::GetOption(&optionList, offsetXmin, "sql-kx-shift-min", _AT_);
+        utilities::GetOption(&optionList, offsetXnbr, "sql-kx-shift-nbr", _AT_);
+        utilities::GetOption(&optionList, offsetXstep, "sql-kx-shift-step", _AT_);
+        utilities::GetOption(&optionList, offsetYmin, "sql-ky-shift-min", _AT_);
+        utilities::GetOption(&optionList, offsetYnbr, "sql-ky-shift-nbr", _AT_);
+        utilities::GetOption(&optionList, offsetYstep, "sql-ky-shift-step", _AT_);
         //  Other parameters are fixed
         const double defaultTheta   = 0.3;
         const double defaultEpsilon = 0.4;
@@ -186,9 +216,13 @@ int main(int argc, char *argv[])
         std::stringstream fileName;
         fileName.str("");
         //  Generate an sql database with the following name
-        fileName<<optionList["out-path"].as<std::string>()<<optionList["sql-name"].as<std::string>();
+        std::string outPath;
+        utilities::GetOption(&optionList, outPath, "out-path", _AT_);
+        std::string sqlName;
+        utilities::GetOption(&optionList, sqlName, "sql-name", _AT_);
+        fileName << outPath << sqlName;
         utilities::cout.SecondaryOutput()<<fileName.str()<<std::endl<<std::endl;
-        utilities::Sqlite sql(fileName.str(), _CREATE_NEW_);
+        utilities::Sqlite sql(fileName.str(), sql::_CREATE_NEW_);
         sql.AddTimeUpdatedTrigger("TimeEntered");
         //////      DEFINE TABLE DATA FIELDS        //////
         utilities::SqliteRow sqlRow;
@@ -198,12 +232,12 @@ int main(int argc, char *argv[])
         sqlRow.AddField("Kappa", defaultKappa);       //  Kappa
         sqlRow.AddField("Mass", defaultMass);         //  Mass
         sqlRow.AddField("Interaction", defaultG);     //  Interaction strength
-        sqlRow.AddField("OutFileName", _TEXT_);       //  Output file name
-        sqlRow.AddField("OffsetX", _REAL_);           //  kx offset
-        sqlRow.AddField("OffsetY", _REAL_);           //  ky offset
-        sqlRow.AddField("JobId", _INT_);              //  Leave a blank column to record the associated cluster job id
+        sqlRow.AddField("OutFileName", sql::_TEXT_);  //  Output file name
+        sqlRow.AddField("OffsetX", sql::_REAL_);      //  kx offset
+        sqlRow.AddField("OffsetY", sql::_REAL_);      //  ky offset
+        sqlRow.AddField("JobId", sql::_INT_);         //  Leave a blank column to record the associated cluster job id
         int completedFlag = 0;
-        if(optionList["sql-completed"].as<bool>())
+        if(sqlCompleted)
         {
             completedFlag = 1;
         }
@@ -214,8 +248,9 @@ int main(int argc, char *argv[])
         sqlRow.AddField("GotDensityDensity", completedFlag);
         sqlRow.AddField("GotParticipationRatio", completedFlag);
         //  Generate a table to contain these data
-        std::string tableName = optionList["sql-table-name"].as<std::string>();
-        sql.CreateTable(tableName,&sqlRow);
+        std::string tableName;
+        utilities::GetOption(&optionList, tableName, "sql-table-name", _AT_);
+        sql.CreateTable(tableName, &sqlRow);
         //////      POPULATE THE TABLE WITH A CUT THROUGH OFFSET SPACE   ///////
         double currxOffsetX = offsetXmin;
         diagonalization::iSize_t startCounter = sql.GetMaxId(tableName)+1;
@@ -235,8 +270,8 @@ int main(int argc, char *argv[])
                 ss<<"optical_flux_model_n_"<<optionList["nbr"].as<diagonalization::iSize_t>()
                 <<"_kx_"<<optionList["kx"].as<diagonalization::iSize_t>()<<"_ky_"<<optionList["ky"].as<diagonalization::iSize_t>()
                 <<"_id_"<<idCounter;
-                sqlRow.UpdateValue("OffsetY",currxOffsetY);
-                sqlRow.UpdateValue("OutFileName",_TEXT_,ss.str());
+                sqlRow.UpdateValue("OffsetY", currxOffsetY);
+                sqlRow.UpdateValue("OutFileName", sql::_TEXT_,ss.str());
                 data.push_back(sqlRow);
                 progress.Display(idCounter-startCounter+1);
             }
@@ -245,13 +280,15 @@ int main(int argc, char *argv[])
         sql.CopyTableToTextFile(tableName,fileName.str());
         utilities::cout.MainOutput()<<"\n\tDONE\n"<<std::endl;
     }
-    else if(optionList["build-sql-table-single-particle"].as<bool>())
+    else if(buildSqlTableSingleParticle)
     {
         //////      GENERATE AN SQL TABLE FOR A CUT THROUGH PARAMETER SPACE     ////////
         utilities::cout.MainOutput()<<"\n\t============ BUILDING SQL TABLE ==========\n"<<std::endl;
         //////      SET PARAMETER CUT VALUES HERE       ////////////
-        const double offsetX         = optionList["kx-shift"].as<double>();
-        const double offsetY         = optionList["ky-shift"].as<double>();
+        double offsetX;
+        double offsetY;
+        utilities::GetOption(&optionList, offsetX, "kx-shift", _AT_);
+        utilities::GetOption(&optionList, offsetY, "ky-shift", _AT_);
         const diagonalization::iSize_t epsilonNbr = 10;
         const double epsilonMin = 0.1;
         const double epsilonStep = 0.1;
@@ -262,7 +299,6 @@ int main(int argc, char *argv[])
         //  Other parameters are fixed
         const double defaultKappa = 1;
         const double defaultMass = 1;
-
         utilities::cout.SecondaryOutput()<<"\tEpsilon from "<<epsilonMin<<" to "<<(epsilonMin+epsilonStep*(epsilonNbr-1))<<" in steps of "<<epsilonStep<<std::endl;
         utilities::cout.SecondaryOutput()<<"\tTheta from "<<thetaMin<<" to "<<(thetaMin+epsilonStep*(thetaNbr-1))<<" in steps of "<<thetaStep<<std::endl;
         utilities::cout.SecondaryOutput()<<"\tkappa = "<<defaultKappa<<std::endl;
@@ -272,28 +308,33 @@ int main(int argc, char *argv[])
         std::stringstream fileName;
         fileName.str("");
         //  Generate an sql database with the following name
-        fileName<<optionList["out-path"].as<std::string>()<<optionList["sql-name"].as<std::string>();
+        std::string outPath;
+        utilities::GetOption(&optionList, outPath, "out-path", _AT_);
+        std::string sqlName;
+        utilities::GetOption(&optionList, sqlName, "sql-name", _AT_);
+        fileName << outPath << sqlName;
         utilities::cout.SecondaryOutput()<<fileName.str()<<std::endl<<std::endl;
-        utilities::Sqlite sql(fileName.str(), _CREATE_NEW_);
+        utilities::Sqlite sql(fileName.str(), sql::_CREATE_NEW_);
         sql.AddTimeUpdatedTrigger("TimeEntered");
         //////      DEFINE TABLE DATA FIELDS        //////
         utilities::SqliteRow sqlRow;
-        sqlRow.AddField("Epsilon", _REAL_);           //  Epsilon
-        sqlRow.AddField("Theta", _REAL_);             //  Theta 
+        sqlRow.AddField("Epsilon", sql::_REAL_);      //  Epsilon
+        sqlRow.AddField("Theta", sql::_REAL_);        //  Theta 
         sqlRow.AddField("V0", defaultV0);             //  Lattice depth
         sqlRow.AddField("Kappa", defaultKappa);       //  Kappa
         sqlRow.AddField("Mass", defaultMass);         //  Mass
-        sqlRow.AddField("OutFileName", _TEXT_);       //  Output file name
+        sqlRow.AddField("OutFileName", sql::_TEXT_);  //  Output file name
         sqlRow.AddField("OffsetX", offsetX);          //  kx offset
         sqlRow.AddField("OffsetY", offsetY);          //  ky offset
-        sqlRow.AddField("JobId", _INT_);              //  Leave a blank column to record the associated cluster job id
+        sqlRow.AddField("JobId", sql::_INT_);         //  Leave a blank column to record the associated cluster job id
         int completedFlag = 0;
-        if(optionList["sql-completed"].as<bool>())
+        if(sqlCompleted)
         {
             completedFlag = 1;
         }
         sqlRow.AddField("Completed", completedFlag);
-        std::string tableName = optionList["sql-table-name"].as<std::string>();
+        std::string tableName;
+        utilities::GetOption(&optionList, tableName, "sql-table-name", _AT_);
         sql.CreateTable(tableName,&sqlRow);
         //////      POPULATE THE TABLE WITH A CUT THROUGH PARAMETER SPACE   ///////
         double currEpsilon = epsilonMin;
@@ -314,7 +355,7 @@ int main(int argc, char *argv[])
                 std::stringstream ss;
                 ss.str("");
                 ss<<"band_data_kx_"<<optionList["kx"].as<diagonalization::iSize_t>()<<"_ky_"<<optionList["ky"].as<diagonalization::iSize_t>()<<"_id_"<<idCounter;
-                sqlRow.UpdateValue("OutFileName",_TEXT_,ss.str());
+                sqlRow.UpdateValue("OutFileName", sql::_TEXT_,ss.str());
                 data.push_back(sqlRow);
                 progress.Display(idCounter-startCounter+1);
             }
@@ -361,7 +402,9 @@ boost::program_options::variables_map ParseCommandLine(
         std::cerr<<std::endl<<utilities::cout.HyphenLine()<<std::endl;
         exit(EXIT_SUCCESS);
     }
-    utilities::cout.SetVerbosity(vm["verbose"].as<int>());
+    int verbosity;
+    utilities::GetOption(&vm, verbosity, "verbose", _AT_);
+    utilities::cout.SetVerbosity(verbosity);
     utilities::cout.MainOutput()<<"\n\tRun with -h option to see program options"<<std::endl;
     return vm;
 }

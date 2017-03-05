@@ -65,10 +65,11 @@ namespace diagonalization
         m_params = NonInteractingOflModelData(optionList,mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            m_xBandCutOff = (*optionList)["x-cut"].as<iSize_t>();
-            m_yBandCutOff = (*optionList)["y-cut"].as<iSize_t>(); 
-            m_nbrBands    = (*optionList)["nbr-bands"].as<iSize_t>();
+	        GetOption(optionList, m_xBandCutOff, "x-cut", _AT_, mpi);
+	        GetOption(optionList, m_yBandCutOff, "y-cut", _AT_, mpi);
+	        GetOption(optionList, m_nbrBands, "nbr-bands", _AT_, mpi);
         }
+        mpi.ExitFlagTest();
         mpi.Sync(&m_xBandCutOff, 1, 0);
         mpi.Sync(&m_yBandCutOff, 1, 0);
         mpi.Sync(&m_nbrBands, 1, 0);
@@ -78,7 +79,7 @@ namespace diagonalization
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Constructor for the NonInteractingOflModel class
     //! 
-    //! Uses a pre-declared SingleParticleParameters struct to initialize the class.
+    //! Uses a pre-declared NonInteractingOflModelData struct to initialize the class.
     ////////////////////////////////////////////////////////////////////////////////
     NonInteractingOflModel::NonInteractingOflModel(
         NonInteractingOflModelData params)   //!<    An instance of the SingleParticleParameters 
@@ -120,9 +121,7 @@ namespace diagonalization
         }
         if(m_bandsCalculated)
         {
-            //  Allocate memory to store eigenvectors for lowest the specified number of bands
             m_blochCoefficients = new (std::nothrow) dcmplx[m_dim*m_nbrBands];
-            //  Allocate memory to store eigenvalues for lowest bands
             m_eigenvalues = new (std::nothrow) double[m_nbrBands];
             memcpy(m_blochCoefficients, other.m_blochCoefficients, sizeof(dcmplx)*m_dim*m_nbrBands);
             memcpy(m_eigenvalues, other.m_eigenvalues, sizeof(double)*m_nbrBands);
@@ -164,9 +163,7 @@ namespace diagonalization
         }
         if(m_bandsCalculated)
         {
-            //  Allocate memory to store eigenvectors for lowest the specified number of bands
             m_blochCoefficients = new (std::nothrow) dcmplx[m_dim*m_nbrBands];
-            //  Allocate memory to store eigenvalues for lowest bands
             m_eigenvalues = new (std::nothrow) double[m_nbrBands];
             //  Direct copy on the current node
 	        if(mpi.m_id == (int)nodeId)
@@ -262,8 +259,8 @@ namespace diagonalization
         for(iSize_t i=0; i<m_dim; ++i)
         {
             int lRow,mRow;   
-            this->MapArrayToLattice(&lRow, &mRow, i/2);    
-            for(iSize_t j=i;j<m_dim;++j)
+            this->MapArrayToLattice(&lRow, &mRow, i/2);
+            for(iSize_t j=i; j<m_dim; ++j)
             {
                 //  Keep track of the book keeping in assigning zero /non-zero 
                 //  matrix elements
@@ -276,7 +273,7 @@ namespace diagonalization
                 dcmplx element = 0.0;
                 if(i==j)
                 {            
-                    element = this->EvaluateDiagonalTerm(lCol,mCol,spinStateI);  
+                    element = this->EvaluateDiagonalTerm(lCol, mCol, spinStateI);  
                 }
                 else if(std::abs(deltaL) > 1 || std::abs(deltaM) > 1)
                 {
@@ -437,17 +434,15 @@ namespace diagonalization
     {
         if(m_differenceMatrixPopulated)
         {
-            //  Remove any previous memory allocation
+            //  Reset previous memory allocation
             if(m_blochCoefficients!=0)  delete[] m_blochCoefficients;
-            if(m_eigenvalues!=0)        delete[] m_eigenvalues;
-            //  Allocate memory to store eigenvectors for lowest the specified number of bands
-            m_blochCoefficients = new (std::nothrow) dcmplx[m_dim*m_nbrBands];
-            //  Allocate memory to store eigenvalues for lowest bands           
+            if(m_eigenvalues!=0) delete[] m_eigenvalues;
+            m_blochCoefficients = new (std::nothrow) dcmplx[m_dim*m_nbrBands];         
             m_eigenvalues = new (std::nothrow) double[m_nbrBands];
             if(m_params.m_V0==0.0)
             {}
             else
-            {   
+            {
 	            //  Generate a copy of the matrix to be diagonalized
 	            //  (since the diagonalization routine will destroy the 
 	            //  original matrix, which we want to keep)
@@ -491,8 +486,8 @@ namespace diagonalization
         const int i)                  //!<    lattice index
         const     
     {
-        *y = - m_yBandCutOff + i % (2*m_yBandCutOff+1);
-        *x = - m_xBandCutOff + floor((double)i/((2*m_yBandCutOff+1)));
+        *y = - (int)m_yBandCutOff + i % (2*(int)m_yBandCutOff+1);
+        *x = - (int)m_xBandCutOff + floor((double)i/((2*(int)m_yBandCutOff+1)));
         return;
     }
   
@@ -504,7 +499,7 @@ namespace diagonalization
         int x,          //!<    return reciprocal lattice x index
         int y) const    //!<    return reciprocal lattice y index
     {
-        return (y + m_yBandCutOff)+(2*m_yBandCutOff+1)*(x + m_xBandCutOff);
+        return (y + (int)m_yBandCutOff)+(2*(int)m_yBandCutOff+1)*(x + (int)m_xBandCutOff);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
