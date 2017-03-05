@@ -34,6 +34,7 @@
 #include "../wrappers/io_wrapper.hpp"
 #include "../wrappers/murmur_hash_wrapper.hpp"
 #include "../general/serialize.hpp"
+#include "../../utilities/algorithms/quick_sort.hpp"
 #if _SPEED_OPTIMIZED_MAP_
 #include <sparsehash/dense_hash_map>
 #elif _MEMORY_OPTIMIZED_MAP_
@@ -42,6 +43,7 @@
 #include <unordered_map>
 #include <vector>
 #include <fstream>
+#include <set>
 #if _DEBUG_
 #include "../general/debug.hpp"
 #include <bitset>
@@ -280,7 +282,6 @@ namespace utilities
             delete[] keyBuffer;
             delete[] valueBuffer;
             //  Insert the received buffer data into a map on the master node
-            //  (note that this process removes entreis for duplicate keys)
             if(nodeId == mpi.m_id)    //  For the gather node
             {
                 //  First convert the buffered map and value arrays into 
@@ -293,8 +294,23 @@ namespace utilities
                 {
                     pairList.push_back(std::pair<uint64_t, T>(*(p_keyBuffer), *(p_valueBuffer)));
                 }
+                //  Remove duplicates
+                QuickSort<std::pair<uint64_t, T>, int, _ASCENDING_ORDER_>(pairList);
+                std::vector<std::pair<uint64_t, T> > uniquePairList;
+                uniquePairList.reserve(totalSize);
+                std::pair<uint64_t, T> prev_value = pairList[0];
+                for(typename std::vector<std::pair<uint64_t, T> >::const_iterator it = pairList.begin(); 
+                    it < pairList.end(); ++it)
+                {
+                    uniquePairList.push_back(*it);
+                    while(*it == prev_value)
+                    {
+                        ++it;
+                    }
+                    prev_value = *it;
+                }
                 //  Insert the whole range into the map in one operation
-                map.insert(pairList.begin(), pairList.end());
+                map.insert(uniquePairList.begin(), uniquePairList.end());
                 delete[] keyRecvBuffer;
                 delete[] mapRecvBuffer;  
             }
@@ -464,8 +480,8 @@ namespace utilities
         template <class M>
         void ToFileBase(
             const M& map,                   //!<    Map containing data to write to the file
-            const std::string fileName,     //!<    Name of file
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            std::ofstream& stream,          //!<    File stream
+            const io::fileFormat_t format,  //!<    Format of file
             const unsigned int nbrLabels,   //!<    Number of key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class  
         {
@@ -474,11 +490,9 @@ namespace utilities
             this->MpiGatherBase(temp_map, 0, mpi);
             if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
-                std::ofstream f_out;
-                utilities::GenFileStream(f_out, fileName, format, mpi);
                 if(!mpi.m_exitFlag)
                 {
-                    if("binary" == format)
+                    if(io::_BINARY_ == format)
                     {   
                         unsigned int size = temp_map.size();
                         std::vector<uint64_t> keys(size);
@@ -490,16 +504,14 @@ namespace utilities
                             *keys_it = it->first;
                             *values_it = it->second;
                         }
-                        f_out.write((char*)&size, sizeof(unsigned int));
-                        f_out.write((char*)keys.data(), size*sizeof(uint64_t));
-                        f_out.write((char*)values.data(), size*sizeof(T));
+                        stream.write((char*)&size, sizeof(unsigned int));
+                        stream.write((char*)keys.data(), size*sizeof(uint64_t));
+                        stream.write((char*)values.data(), size*sizeof(T));
                     }
-                    else
+                    else if(io::_TEXT_ == format)
                     {
-                        //  First entry to file is number of entries in the map  
-                        f_out << temp_map.size() << "\n";
-                        //  Second entry to file is the number of map labels
-                        f_out << nbrLabels << "\n";
+                        stream << temp_map.size() << "\n";
+                        stream << nbrLabels << "\n";
                         //  Write map key-value pairs to the file (including multiple  
                         //  values if found)
                         for(auto it = temp_map.begin(); it != temp_map.end(); ++it)
@@ -509,43 +521,42 @@ namespace utilities
                             {
                                 case 1:
                                 {
-                                    f_out << it->first << "\t" << streamData <<"\n";
+                                    stream << it->first << "\t" << streamData <<"\n";
                                     break;
                                 }
                                 case 2:
                                 {    
                                     uint32_t key1, key2;
                                     utilities::Unpack2x32(it->first, key1, key2);
-                                    f_out << key1 << "\t" << key2 << "\t" << streamData <<"\n";
+                                    stream << key1 << "\t" << key2 << "\t" << streamData <<"\n";
                                     break;
                                 }
                                 case 3:
                                 {    
                                     uint16_t key1, key2, key3, key4;
                                     utilities::Unpack4x16(it->first, key1, key2, key3, key4);
-                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << streamData <<"\n";
+                                    stream << key1 << "\t" << key2 << "\t" << key3 << "\t" << streamData <<"\n";
                                     break;
                                 }
                                 case 4:
                                 {
                                     uint16_t key1, key2, key3, key4;
                                     utilities::Unpack4x16(it->first, key1, key2, key3, key4);           
-                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t";
-                                    f_out << streamData <<"\n";
+                                    stream << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t";
+                                    stream << streamData <<"\n";
                                     break;
                                 }
                                 case 8:
                                 {
                                     uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
                                     utilities::Unpack8x8(it->first, key1, key2, key3, key4, key5, key6, key7, key8);
-                                    f_out << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t" << key5<< "\t" << key6;
-                                    f_out << "\t" << key7 << "\t" << key8 << "\t" << streamData <<"\n";
+                                    stream << key1 << "\t" << key2 << "\t" << key3 << "\t" << key4 << "\t" << key5<< "\t" << key6;
+                                    stream << "\t" << key7 << "\t" << key8 << "\t" << streamData <<"\n";
                                     break;
                                 }
                             }
                         }
                     }
-                    f_out.close();
                 }
             }
             mpi.ExitFlagTest();
@@ -559,26 +570,24 @@ namespace utilities
         template <class M>
         void FromFileBase(
             M& map,                         //!<    Map containing data to write to the file
-            const std::string fileName,     //!<    Name of file
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            std::ifstream& stream,          //!<    File stream
+            const io::fileFormat_t format,  //!<    Format of file
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class  
         {
             if(0 == mpi.m_id)    //  FOR THE MASTER NODE
             {
-                std::ifstream f_in;
-                utilities::GenFileStream(f_in, fileName, format, mpi);
                 if(!mpi.m_exitFlag)
                 {
                     std::vector<std::pair<uint64_t, T> > pairList;
-                    if("binary" == format)
+                    if(io::_BINARY_ == format)
                     {
                         unsigned int size = 0;
-                        f_in.read(reinterpret_cast<char*>(&size), sizeof(unsigned int));
+                        stream.read(reinterpret_cast<char*>(&size), sizeof(unsigned int));
                         pairList.resize(size);
                         std::vector<uint64_t> keys(size);
                         std::vector<T> values(size);
-                        f_in.read(reinterpret_cast<char*>(keys.data()), size*sizeof(uint64_t));
-                        f_in.read(reinterpret_cast<char*>(values.data()), size*sizeof(T));
+                        stream.read(reinterpret_cast<char*>(keys.data()), size*sizeof(uint64_t));
+                        stream.read(reinterpret_cast<char*>(values.data()), size*sizeof(T));
                         std::vector<uint64_t>::iterator keys_it = keys.begin();
                         typename std::vector<T>::iterator values_it = values.begin();
                         for(auto it = pairList.begin(); it < pairList.end(); ++it, ++keys_it, ++values_it)
@@ -587,12 +596,12 @@ namespace utilities
                             it->second = *values_it;
                         }
                     }
-                    else
+                    else if(io::_TEXT_ == format)
                     {
                         unsigned int size;
-                        f_in >> size;
+                        stream >> size;
                         uint64_t nbrLabels; 
-                        f_in >> nbrLabels;
+                        stream >> nbrLabels;
                         pairList.reserve(size);
                         for(uint64_t i=0; i<size; ++i)
                         {
@@ -601,57 +610,56 @@ namespace utilities
                             {
                                 case 1:
                                 {
-                                    f_in >> key;
+                                    stream >> key;
                                     break;
                                 }
                                 case 2:
                                 {
                                     uint32_t key1, key2;
-                                    f_in >> key1;
-                                    f_in >> key2;
+                                    stream >> key1;
+                                    stream >> key2;
                                     key = utilities::Pack2x32(key1, key2);
                                     break;
                                 }
                                 case 3:
                                 {
                                     uint16_t key1, key2, key3;
-                                    f_in >> key1;
-                                    f_in >> key2;
-                                    f_in >> key3;
+                                    stream >> key1;
+                                    stream >> key2;
+                                    stream >> key3;
                                     key = utilities::Pack4x16(key1, key2, key3, 0);
                                     break;
                                 }
                                 case 4:
                                 {
                                     uint16_t key1, key2, key3, key4;
-                                    f_in >> key1;
-                                    f_in >> key2;
-                                    f_in >> key3;
-                                    f_in >> key4;
+                                    stream >> key1;
+                                    stream >> key2;
+                                    stream >> key3;
+                                    stream >> key4;
                                     key = utilities::Pack4x16(key1, key2, key3, key4);
                                     break;
                                 }
                                 case 8:
                                 {
                                     uint8_t key1, key2, key3, key4, key5, key6, key7, key8;
-                                    f_in >> key1;
-                                    f_in >> key2;
-                                    f_in >> key3;
-                                    f_in >> key4;
-                                    f_in >> key5;
-                                    f_in >> key6;
-                                    f_in >> key7;
-                                    f_in >> key8;
+                                    stream >> key1;
+                                    stream >> key2;
+                                    stream >> key3;
+                                    stream >> key4;
+                                    stream >> key5;
+                                    stream >> key6;
+                                    stream >> key7;
+                                    stream >> key8;
                                     key = utilities::Pack8x8(key1, key2, key3, key4, key5, key6, key7, key8);
                                     break;
                                 }
                             }
                             T val;
-                            utilities::FromStream(f_in, val);
+                            utilities::FromStream(stream, val);
                             pairList.push_back(std::pair<uint64_t, T>(key, val));
                         }
                     }
-                    f_in.close();
                     map.insert(pairList.begin(), pairList.end());
                 }
             }
@@ -800,24 +808,24 @@ namespace utilities
         //! Store the map in a file
         //! 
         void ToFile(
-            const std::string fileName,     //!<    Name of file to write to
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            std::ofstream& stream,          //!<    File stream
+            const io::fileFormat_t format,  //!<    Format of file
             const unsigned int nbrLabels,   //!<    Number of map key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            this->ToFileBase(m_map, fileName, format, nbrLabels, mpi);
+            this->ToFileBase(m_map, stream, format, nbrLabels, mpi);
         }
 
         //!
         //! Retrieve map data from a file and use it to construct a new map
         //! 
         void FromFile(
-            const std::string fileName,     //!<    Name of file
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            std::ifstream& stream,          //!<    File stream
+            const io::fileFormat_t format,  //!<    Format of file
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
             this->Clear();
-            this->FromFileBase(m_map, fileName, format, mpi);
+            this->FromFileBase(m_map, stream, format, mpi);
         }   
 
         //!
@@ -976,24 +984,24 @@ namespace utilities
         //! Store the map in a file
         //! 
         void ToFile(
-            const std::string fileName,     //!<    Name of file to write to
-            const std::string format,       //!<    Format of file (e.g. "binary", "text")
+            std::ofstream& stream,          //!<    File stream
+            const io::fileFormat_t format,  //!<    Format of file
             const unsigned int nbrLabels,   //!<    Number of map key labels
             MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
-            this->ToFileBase(m_map, fileName, format, nbrLabels, mpi);
+            this->ToFileBase(m_map, stream, format, nbrLabels, mpi);
         }
 
         //!
         //! Retrieve map data from a file and use it to construct a new map
         //!
         void FromFile(
-            const std::string fileName, //!<    Name of file to read from
-            const std::string format,   //!<    Format of file (e.g. "binary", "text")
-            MpiWrapper& mpi)            //!<    Instance of the MPI wrapper class
+            std::ifstream& stream,          //!<    File stream
+            const io::fileFormat_t format,  //!<    Format of file
+            MpiWrapper& mpi)                //!<    Instance of the MPI wrapper class
         {
             this->Clear();
-            this->FromFileBase(m_map, fileName, format, mpi);
+            this->FromFileBase(m_map, stream, format, mpi);
         }
 
         //!
