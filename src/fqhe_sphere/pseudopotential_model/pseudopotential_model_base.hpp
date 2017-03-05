@@ -27,6 +27,7 @@
 #define _PSEUDOPOTENTIAL_MODEL_BASE_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
+#include "../../program_options/general_options.hpp"
 #include "../program_options/pseudopotential_model_options.hpp"
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 #include "pseudopotential_model_data.hpp"
@@ -53,8 +54,7 @@ namespace diagonalization
     {
         protected:
         H m_hamiltonian;                    //!<  An object to contain the Hamiltonian
-        PseudopotentialmodelData m_params;
-                                            //!<  Container for model parameters
+        PseudopotentialModelData m_params;  //!<  Container for model parameters
         //!
         //! Convert signed angular momentum values m into unsigned state
         //! labels k
@@ -330,8 +330,8 @@ namespace diagonalization
         }
 
         virtual void BuildTermTables(const utilities::MpiWrapper& mpi)=0;
-        virtual void TermTablesToFile(const utilities::MpiWrapper& mpi)=0;
-        virtual void TermTablesFromFile(const utilities::MpiWrapper& mpi)=0;
+        virtual void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi) const=0;
+        virtual void TermsFromFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi)=0;
         virtual void BuildFockBasis(utilities::MpiWrapper& mpi)=0;
         virtual void BuildHamiltonian(utilities::MpiWrapper& mpi)=0;
         virtual void Diagonalize(utilities::MpiWrapper& mpi)=0;
@@ -371,6 +371,7 @@ namespace diagonalization
         void EigensystemToFile(
             const bool writeEigenvalues,    //!<    Option to write eigenvalues to file
             const bool writeEigenvectors,   //!<    Option to write eigenvectors to file
+            const io::fileFormat_t format,  //!<    Format of file 
             utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {   
             if(writeEigenvalues || (writeEigenvectors && m_params.m_hamiltonianDiagonalized))
@@ -381,13 +382,13 @@ namespace diagonalization
                 }
                 std::stringstream ss;
                 ss.str("");
-                ss<<m_params.MakeBaseFileName(_OUT_)<<"_eigensystem.dat";
+                ss<<m_params.MakeBaseFileName(io::_OUT_)<<"_eigensystem.dat";
                 std::vector<iSize_t> permsList(m_params.m_nbrEigenvaluesToFind);
                 for(iSize_t i=0; i<m_params.m_nbrEigenvaluesToFind; ++i)
                 {
                     permsList[i] = i;
                 }
-                m_hamiltonian.EigensystemToFile(ss.str(), writeEigenvalues, writeEigenvectors, mpi);
+                m_hamiltonian.EigensystemToFile(ss.str(), writeEigenvalues, writeEigenvectors, format, mpi);
                 mpi.ExitFlagTest();
             }
             return;
@@ -399,9 +400,10 @@ namespace diagonalization
         //! This function MUST be called on all nodes if run in parallel 
         ////////////////////////////////////////////////////////////////////////////////
         void EigensystemFromFile(
-            const bool readEigenvalues,
-            const bool readEigenvectors,
-            utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
+            const bool readEigenvalues,     //!<    Option to read eigenvalues from file
+            const bool readEigenvectors,    //!<    Option to read eigenvectors from file
+            const io::fileFormat_t format,  //!<    Format of file 
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {   
             if((readEigenvalues || readEigenvectors) && !m_params.m_hamiltonianDiagonalized)
             {
@@ -424,8 +426,8 @@ namespace diagonalization
                 }
                 std::stringstream ss;
                 ss.str("");
-                ss<<m_params.MakeBaseFileName(_IN_)<<"_eigensystem.dat";
-                m_hamiltonian.EigensystemFromFile(ss.str(), readEigenvalues, readEigenvectors, mpi);
+                ss<<m_params.MakeBaseFileName(io::_IN_)<<"_eigensystem.dat";
+                m_hamiltonian.EigensystemFromFile(ss.str(), readEigenvalues, readEigenvectors, format ,mpi);
                 mpi.ExitFlagTest();
                 //  Counts as if the Hamiltonian were diagonalized
                 m_params.m_hamiltonianDiagonalized = true;
@@ -437,6 +439,7 @@ namespace diagonalization
         //! Write currently stored Hamiltonian matrix data to a file
         //!
         void HamiltonianToFile(
+            const io::fileFormat_t format,//!<    Format of file
             utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
         {
             if(m_params.m_hamiltonianBuilt)
@@ -447,8 +450,8 @@ namespace diagonalization
                 }
                 std::stringstream ss;
                 ss.str("");
-                ss<<m_params.MakeBaseFileName(_OUT_)<<"_hamiltonian_"<<mpi.m_id<<".dat";
-                m_hamiltonian.HamiltonianToFile(ss.str(),mpi);
+                ss<<m_params.MakeBaseFileName(io::_OUT_)<<"_hamiltonian_"<<mpi.m_id<<".dat";
+                m_hamiltonian.HamiltonianToFile(ss.str(), format, mpi);
                 mpi.ExitFlagTest();
             }
         }

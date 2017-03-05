@@ -30,13 +30,15 @@
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/wrappers/sqlite_wrapper.hpp"
-#if _DEBUG_
-#include "../../general/debug.hpp"
-#endif
+#include "../../utilities/wrappers/io_wrapper.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <boost/program_options.hpp>
+#if _DEBUG_
+#include "../../general/debug.hpp"
+#endif
 
 namespace diagonalization
 {
@@ -46,7 +48,7 @@ namespace diagonalization
     //! 
     //! See e.g. PRL 109, 265301 (2012) for the full definition of these parameters
     //////////////////////////////////////////////////////////////////////////////////
-    struct SingleParticleParameters
+    struct NonInteractingOflModelData
     {
         double m_theta;       //!<    Polarization angle of incident beams
                               //!
@@ -58,10 +60,10 @@ namespace diagonalization
                               //!
         double m_mass;        //!<    mass of the cold atom
                               //!
-        SingleParticleParameters();
-        SingleParticleParameters(const SingleParticleParameters& other);
-        SingleParticleParameters& operator=( const SingleParticleParameters& other);
-        SingleParticleParameters(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
+        NonInteractingOflModelData();
+        NonInteractingOflModelData(const NonInteractingOflModelData& other);
+        NonInteractingOflModelData& operator=( const NonInteractingOflModelData& other);
+        NonInteractingOflModelData(boost::program_options::variables_map* optionList, utilities::MpiWrapper& mpi);
         void ReadFromFile(const std::string fileName, utilities::MpiWrapper& mpi);
         void GenerateParametersFile() const;
         void ReadFromSql(const std::string tableName, const std::string fileName, const iSize_t sqlId, utilities::MpiWrapper& mpi);

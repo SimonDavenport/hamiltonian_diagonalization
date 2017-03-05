@@ -127,9 +127,9 @@ namespace diagonalization
         {
             for(const auto &pair : m_observablesList)
             {
-                m_observablesList[pair.first] = (*optionList)[pair.first].as<bool>();
+                GetOption(optionList, m_observablesList[pair.first], pair.first, _AT_, mpi);
             }
-            m_nbrMostProbable = (*optionList)["nbr-most-probable"].as<iSize_t>();
+            GetOption(optionList, m_nbrMostProbable, "nbr-most-probable", _AT_, mpi);
         }
         mpi.ExitFlagTest();
         this->MpiSynchronize(0, mpi);
@@ -187,21 +187,26 @@ namespace diagonalization
     //!
     void ObservablesManager::UpdateSqlFlags(
         boost::program_options::variables_map* optionList,  //!<    Command line variables map
-        const utilities::MpiWrapper& mpi)                   //!<    Instance of the mpi wrapper class
+        utilities::MpiWrapper& mpi)                   //!<    Instance of the mpi wrapper class
     {
         if(0 == mpi.m_id)    //  FOR THE MASTER NODE
         {
-            std::string inPath          =  (*optionList)["in-path"].as<std::string>();
-            bool useSql                 =  (*optionList)["use-sql"].as<bool>();
-            iSize_t sqlId               =  (*optionList)["sql-id"].as<iSize_t>();
-            std::string sqlName         =  (*optionList)["sql-name"].as<std::string>();
-            std::string sqlTableName    =  (*optionList)["sql-table-name"].as<std::string>();
+            std::string inPath;
+            GetOption(optionList, inPath, "in-path", _AT_, mpi);
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            iSize_t sqlId;
+            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            std::string sqlName;
+            GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+            std::string sqlTableName;
+            GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
             if(m_calcualtedObservables && useSql)
             {
                 std::stringstream fileName;
                 fileName.str("");
                 fileName<<inPath<<sqlName;
-                utilities::Sqlite sql(fileName.str(),_EDIT_EXISTING_);
+                utilities::Sqlite sql(fileName.str(), sql::_EDIT_EXISTING_);
                 //  If any data analysis has been performed at any point then update
                 //  the SQL table to indicate that this is so
                 if(m_observablesList["calculate-occupations"])

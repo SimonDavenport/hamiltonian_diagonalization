@@ -27,9 +27,10 @@
 #define _TERM_HASH_TABLES_BASE_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-#include "../general/orbital_and_state_defs.hpp"
-#include "../data_structures/multi_key_hash.hpp"
-#include "../wrappers/mpi_wrapper.hpp"
+#include "../utilities/general/orbital_and_state_defs.hpp"
+#include "../utilities/data_structures/multi_key_hash.hpp"
+#include "../utilities/wrappers/mpi_wrapper.hpp"
+#include "../program_options/general_options.hpp"
 #include <vector>
 
 namespace diagonalization
@@ -39,7 +40,6 @@ namespace diagonalization
     //! V_{k1,k2,k3,k4}. This version uses an underlying hash table
     //! data structure.
     ////////////////////////////////////////////////////////////////////////////////
-
     template <typename T>
     class TermHashTables
     {
@@ -49,6 +49,7 @@ namespace diagonalization
                                             //!< Store a look-up table of k1 values 
                                             //!  satisfying a conservation law   
         kState_t m_kMax;                    //!<    Maximum index-value
+        std::string m_fileHeader;           //!<    Text description at file head
         public:
 
         //!
@@ -56,7 +57,8 @@ namespace diagonalization
         //!
         TermHashTables()
         :
-            m_kMax(0)
+            m_kMax(0),
+            m_fileHeader("# File contains term table data in hash table format")
         {}
 
         //!
@@ -85,13 +87,13 @@ namespace diagonalization
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2,
                            const kState_t k3, const kState_t k4) const{};
         virtual T GetVkkkk(const kState_t k1, const kState_t k2, const kState_t k3,
-                           const kState_t k4) const{ return 0.0;};
+                           const kState_t k4) const{return 0.0;};
         virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const{};
-        virtual T GetEkk(const kState_t k1, const kState_t k2) const{ return 0.0;};
+        virtual T GetEkk(const kState_t k1, const kState_t k2) const{return 0.0;};
         virtual iSize_t GetMaxKCount() const{return 1;};
-        virtual void TableToFile(const std::string fileName, std::string format, 
-                                 utilities::MpiWrapper& mpi) const=0;
-        virtual void TableFromFile(const std::string fileName, std::string format,
+        virtual void ToFile(const std::string fileName, const io::fileFormat_t format, 
+                                 utilities::MpiWrapper& mpi)=0;
+        virtual void FromFile(const std::string fileName, const io::fileFormat_t format,
                                    utilities::MpiWrapper& mpi)=0;
         //!
         //! Get the address of the quantum number hash table
@@ -134,24 +136,81 @@ namespace diagonalization
         //!
         //! Output the table to a file
         //!
-        void TableToFileBase(
+        void ToFileBase(
             const std::string fileName,         //!<    File name
-            const std::string format,           //!<    Format of file (e.g. "binary", "text")
+            const io::fileFormat_t format,      //!<    Format of file 
             const iSize_t nbrLabels,            //!<    Number of quantum number labels
             utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
         {
-            m_vTable.ToFile(fileName, format, nbrLabels, mpi);
+            std::ofstream f_out;
+            if(0 == mpi.m_id)	// FOR THE MASTER NODE
+            {
+                GenFileStream(f_out, fileName, format, mpi);
+                if(!mpi.m_exitFlag)
+                {
+                    if(io::_BINARY_ == format)
+                    {
+                        iSize_t strSize = m_fileHeader.size();
+                        f_out.write((char*)&(strSize), sizeof(iSize_t));
+                        f_out.write(m_fileHeader.c_str(), strSize);
+                    }
+                    else if(io::_TEXT_ == format)
+                    {
+                        f_out << m_fileHeader << "\n";
+                    }
+                }
+            }
+            mpi.ExitFlagTest();
+            m_kTable.ToFile(f_out, format, nbrLabels-1, mpi);
+            m_vTable.ToFile(f_out, format, nbrLabels, mpi);
+            if(f_out.is_open())
+            {
+                f_out.close();
+            }
         }
 
         //!
         //! Import the term table from a file
         //!
-        void TableFromFileBase(
+        void FromFileBase(
             const std::string fileName,         //!<    File name
-            const std::string format,           //!<    Format of file (e.g. "binary", "text")
+            const io::fileFormat_t format,      //!<    Format of file 
             utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
         {
-            m_vTable.FromFile(fileName, format, mpi);
+            std::ifstream f_in;
+            std::string fileHeader;
+            if(0 == mpi.m_id)	// FOR THE MASTER NODE
+            {
+                GenFileStream(f_in, fileName, format, mpi);
+                if(!mpi.m_exitFlag)
+                {
+                    if(io::_BINARY_ == format)
+                    {
+                        iSize_t strSize;
+                        f_in.read(reinterpret_cast<char*>(&strSize), sizeof(iSize_t));
+                        fileHeader.resize(strSize);
+                        f_in.read(&fileHeader[0], strSize);
+                    }
+                    else if(io::_TEXT_ == format)
+                    {
+                         getline(f_in, fileHeader);
+                    }
+                    if(m_fileHeader != fileHeader)
+                    {
+                        std::cerr << "\n\tFile read in error - wrong file header " << fileHeader << std::endl;
+                        mpi.m_exitFlag = true;
+                        f_in.close();
+                    }
+                }
+            }
+            mpi.ExitFlagTest();
+            m_kTable.FromFile(f_in, format, mpi);
+            m_vTable.FromFile(f_in, format, mpi);
+            if(f_in.is_open())
+            {
+                f_in.close();
+            }
+            this->MpiSynchronize(0, mpi);
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -181,6 +240,7 @@ namespace diagonalization
                         kState_t k1;
                         iSize_t nbrK1;
                         quarticArray->GetK1(&k1, nbrK1, k2, k3, k4);
+                        m_kTable.Insert(k1, utilities::Key(k2, k3, k4));
                         m_vTable.Insert(utilities::Key(k1, k2, k3, k4)) = quarticArray->GetVkkkk(k1, k2, k3, k4);
                     }
                 }
@@ -209,7 +269,8 @@ namespace diagonalization
                 kState_t k1;
                 iSize_t nbrK1;
                 quadraticArray->GetK1(&k1, nbrK1, k2);
-                m_vTable.Insert(utilities::Key(k2, k2)) = quadraticArray->GetEkk(k1, k2);
+                m_kTable.Insert(k1, k2);
+                m_vTable.Insert(utilities::Key(k1, k2)) = quadraticArray->GetEkk(k1, k2);
             }
         }
     };

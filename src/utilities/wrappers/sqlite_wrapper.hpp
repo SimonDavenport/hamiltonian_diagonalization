@@ -43,10 +43,14 @@
 #include "../general/debug.hpp"
 #endif
 //////      ENUM DECLARATIONS       ////////////////////////////////////////
-enum sqlFlag_t {_OPEN_=0,_NOT_OPEN_=1};            //!<   SQL Database open flag
-enum sqlType_t {_TEXT_,_INT_,_REAL_,_BLOB_};       //!<   Possible SQL data types
-enum sqlCreate_t {_CREATE_NEW_,_READ_EXISTING_,_EDIT_EXISTING_};   
-                                    //!<   Flag to pass to the Sqlite constructor
+namespace sql
+{
+    enum sqlFlag_t {_OPEN_=0, _NOT_OPEN_=1};            //!<   SQL Database open flag
+    enum sqlType_t {_TEXT_, _INT_, _REAL_, _BLOB_};     //!<   Possible SQL data types
+    enum sqlCreate_t {_CREATE_NEW_, _READ_EXISTING_, _EDIT_EXISTING_};   
+                                        //!<   Flag to pass to the Sqlite constructor
+}
+
 namespace utilities
 {
     class SqliteVariable
@@ -63,7 +67,7 @@ namespace utilities
         bool operator==(const SqliteVariable& rhs) const;
         bool operator==(SqliteVariable& rhs) const;
         SqliteVariable& operator=(const SqliteVariable& other);
-        SqliteVariable(const std::string name, const sqlType_t type);
+        SqliteVariable(const std::string name, const sql::sqlType_t type);
 
         //!
         //! Template method setting explicit data values
@@ -125,7 +129,7 @@ namespace utilities
         SqliteRow& operator=(const SqliteRow& lhs);
         unsigned int GetLength() const;
         std::vector<SqliteVariable> GetCurrentFields() const;
-        void AddField(const std::string name,const sqlType_t type);
+        void AddField(const std::string name,const sql::sqlType_t type);
         //!
         //! Template for the AddField function to pass arguments to the 
         //! SqliteVariable constructor
@@ -142,7 +146,7 @@ namespace utilities
         //! SqliteVariable constructor
         //!
         template<typename T>
-        void UpdateValue(const std::string name, const sqlType_t type, const T data)
+        void UpdateValue(const std::string name, const sql::sqlType_t type, const T data)
         {
             SqliteVariable temp(name,type);
             temp.SetValues(name,data);
@@ -160,7 +164,7 @@ namespace utilities
             this->UpdateValue(temp);
         }
         
-        void UpdateValue(const std::string name, const sqlType_t type);
+        void UpdateValue(const std::string name, const sql::sqlType_t type);
         //!
         //! Template to get the parameter value corresponding to the specified 
         //! SQL field and type from the list of fields sorted in m_data
@@ -196,7 +200,7 @@ namespace utilities
         const static int stringStreamPrecision=15;  //!<    Precision when writing
                                                     //!     numbers in a string stream
         sqlite3* m_db;              //!<    Pointer to SQL database object
-        sqlFlag_t m_dbOpen;         //!<    Flag to specify if the database is opened
+        sql::sqlFlag_t m_dbOpen;         //!<    Flag to specify if the database is opened
         bool m_timeUpdatedTrigger;  //!<    Flag to specify a time field
         std::string m_timeFieldName;//!<    Name of SQL time field
         std::vector<std::string> m_columnHead;
@@ -207,7 +211,7 @@ namespace utilities
 
 	    public:
         Sqlite();
-        Sqlite(const std::string fileName, const sqlCreate_t flag);
+        Sqlite(const std::string fileName, const sql::sqlCreate_t flag);
         ~Sqlite();
         bool IsOpen() const;
         void AddTimeUpdatedTrigger(const std::string name);

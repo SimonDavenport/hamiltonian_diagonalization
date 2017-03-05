@@ -35,6 +35,7 @@
 #include "../../utilities/wrappers/mpi_wrapper.hpp"
 #include "../../utilities/general/cout_tools.hpp"
 #include "../program_options/observables_options.hpp"
+#include "../../utilities/wrappers/program_options_wrapper.hpp"
 
 namespace diagonalization
 {
@@ -59,7 +60,7 @@ namespace diagonalization
             void CalculateAllObservables(InteractingOflModel* model, 
                                          utilities::MpiWrapper& mpi);
             void UpdateSqlFlags(boost::program_options::variables_map* optionList, 
-                                const utilities::MpiWrapper& mpi);
+                                utilities::MpiWrapper& mpi);
     };
 }   //  End namespace diagonalization
 #endif

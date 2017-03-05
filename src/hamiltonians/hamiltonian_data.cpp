@@ -29,50 +29,8 @@
 namespace diagonalization
 {
     //!
-    //! Write a value to a file for double types
+    //! Default constructor declaration
     //!
-    void ValueToFile(std::ofstream& f_out, double* value)
-    {
-        f_out.precision(15);
-        f_out<<*value<<"\n";
-    }
-
-    //!
-    //! Write a value to a file for dcmplx types
-    //!
-    void ValueToFile(std::ofstream& f_out, dcmplx* value)
-    {
-        f_out.precision(15);                
-        f_out<<value->real()<<" ";
-        f_out.precision(15);
-        f_out<<value->imag()<<"\n";
-    }
-
-    //!
-    //! Read a value from a file for double types
-    //!
-    void ValueFromFile(std::ifstream& f_in, double* value)
-    {
-        f_in >> *value;
-    }
-
-    //!
-    //! Read a value from a file for dcmplx types
-    //!
-    void ValueFromFile(std::ifstream& f_in, dcmplx* value)
-    {
-        double tmpReal;
-        double tmpImag;
-        f_in >> tmpReal;
-        f_in >> tmpImag;
-        *value = dcmplx(tmpReal, tmpImag);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Default constructor declaration
-    //!
-    ////////////////////////////////////////////////////////////////////////////////
-
     HamiltonianData::HamiltonianData()
     : 
     m_nbrParticles(1),
@@ -85,10 +43,7 @@ namespace diagonalization
     m_fockSpaceDim(0),
     m_nodeDim(0),
     m_nbrEigenvalues(0)
-    {
-    }
-
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//
+    {}
 
     //!
     //! Constructor with basic arguments

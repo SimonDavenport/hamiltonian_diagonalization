@@ -96,6 +96,40 @@ namespace utilities
     //!	\brief A class template to contain a comparison function used by the sorting
     //! algorithm, built with some template metaprogramming tricks.
     //!
+    //! This version contains a full specialization to allow for std::pairs
+    //! in ascending order.
+    //////////////////////////////////////////////////////////////////////////////////
+    template <>
+    struct Compare<std::pair<uint64_t, dcmplx>, _ASCENDING_ORDER_>
+    {
+        static bool Value(std::pair<uint64_t, dcmplx>* const & keyA, 
+                          std::pair<uint64_t, dcmplx>* const & keyB)
+        {
+            return (keyA->first <= keyB->first) || ((keyA->first == keyB->first) && (abs(keyA->second) <= abs(keyB->second)));
+        }
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //!	\brief A class template to contain a comparison function used by the sorting
+    //! algorithm, built with some template metaprogramming tricks.
+    //!
+    //! This version contains a full specialization to allow for std::pairs
+    //! in descending order.
+    //////////////////////////////////////////////////////////////////////////////////
+    template <>
+    struct Compare<std::pair<uint64_t, dcmplx>, _DESCENDING_ORDER_>
+    {
+        static bool Value(std::pair<uint64_t, dcmplx>* const & keyA, 
+                          std::pair<uint64_t, dcmplx>* const & keyB)
+        {
+            return (keyA->first >= keyB->first) || ((keyA->first == keyB->first) && (abs(keyA->second) >= abs(keyB->second)));
+        }
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //!	\brief A class template to contain a comparison function used by the sorting
+    //! algorithm, built with some template metaprogramming tricks.
+    //!
     //! This version contains a full specialization to allow for sorting complex 
     //! types in ascending order.
     //////////////////////////////////////////////////////////////////////////////////
@@ -329,7 +363,7 @@ namespace utilities
         V* valueList = new V[dim];
         for(unsigned int i=0; i<dim; ++i)
         {
-            valueList[i] = 0;
+            valueList[i] = i;
         }
         DoQuickSort<K,V,O>(keyList.data(), valueList, dim, dim, maxSorted);
         delete[] valueList;

@@ -39,6 +39,7 @@
 #include "../utilities/wrappers/lapack_wrapper.hpp"
 #include "../utilities/general/template_tools.hpp"
 #include "../utilities/general/run_script.hpp"
+#include "../utilities/wrappers/io_wrapper.hpp"
 #include <functional>
 #if _DEBUG_
 #include "../utilities/general/debug.hpp"
@@ -1054,8 +1055,7 @@ namespace diagonalization
         bool PlotHamiltonian(
             const std::string fileName,     //!<    Name of the file where Hamiltonian plot is stored
             const std::string tmpDir,       //!<    A temporary directory where data are stored
-            const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
-            const
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
             if(m_data.m_matrixAllocated)
             {
@@ -1064,43 +1064,11 @@ namespace diagonalization
                     utilities::cout.AdditionalInfo()<<"\n\t- PLOT HAMILTONIAN"<<std::endl;
                 }
 	            //  Output the Hamiltonian into a file
-	            std::ofstream f_tmp;
 	            std::stringstream fileNameStream;
 	            fileNameStream.str("");
 	            fileNameStream<<tmpDir<<"hamiltonianPlotData_id_"<<mpi.m_id<<".tmp";
-	            f_tmp.open(fileNameStream.str().c_str(), std::ios::out);
-	            f_tmp.precision(15);
-                //  Put matrix dimensions in file first
-                f_tmp<<m_data.m_nodeDim<<"\n";
-                f_tmp<<m_data.m_fockSpaceDim<<"\n";
-	            if(utilities::_SPARSE_MAPPED_ == m_data.m_storageMethod)
-	            {
-		            for(fock_t i=0; i<m_data.m_nodeDim; ++i)
-		            {
-			            for(fock_t j=0; j<m_data.m_fockSpaceDim; ++j)
-			            {
-				            f_tmp<<abs(m_sparseMap.Value(i, j))<<"\n";
-			            }
-		            }
-	            }
-	            else if(utilities::_SPARSE_CRS_ == m_data.m_storageMethod)
-	            {
-		            for(fock_t i=0; i<m_data.m_nodeDim; ++i)
-		            {
-			            for(fock_t j=0; j<m_data.m_fockSpaceDim; ++j)
-			            {
-				            f_tmp<<abs(m_crsSparseMatrix.Value(i, j))<<"\n";
-			            }
-		            }
-	            }
-	            else if(utilities::_DENSE_ == m_data.m_storageMethod)
-	            {
-		            for(fock_t i=0; i<m_data.m_nodeDim*m_data.m_fockSpaceDim; ++i)
-		            {
-			            f_tmp<<std::fixed<<abs(m_fullMatrix[i])<<"\n";
-		            }
-	            }
-	            f_tmp.close(); 
+	            io::fileFormat_t format = io::_TEXT_;
+                this->HamiltonianToFile(fileNameStream.str(), format, mpi);
 	            //  Generate the python script that will perform the plotting
 	            std::stringstream pythonScript;
 	            pythonScript.str();
@@ -1154,32 +1122,21 @@ namespace diagonalization
         ////////////////////////////////////////////////////////////////////////////////
         void HamiltonianToFile(
             const std::string fileName,     //!<    Name of output file
+            const io::fileFormat_t format,  //!<    Format of file
             utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
             if(m_data.m_matrixAllocated)
             {
-                std::ofstream f_out;
-                f_out.open(fileName.c_str(), std::ios::out);
-                f_out.precision(15);
-                if(!f_out.is_open())
-                {
-                    std::cerr<<"\n\tERROR: cannot open file: "<<fileName<<std::endl;
-                    mpi.m_exitFlag = true;
-                }
-                if(utilities::_SPARSE_CRS_ != m_data.m_storageMethod)
-                {
-                    //  Need to convert to sparse CRS storage format first
-                    this->ResetMatrixStorageMethod(utilities::_SPARSE_CRS_, _PARALLEL_, mpi);
-                }
                 if(0 == mpi.m_id) //  FOR THE MASTER NODE
                 {
                     utilities::cout.AdditionalInfo()<<"\t- WRITING FILE"<<std::endl;
                 }
-                if(utilities::_SPARSE_CRS_ == m_data.m_storageMethod)
+                //  Need to convert to sparse CRS storage format first
+                if(utilities::_SPARSE_CRS_ != m_data.m_storageMethod)
                 {
-                    m_crsSparseMatrix.DataToFile(f_out);
+                    this->ResetMatrixStorageMethod(utilities::_SPARSE_CRS_, _PARALLEL_, mpi);
                 }
-                f_out.close();
+                m_crsSparseMatrix.ToFile(fileName, format, mpi);
                 if(0 == mpi.m_id) //  FOR THE MASTER NODE
                 {
                     utilities::cout.AdditionalInfo()<<"\n\t- DONE"<<std::endl;
@@ -1189,10 +1146,9 @@ namespace diagonalization
             {
                 if(0 == mpi.m_id) //  FOR THE MASTER NODE
                 {
-                    std::cerr<<"\n\t- FAILED TO STORE HAMILTONIAN ON DISK"<<std::endl;
+                    std::cerr<<"\n\t- Hamiltonain not allocated - failed to srite to file"<<std::endl;
                 }
             }
-            mpi.ExitFlagTest();
             return;
         }
 
@@ -1205,65 +1161,23 @@ namespace diagonalization
         //! stored on each node (make sure that different nodes use
         //! different file names)
         ////////////////////////////////////////////////////////////////////////////////
-        void HamiltonianFromFile(const std::string fileName,
-            utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
+        void HamiltonianFromFile(
+            const std::string fileName,     //!<    Name of input file
+            const io::fileFormat_t format,  //!<    Format of file
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
-            if(!m_data.m_matrixAllocated)
+            if(0 == mpi.m_id) //  FOR THE MASTER NODE
             {
-                if(0 == mpi.m_id) //  FOR THE MASTER NODE
-                {
-                    utilities::cout.AdditionalInfo()<<"\n\t- RETRIEVE HAMILTONIAN FROM DISK"<<std::endl;
-                }
-                std::ifstream f_in;
-                f_in.open(fileName.c_str(), std::ios::in);
-                f_in.precision(15);
-                if(!f_in.is_open())
-                {
-                    std::cerr<<"\n\tERROR: cannot open file: "<<fileName<<std::endl;
-                    mpi.m_exitFlag = true;
-                }
-                mpi.ExitFlagTest();
-                //  File format is CRS sparse storage
-                m_data.m_storageMethod = utilities::_SPARSE_CRS_;
-                fock_t nbrNonZeros;
-                f_in >> nbrNonZeros;
-                f_in >> m_data.m_nodeDim;
-                //  Allocate space to store the matrix on each node
-                m_crsSparseMatrix.Initialize(m_data.m_nodeDim, m_data.m_fockSpaceDim, nbrNonZeros);
-                for(fock_t i=0; i<nbrNonZeros; ++i)
-                {
-                    crsIndex_t rowIndex;
-                    crsIndex_t colIndex;
-                    f_in >> rowIndex;
-                    f_in >> colIndex;
-                    if(utilities::is_same<double, T>::value)
-                    {
-                        double tmpReal;
-                        f_in >> tmpReal;
-                        m_crsSparseMatrix.Insert(rowIndex,colIndex) = tmpReal;
-                    }
-                    else if(utilities::is_same<dcmplx, T>::value)
-                    {
-                        double tmpReal;
-                        double tmpImag;
-                        f_in >> tmpReal;
-                        f_in >> tmpImag;
-                        m_crsSparseMatrix.Insert(rowIndex, colIndex) = dcmplx(tmpReal, tmpImag);
-                    }
-                }
-                f_in.close();
-                m_data.m_matrixAllocated = true;
-                if(0 == mpi.m_id) //  FOR THE MASTER NODE
-                {
-                    utilities::cout.AdditionalInfo()<<"\n\t- DONE"<<std::endl;
-                }
+                utilities::cout.AdditionalInfo()<<"\n\t- RETRIEVE HAMILTONIAN FROM DISK"<<std::endl;
             }
-            else
+            //  File format is always CRS sparse storage
+            m_data.m_storageMethod = utilities::_SPARSE_CRS_;
+            m_crsSparseMatrix.FromFile(fileName, format, mpi);
+            m_data.m_nodeDim = m_crsSparseMatrix.GetNbrRows();
+            m_data.m_matrixAllocated = true;
+            if(0 == mpi.m_id) //  FOR THE MASTER NODE
             {
-                if(0 == mpi.m_id) //  FOR THE MASTER NODE
-                {
-                    std::cerr<<"\n\t- FAILED TO RETRIEVE HAMILTONIAN FROM DISK"<<std::endl;
-                }
+                utilities::cout.AdditionalInfo()<<"\n\t- DONE"<<std::endl;
             }
             return;
         }
@@ -1292,16 +1206,33 @@ namespace diagonalization
             bool writeValues,               //!<    Optionally write eigenvalues
             bool writeVectors,              //!<    Optionally write eigenvectors 
                                             //!     (can be turned off to save disk space)
+            const io::fileFormat_t format,  //!<    Format of file
             utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {   
+            if(0 == mpi.m_id)	// FOR THE MASTER NODE
+            {
+                utilities::cout.AdditionalInfo()<<"\n\t- WRITING EIGENSYSTEM DATA TO FILE "<<fileName.c_str()<<std::endl;
+            }
             //  Set flag to include eigenvalues with eigenvectors
             if(writeVectors)     
             {
                 writeValues = writeVectors;
             }
-            //  Call MPI gather on the eigenvectors
+            if(!m_data.m_eigenvaluesCalculated && writeValues)
+            {
+                std::cerr << "ERROR eigenvalues cannot be written to file as they are not calculated" << std::endl;
+                mpi.m_exitFlag=true;
+                return;
+            }
+            if(!m_data.m_eigenvectorsCalculated && writeVectors)
+            {
+                std::cerr << "ERROR eigenvectors cannot be written to file as they are not calculated" << std::endl;
+                mpi.m_exitFlag=true;
+                return;
+            }
+            //  Call MPI gather on the eigenvectors, if writing to file
             T* eigenvectorsBuffer = 0;
-            if(writeVectors && m_data.m_eigenvectorsCalculated)
+            if(writeVectors)
             {
                 if(0 == mpi.m_id)	// FOR THE MASTER NODE
                 {
@@ -1318,56 +1249,56 @@ namespace diagonalization
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
                 std::ofstream f_out;
-                if((m_data.m_eigenvaluesCalculated && writeValues) || (writeVectors && m_data.m_eigenvectorsCalculated))
+                utilities::GenFileStream(f_out, fileName, format, mpi);
+                if(!mpi.m_exitFlag)
                 {
-                    utilities::cout.AdditionalInfo()<<"\n\t- WRITING EIGENSYSTEM DATA TO FILE "<<fileName.c_str()<<std::endl;
-                    //   create the file
-                    f_out.open(fileName.c_str(), std::ios::out);
-                    if(!f_out.is_open())
+                    if(writeValues)
                     {
-                        std::cerr<<"\tFile: "<<fileName<<" not found !!! "<<std::endl<<std::endl;
-                        mpi.m_exitFlag = true;
-                        return;
-                    }
-                }
-                //  Write eigenvalue data to file
-                if(writeValues && m_data.m_eigenvaluesCalculated)
-                {      
-                    f_out<<"##  NBR EIGENVALUES\n";
-                    f_out<<m_data.m_nbrEigenvalues<<"\n";
-                    f_out<<"##  EIGENVALUES\n";
-                    for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
-                    {
-                        f_out.precision(15);
-                        f_out<<m_eigenvalues[i]<<"\n";
-                    }
-                }
-                if(writeVectors && m_data.m_eigenvectorsCalculated)
-                {
-                    //  Write eigenvector data to file
-                    //  If stored in parallel, we need to sequentially write
-                    //  the values on each node to the same file
-                    f_out<<"##  FOCK SPACE DIMENSION\n";
-                    f_out<<m_data.m_fockSpaceDim<<"\n";
-                    f_out<<"##  EIGENVECTORS\n";
-                    for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
-                    {
-                        T* p_eigs = eigenvectorsBuffer + i*m_data.m_fockSpaceDim;
-                        for(fock_t j=0; j<m_data.m_fockSpaceDim; ++j, ++p_eigs)
+                        if(io::_TEXT_ == format)
                         {
-                            //  See hamiltonian_data.cpp for implementation
-                            ValueToFile(f_out, p_eigs);
-                        }          
+                            f_out << "##  NBR EIGENVALUES\n";
+                            f_out << m_data.m_nbrEigenvalues << "\n";
+                            f_out << "##  EIGENVALUES\n";
+                            for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
+                            {
+                                f_out << std::setprecision(15) << m_eigenvalues[i] << "\n";
+                            }
+                        }
+                        else if(io::_BINARY_ == format)
+                        {
+                            f_out.write((char*)&(m_data.m_nbrEigenvalues), sizeof(unsigned int));
+                            f_out.write((char*)m_eigenvalues.data(), m_data.m_nbrEigenvalues*sizeof(double));
+                        }
                     }
-                }
-                if(f_out.is_open()) 
-                {
+                    if(writeVectors)
+                    {
+                        if(io::_TEXT_ == format)
+                        {
+                            f_out << "##  FOCK SPACE DIMENSION\n";
+                            f_out << m_data.m_fockSpaceDim << "\n";
+                            f_out << "##  EIGENVECTORS\n";
+                            for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
+                            {
+                                T* p_eigs = eigenvectorsBuffer + i*m_data.m_fockSpaceDim;
+                                for(fock_t j=0; j<m_data.m_fockSpaceDim; ++j, ++p_eigs)
+                                {
+                                    std::string streamData = utilities::ToStream(*p_eigs);
+                                    f_out << streamData << "\n";
+                                }
+                            }
+                        }
+                        else if(io::_BINARY_ == format)
+                        {
+                            f_out.write((char*)&(m_data.m_fockSpaceDim), sizeof(unsigned int));
+                            f_out.write((char*)eigenvectorsBuffer, m_data.m_fockSpaceDim*m_data.m_nbrEigenvalues*sizeof(T));
+                        }
+                    }
                     f_out.close();
                 }
-                if(0 != eigenvectorsBuffer) 
-                {
-                    delete[] eigenvectorsBuffer;
-                }
+            }
+            if(0 != eigenvectorsBuffer) 
+            {
+                delete[] eigenvectorsBuffer;
             }
             return;
         }
@@ -1377,12 +1308,13 @@ namespace diagonalization
         //! and distribute data over program nodes
         //!
         void EigensystemFromFile(
-            const std::string fileName, //!<    Name of input file
-            bool readValues,            //!<    Optionally read eigenvalues
-            bool readVectors,           //!<    Optionally read eigenvectors 
-            utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
+            const std::string fileName,     //!<    Name of input file
+            bool readValues,                //!<    Optionally read eigenvalues
+            bool readVectors,               //!<    Optionally read eigenvectors
+            const io::fileFormat_t format,  //!<    Format of file
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
         {
-            double* eigenvaluesBuffer  = 0;
+            double* eigenvaluesBuffer = 0;
             T* eigenvectorsBuffer = 0;
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
@@ -1393,90 +1325,67 @@ namespace diagonalization
                 }
                 utilities::cout.AdditionalInfo()<<"\n\t- READING EIGENSYSTEM DATA FROM FILE "<<fileName.c_str()<<std::endl;
                 std::ifstream f_in;
-                f_in.open(fileName.c_str(), std::ios::in);
-                if(!f_in.is_open())
+                utilities::GenFileStream(f_in, fileName, format, mpi);
+                if(!mpi.m_exitFlag)
                 {
-                    std::cerr<<"\n\tERROR in EigensystemFromFile: file: "<<fileName<<" not found !!! "<<std::endl<<std::endl;
-                    mpi.m_exitFlag = true;
-                    return;
-                }
-                if(readValues)
-                {
-                    std::string line;
-                    while(getline(f_in, line))
+                    if(readValues)
                     {
-                        if(line=="##  NBR EIGENVALUES")	
+                        if(io::_TEXT_ == format)
                         {
-                            break;
+                            std::string line;
+                            while(getline(f_in, line))
+                            {
+                                if(line=="##  NBR EIGENVALUES") break;
+                            }
+                            f_in >> m_data.m_nbrEigenvalues;
+                            eigenvaluesBuffer = new (std::nothrow) double[m_data.m_nbrEigenvalues];
+                            while(getline(f_in, line))
+                            {
+                                if(line=="##  EIGENVALUES")	break;
+                            }
+                            for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
+                            {
+                                f_in >> eigenvaluesBuffer[i];
+                            }
                         }
-                        if(f_in.eof())
+                        else if(io::_BINARY_ == format)
                         {
-                            std::cerr<<"\n\tERROR: In file: "<<fileName<<" nbr eigenvalues not found !!! "<<std::endl<<std::endl;
-                            mpi.m_exitFlag = true;
-                            return; 
+                            f_in.read(reinterpret_cast<char*>(&(m_data.m_nbrEigenvalues)), sizeof(unsigned int));
+                            eigenvaluesBuffer = new (std::nothrow) double[m_data.m_nbrEigenvalues];
+                            f_in.read(reinterpret_cast<char*>(eigenvaluesBuffer), m_data.m_nbrEigenvalues*sizeof(double));
                         }
-                    }               
-                    //  Allocate memory to store eigenvalues
-                    f_in >> m_data.m_nbrEigenvalues;
-                    eigenvaluesBuffer = new (std::nothrow) double[m_data.m_nbrEigenvalues];   
-                    while(getline(f_in, line))
-                    {
-                        if(line=="##  EIGENVALUES")	
-                        {
-                            break;
-                        }
-                        if(f_in.eof())
-                        {
-                            std::cerr<<"\n\tERROR: In file: "<<fileName<<" eigenvalues not found !!! "<<std::endl<<std::endl;
-                            mpi.m_exitFlag = true;
-                            return; 
-                        }
+                        m_data.m_eigenvaluesCalculated = true;
                     }
-                    for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
+                    if(readVectors)
                     {
-                        f_in>>eigenvaluesBuffer[i];
-                    }
-                    m_data.m_eigenvaluesCalculated = true;
-                }
-                if(readValues && readVectors)
-                {
-                    std::string line;
-                    while(getline(f_in, line))
-                    {
-                        if(line=="##  FOCK SPACE DIMENSION")	
+                        if(io::_TEXT_ == format)
                         {
-                            break;
+                            std::string line;
+                            while(getline(f_in, line))
+                            {
+                                if(line=="##  FOCK SPACE DIMENSION") break;
+                            }       
+                            f_in >> m_data.m_fockSpaceDim;
+                            eigenvectorsBuffer = new (std::nothrow) T[m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim];
+                            while(getline(f_in,line))
+                            {
+                                if(line=="##  EIGENVECTORS") break;
+                            }
+                            T* p_eigs = eigenvectorsBuffer;
+                            for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
+                            {
+                                for(fock_t j=0; j<m_data.m_fockSpaceDim; ++j, ++p_eigs)
+                                {
+                                    utilities::FromStream(f_in, *p_eigs);
+                                }           
+                            }
                         }
-                        if(f_in.eof())
+                        else if(io::_BINARY_ == format)
                         {
-                            std::cerr<<"\n\tERROR: In file: "<<fileName<<" Fock space dimension not found !!! "<<std::endl<<std::endl;
-                            mpi.m_exitFlag = true;
-                            return; 
+                            f_in.read(reinterpret_cast<char*>(&(m_data.m_fockSpaceDim)), sizeof(unsigned int));
+                            eigenvectorsBuffer = new (std::nothrow) T[m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim];
+                            f_in.read(reinterpret_cast<char*>(eigenvectorsBuffer), m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim*sizeof(T));
                         }
-                    }           
-                    //  Allocate memory to store eigenvectors
-                    f_in >> m_data.m_fockSpaceDim;
-                    eigenvectorsBuffer = new (std::nothrow) T[m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim];
-                    while(getline(f_in,line))
-                    {
-                        if(line=="##  EIGENVECTORS")	
-                        {
-                            break;
-                        }
-                        if(f_in.eof())
-                        {
-                            std::cerr<<"\n\tERROR: In file: "<<fileName<<" eigenvectors not found !!! "<<std::endl<<std::endl;
-                            mpi.m_exitFlag = true;
-                            return; 
-                        }
-                    }
-                    T* p_eigs = eigenvectorsBuffer;
-                    for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
-                    {
-                        for(fock_t j=0; j<m_data.m_fockSpaceDim; ++j, ++p_eigs)
-                        {
-                            ValueFromFile(f_in, p_eigs);
-                        }           
                     }
                     f_in.close();
                     m_data.m_eigenvectorsCalculated = true;
@@ -1514,171 +1423,7 @@ namespace diagonalization
                     mpi.Scatter<T>(eigenvectorsBuffer+e*m_data.m_fockSpaceDim, m_data.m_fockSpaceDim,
                                    m_eigenvectors.data()+e*eigenvectorNodeDim, eigenvectorNodeDim, 0, mpi.m_comm, status);
                 }
-                if(0!=eigenvectorsBuffer)   
-                {
-                    delete[] eigenvectorsBuffer;
-                }
-            }
-            return;
-        }
-
-        //!
-        //! Output all stored eigenvalue and eigenvector data to a binary file
-        //!
-        void EigensystemToBinaryFile(
-            const std::string fileName,   //!<    Name of output file
-            bool writeValues,             //!<    Optionally write eigenvalues
-            bool writeVectors,            //!<    Optionally write eigenvectors 
-                                          //!     (can be turned off to save disk space)
-            const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
-            const
-        {   
-            //  Set flag to include eigenvalues with eigenvectors
-            if(writeVectors)     
-            {
-                writeValues = writeVectors;
-            }
-            //  Call MPI gather on the eigenvectors
-            T* eigenvectorsBuffer = 0;
-            if(m_data.m_eigenvectorsCalculated)
-            {
-                if(0 == mpi.m_id)	// FOR THE MASTER NODE
-                {
-                    eigenvectorsBuffer = new T[m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim];
-                }
-                for(iSize_t e=0; e<m_data.m_nbrEigenvalues; ++e)
-                {
-                    MPI_Status status;
-                    fock_t eigenvectorNodeDim = this->GetEigenvectorNodeDim();
-                    mpi.Gather<T>(m_eigenvectors.data()+e*eigenvectorNodeDim, eigenvectorNodeDim,
-                                  eigenvectorsBuffer+e*m_data.m_fockSpaceDim, m_data.m_fockSpaceDim, 0, mpi.m_comm, status);
-                }
-            } 
-            if(0 == mpi.m_id)	// FOR THE MASTER NODE
-            {
-                std::ofstream f_out;
-                if((m_data.m_eigenvaluesCalculated && writeValues) || (writeVectors && m_data.m_eigenvectorsCalculated))
-                {
-                    utilities::cout.AdditionalInfo()<<"\n\t- WRITING EIGENSYSTEM DATA TO BINARY FILE "<<fileName.c_str()<<std::endl;
-                    //   create the file
-                    f_out.open(fileName.c_str(), std::ios::binary);
-                    if(!f_out.is_open())
-                    {
-                        std::cerr<<"\tFile: "<<fileName<<" not found !!! "<<std::endl<<std::endl;
-                        mpi.m_exitFlag = true;
-                        return;
-                    }
-                }
-                //  Write eigenvalue data to file
-                if(writeValues && m_data.m_eigenvaluesCalculated)
-                {      
-                    f_out.write((char*)&m_data.m_nbrEigenvalues, sizeof(iSize_t));
-                    for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
-                    {
-                        f_out.write((char*)(m_eigenvalues.data()+i), sizeof(double));
-                    }
-                }
-                //  Write eigenvector data to file 
-                if(writeVectors && m_data.m_eigenvectorsCalculated)
-                {
-                    f_out.write((char*)&m_data.m_nbrEigenvalues, sizeof(iSize_t));
-                    f_out.write((char*)&m_data.m_fockSpaceDim, sizeof(fock_t));
-                    for(iSize_t i=0; i<m_data.m_nbrEigenvalues; ++i)
-                    {
-                        f_out.write((char*)(eigenvectorsBuffer+i*m_data.m_fockSpaceDim), m_data.m_fockSpaceDim*sizeof(T));     
-                    }
-                }
-                if(f_out.is_open()) 
-                {
-                    f_out.close();
-                }
-                if(0 != eigenvectorsBuffer) 
-                {
-                    delete[] eigenvectorsBuffer;
-                }
-            }
-            return;
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////
-        //! \brief Input all stored eigenvalue and eigenvector data from a text file
-        //!
-        //! This function MUST be called on all nodes if run in parallel 
-        //////////////////////////////////////////////////////////////////////////////////
-        void EigensystemFromBinaryFile(
-            const std::string fileName, //!<    Name of input file
-            bool readValues,            //!<    Optionally read eigenvalues
-            bool readVectors,           //!<    Optionally read eigenvectors 
-            utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
-        {   
-            double* eigenvaluesBuffer  = 0;
-            T* eigenvectorsBuffer = 0;
-            if(0 == mpi.m_id)	// FOR THE MASTER NODE
-            {
-                //  Set flag to include eigenvalues with eigenvectors
-                if(readVectors)     
-                {
-                    readValues = readVectors;
-                }
-                utilities::cout.AdditionalInfo()<<"\n\t- READING EIGENSYSTEM DATA FROM BINARY FILE "<<fileName.c_str()<<std::endl;
-                std::ifstream f_in;
-                f_in.open(fileName.c_str(), std::ios::binary);
-                if(!f_in.is_open())
-                {
-                    std::cerr<<"\n\tERROR: File: "<<fileName<<" not found !!! "<<std::endl<<std::endl;
-                    mpi.m_exitFlag = true;
-                    return;
-                }
-                if(readValues)
-                {   
-                    f_in.read(reinterpret_cast<char*>(&m_data.m_nbrEigenvalues), sizeof(iSize_t));           
-                    //  Allocate memory to store eigenvalues
-                    eigenvaluesBuffer = new (std::nothrow) double[m_data.m_nbrEigenvalues];   
-                    f_in.read(reinterpret_cast<char*>(eigenvaluesBuffer), m_data.m_nbrEigenvalues*sizeof(double));
-                    m_data.m_eigenvaluesCalculated = true;
-                }
-                if(readVectors)
-                {
-                    f_in.read(reinterpret_cast<char*>(&m_data.m_nbrEigenvalues), sizeof(iSize_t));
-                    f_in.read(reinterpret_cast<char*>(&m_data.m_fockSpaceDim), sizeof(fock_t));
-                    //  Allocate memory to store eigenvectors
-                    eigenvectorsBuffer = new (std::nothrow) T[m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim];   
-                    f_in.read(reinterpret_cast<char*>(eigenvectorsBuffer), (fock_t)m_data.m_nbrEigenvalues*m_data.m_fockSpaceDim*sizeof(T));
-                   m_data.m_eigenvectorsCalculated = true;
-                }
-                f_in.close();
-            }
-            //  MPI sync parameters required on all nodes
-            mpi.Sync(&m_data.m_eigenvaluesCalculated, 1, 0);
-            mpi.Sync(&m_data.m_eigenvectorsCalculated, 1, 0);
-            mpi.Sync(&m_data.m_nbrEigenvalues, 1, 0);
-            if(m_data.m_eigenvaluesCalculated)
-            {
-                m_eigenvalues.resize(m_data.m_nbrEigenvalues);
-                if(0 == mpi.m_id)	// FOR THE MASTER NODE
-                {
-                    memcpy(m_eigenvalues.data(), eigenvaluesBuffer, m_data.m_nbrEigenvalues*sizeof(double));
-                }
-                MPI_Barrier(mpi.m_comm);
-                //  Set the same eigenvalues on each node
-                mpi.Sync(&m_eigenvalues, 0);
-                //  Clear the buffer
-                if(0 != eigenvaluesBuffer)  delete[] eigenvaluesBuffer;
-            }
-
-            if(m_data.m_eigenvectorsCalculated)
-            {
-                //  Call MPI scatter on the eigenvectors
-                mpi.DivideTasks(mpi.m_id, m_data.m_fockSpaceDim, mpi.m_nbrProcs, &mpi.m_firstTask, &mpi.m_lastTask, false);
-                fock_t eigenvectorNodeDim = mpi.m_lastTask - mpi.m_firstTask + 1;
-                m_eigenvectors.resize(eigenvectorNodeDim*m_data.m_nbrEigenvalues);
-                for(iSize_t e=0; e<m_data.m_nbrEigenvalues; ++e)
-                {
-                    MPI_Status status;
-                    mpi.Scatter<T>(eigenvectorsBuffer+e*m_data.m_fockSpaceDim, m_data.m_fockSpaceDim,
-                                   m_eigenvectors.data()+e*eigenvectorNodeDim, eigenvectorNodeDim, 0, mpi.m_comm, status);
-                }
-                if(0!=eigenvectorsBuffer)   
+                if(0!=eigenvectorsBuffer)
                 {
                     delete[] eigenvectorsBuffer;
                 }

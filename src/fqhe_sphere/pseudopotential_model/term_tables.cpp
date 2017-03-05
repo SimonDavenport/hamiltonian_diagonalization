@@ -69,23 +69,23 @@ namespace diagonalization
     //! Write quadratic terms to a file
     //!
     void QuadraticTermTables::ToFile(
-        const std::string fileName, //!<    Name of file
-        std::string format,         //!<    Format of file (e.g. "binary", "text")
-        utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
+        const std::string fileName,     //!<    Name of file
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
         const
     {
-        this->ToFileBase(fileName, format, 2, mpi)
+        this->ToFileBase(fileName, format, 2, mpi);
     }
     
     //!
     //! Read quadratic terms from a file
     //!
     void QuadraticTermTables::FromFile(
-        const std::string fileName, //!<    Name of file
-        std::string format,         //!<    Format of file (e.g. "binary", "text")
-        utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
+        const std::string fileName,     //!<    Name of file
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
     {
-        this->FromFileBase(fileName, format, mpi)
+        this->FromFileBase(fileName, format, mpi);
     }
     
     //////  QuarticTermTables IMPLEMENTATION        //////////////////////////
@@ -123,6 +123,18 @@ namespace diagonalization
         }
     }
 
+    //!
+    //! Set the k1 value corresponding to a given k2, k3, k4
+    //!
+    void QuarticTermTables::SetK1(
+        const kState_t k1,          //!<    k1 index to be set
+        const kState_t k2,          //!<    k2 index
+        const kState_t k3,          //!<    k3 index
+        const kState_t k4)          //!<    k4 index
+    {
+        m_kTable[(k4*m_kMax+k3)*m_kMax + k2] = k1;
+    }  
+
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Return a quartic term coefficient specified by a given k1,k2,k3,k4
     //!
@@ -144,11 +156,24 @@ namespace diagonalization
     }
     
     //!
+    //! Set the value of the term Vkkkk for a given k1, k2, k3, k4
+    //!
+    void QuarticTermTables::SetVkkkk(
+        const double Vkkkk,        //!<    New Vkkkk value to set
+        const kState_t k1,         //!<    k1 index
+        const kState_t k2,         //!<    k2 index
+        const kState_t k3,         //!<    k3 index
+        const kState_t k4)         //!<    k4 index
+    {
+        m_vTable[(k4*m_kMax+k3)*m_kMax + k2] = Vkkkk;
+    }
+    
+    //!
     //! Write quartic terms to a file
     //!
     void QuarticTermTables::ToFile(
         const std::string fileName, //!<    Name of file
-        std::string format,         //!<    Format of file (e.g. "binary", "text")
+        io::fileFormat_t format,    //!<    Format of file
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
         const
     {
@@ -160,7 +185,7 @@ namespace diagonalization
     //!
     void QuarticTermTables::FromFile(
         const std::string fileName, //!<    Name of file
-        std::string format,         //!<    Format of file (e.g. "binary", "text")
+        io::fileFormat_t format,    //!<    Format of file (e.g. "binary", "text")
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
     {
         this->FromFileBase(fileName, format, mpi);

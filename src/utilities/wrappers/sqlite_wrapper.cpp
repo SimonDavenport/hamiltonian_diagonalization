@@ -51,23 +51,23 @@ namespace utilities
     //!
     SqliteVariable::SqliteVariable(
     const std::string name,     //!<    SQL variable name
-    const sqlType_t type)       //!<    SQL variable type
+    const sql::sqlType_t type)       //!<    SQL variable type
         :
         m_name(name),
         m_data("0")
     {
         switch(type)
         {
-            case _TEXT_: 
+            case sql::_TEXT_: 
                 m_type = "TEXT";
                 break;
-            case _INT_:
+            case sql::_INT_:
                 m_type = "INT";
                 break;
-            case _REAL_:
+            case sql::_REAL_:
                 m_type = "REAL";
                 break;
-            case _BLOB_:
+            case sql::_BLOB_:
                 m_type = "BLOB";
                 break;
         }
@@ -285,7 +285,7 @@ namespace utilities
     //! Public interface for the AddField function, passes variables
     //! to an SqliteVariable constructor
     //!
-    void SqliteRow::AddField(const std::string name, const sqlType_t type)
+    void SqliteRow::AddField(const std::string name, const sql::sqlType_t type)
     {
         this->AddField(SqliteVariable(name, type));
     }
@@ -293,7 +293,7 @@ namespace utilities
     //! Public interface for the UpdateValue function, passes variables
     //! to an SqliteVariable constructor
     //!
-    void SqliteRow::UpdateValue(const std::string name,const sqlType_t type)
+    void SqliteRow::UpdateValue(const std::string name,const sql::sqlType_t type)
     {
         this->UpdateValue(SqliteVariable(name,type));
     }
@@ -306,7 +306,7 @@ namespace utilities
     Sqlite::Sqlite()
     :
         m_db(0),
-        m_dbOpen(_NOT_OPEN_),
+        m_dbOpen(sql::_NOT_OPEN_),
         m_timeUpdatedTrigger(false)
     {
     }
@@ -322,11 +322,11 @@ namespace utilities
     //////////////////////////////////////////////////////////////////////////////////
     Sqlite::Sqlite(
         const std::string fileName,      //!<   Name of Sqlite database
-        const sqlCreate_t flag)          //!<   Flag specifying whether to create
+        const sql::sqlCreate_t flag)      //!<   Flag specifying whether to create
                                          //!    a new database or open an existing one   
     :
         m_db(0),
-        m_dbOpen(_NOT_OPEN_),
+        m_dbOpen(sql::_NOT_OPEN_),
         m_timeUpdatedTrigger(false)
     {
         utilities::cout.MainOutput()<<"\n\tUsing SQLite version: "<<sqlite3_libversion()<<std::endl<<std::endl;
@@ -334,15 +334,15 @@ namespace utilities
         dbName.str("");
         dbName<<fileName<<".sql";
         int errorFlag = 0;
-        if(_READ_EXISTING_ == flag)
+        if(sql::_READ_EXISTING_ == flag)
         {
             errorFlag = sqlite3_open_v2(dbName.str().c_str(), &m_db, SQLITE_OPEN_READONLY, NULL);
         }
-        else if(_CREATE_NEW_ == flag)
+        else if(sql::_CREATE_NEW_ == flag)
         {
             errorFlag = sqlite3_open(dbName.str().c_str(),&m_db);
         }
-        else if(_EDIT_EXISTING_ == flag)
+        else if(sql::_EDIT_EXISTING_ == flag)
         {
             errorFlag = sqlite3_open_v2(dbName.str().c_str(), &m_db, SQLITE_OPEN_READWRITE, NULL);
         }
@@ -354,7 +354,7 @@ namespace utilities
         }
         else
         {
-            m_dbOpen = _OPEN_;
+            m_dbOpen = sql::_OPEN_;
         }
     }
     
@@ -365,7 +365,7 @@ namespace utilities
     //////////////////////////////////////////////////////////////////////////////////
     Sqlite::~Sqlite()
     {
-        if(_OPEN_ == m_dbOpen) sqlite3_close(m_db);
+        if(sql::_OPEN_ == m_dbOpen) sqlite3_close(m_db);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -375,7 +375,7 @@ namespace utilities
     //////////////////////////////////////////////////////////////////////////////////
     bool Sqlite::IsOpen() const
     {
-        return (_OPEN_ == m_dbOpen);
+        return (sql::_OPEN_ == m_dbOpen);
     }
     //!
     //! This is a wrapper function that passes a SQL script to the sqlite
@@ -385,7 +385,7 @@ namespace utilities
         const std::string sqlScript,    //!<    Sqlite script to be executed
         const bool getOutput)           //!<    Flag to retrieve output
     {
-        if(_OPEN_ == m_dbOpen)
+        if(sql::_OPEN_ == m_dbOpen)
         {
             char *errMsg;
             char** returnVal;
@@ -816,16 +816,16 @@ namespace utilities
                 switch(choice)
                 {
                     case 0:
-                        this->AddField(field,_TEXT_);
+                        this->AddField(field,sql::_TEXT_);
                         break;
                     case 1:
-                        this->AddField(field,_INT_);
+                        this->AddField(field,sql::_INT_);
                         break;
                     case 2:
-                        this->AddField(field,_REAL_);
+                        this->AddField(field,sql::_REAL_);
                         break;
                     case 3:
-                        this->AddField(field,_BLOB_);
+                        this->AddField(field,sql::_BLOB_);
                         break;
                 }
             

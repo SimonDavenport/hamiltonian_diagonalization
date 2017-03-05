@@ -32,7 +32,7 @@ namespace diagonalization
     //!
     //! This function combines a set of 2D indexes into a single index
     //!
-    kState_t NoninteractingOflModelGrid::CombineIndexes(
+    kState_t NonInteractingOflModelGrid::CombineIndexes(
         const kState_t x,           //!<    x index
         const kState_t y,           //!<    y index
         const iSize_t dim)          //!<    Number of points on the grid
@@ -45,38 +45,38 @@ namespace diagonalization
     //! \brief  Generate a table single-particle Hamiltonian solutions for a given 
     //! k-space grid covering the Brillouin zone with dimX by dimY points.
     //!
-    //! Note: pass the address of an array of SingleParticleHamiltonian classes
+    //! Note: pass the address of an array of NonInteractingOflModel classes
     //! as the Bloch wave function look-up table
     //!
     //! Note: This function is parallelized
     ////////////////////////////////////////////////////////////////////////////////
-    void NoninteractingOflModelGrid::GenerateBlochWaveFunctionTable(
+    void NonInteractingOflModelGrid::GenerateBlochWaveFunctionTable(
         const iSize_t cutOff,                   //!<    Cut-off in range of reciprocal lattice vectors
         const iSize_t dimX,                     //!<    Number of k-space points in G1-direction
         const iSize_t dimY,                     //!<    Number of k-space points in G2-direction
         const double offsetX,                   //!<    X offset in the map of k-space
         const double offsetY,                   //!<    Y offset in the map of k-space
-        SingleParticleHamiltonian* blochTable,  //!<    Look-up table of Bloch wave functions  
-        const SingleParticleParameters* params, //!<    Parameter set defining the Hamiltonian
+        NonInteractingOflModel* blochTable,     //!<    Look-up table of Bloch wave functions  
+        const NonInteractingOflModelData* params, //!<    Parameter set defining the model
         utilities::MpiWrapper& mpi)             //!<    Instance of the mpi wrapper class
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             utilities::cout.AdditionalInfo()<<"\n\t- GENERATING BLOCH WAVE FUNCTION TABLE (cut-off range "<<cutOff<<")"<<std::endl<<std::endl;
         }
-        //  Generate a list of SingleParticleHamiltonian objects to store
+        //  Generate a list of NonInteractingOflModel objects to store
         //  tables of Bloch wave function data
         mpi.DivideTasks(mpi.m_id,dimX*dimY, mpi.m_nbrProcs, &mpi.m_firstTask, &mpi.m_lastTask, false);
-        SingleParticleHamiltonian singleParticleHam(*params);
-        singleParticleHam.m_xBandCutOff = cutOff;
-        singleParticleHam.m_yBandCutOff = cutOff;
-        singleParticleHam.m_nbrBands = 1;
+        NonInteractingOflModel oflModel(*params);
+        oflModel.m_xBandCutOff = cutOff;
+        oflModel.m_yBandCutOff = cutOff;
+        oflModel.m_nbrBands = 1;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            utilities::cout.DebuggingInfo()<<"\n\t- ALLOCATING ~"<<dimX*dimY*singleParticleHam.GetDifferenceMatrixDimension()*sizeof(dcmplx)/(1024.0*1024.0)<<" mb";
+            utilities::cout.DebuggingInfo()<<"\n\t- ALLOCATING ~"<<dimX*dimY*oflModel.GetDifferenceMatrixDimension()*sizeof(dcmplx)/(1024.0*1024.0)<<" mb";
             utilities::cout.DebuggingInfo()<<" to store Bloch wave function loop-up table.\n"<<std::endl;
         }
-        singleParticleHam.PopulateDifferenceMatrix();
+        oflModel.PopulateDifferenceMatrix();
         utilities::LatticeVector2D<double> kVector(offsetX, offsetY);
         utilities::LatticeVector2D<double> increment1(reciprocalLattice::G1, (double)1/dimX);
         utilities::LatticeVector2D<double> increment2(reciprocalLattice::G2, (double)1/dimY);
@@ -87,8 +87,8 @@ namespace diagonalization
             progress.Initialize(mpi.m_lastTask - mpi.m_firstTask+1);
         }        
         //  Allocate memory to store part of the result on each node
-        std::vector<SingleParticleHamiltonian> temp;
-        SingleParticleHamiltonian dummy;
+        std::vector<NonInteractingOflModel> temp;
+        NonInteractingOflModel dummy;
         temp.reserve(ceil((double)mpi.m_nbrProcs/(dimX*dimY)));
         MPI_Barrier(mpi.m_comm);
         // Parallelize the the for loop by dividing the k-space grid calculations
@@ -99,14 +99,14 @@ namespace diagonalization
             {
                 if(mpi.m_firstTask <= (int)counter && mpi.m_lastTask >= (int)counter)
                 {
-                    singleParticleHam.UpdateDifferenceDiagonal(kVector);
-                    singleParticleHam.DiagonalizeDifferenceMatrix();
+                    oflModel.UpdateDifferenceDiagonal(kVector);
+                    oflModel.DiagonalizeDifferenceMatrix();
                     //  Set the m_differenceMatrixPopulated to false so that the
                     //  full difference matrix is not coppied
-                    singleParticleHam.m_differenceMatrixPopulated = false;
-                    temp.push_back(singleParticleHam);
+                    oflModel.m_differenceMatrixPopulated = false;
+                    temp.push_back(oflModel);
                     //  Reset the flag so that the difference matrix can be updated
-                    singleParticleHam.m_differenceMatrixPopulated = true;
+                    oflModel.m_differenceMatrixPopulated = true;
                 }
                 else
                 {
@@ -138,7 +138,7 @@ namespace diagonalization
         counter = 0;
         int proc_remain = std::min(mpi.m_nbrProcs, (int)(dimX*dimY));
         int taskRemain = dimX*dimY;
-        SingleParticleHamiltonian* p_table = blochTable;
+        NonInteractingOflModel* p_table = blochTable;
         int taskCounter = 0;
         for(int node=0; node<mpi.m_nbrProcs; ++node)
         {
@@ -157,7 +157,7 @@ namespace diagonalization
     //! Numerically calculates the non-interacting band structure of the 
     //! Hamiltonian given in e.g. eq (1) of PRL 109,265301 in a single Brillouin zone
     //!
-    void NoninteractingOflModelGrid::CalculateBandstructure(
+    void NonInteractingOflModelGrid::CalculateBandstructure(
         double* lowerBand,          //!<    List of energy eigenvalues in the lowest band
                                     //!     (returned on node 0 only)
         double* secondBand,         //!<    List of energy eigenvalues in the second band
@@ -179,7 +179,7 @@ namespace diagonalization
         const iSize_t dimY,         //!<    Number of k-space points in G2-direction
         const double offsetX,       //!<    X offset in the map of k-space
         const double offsetY,       //!<    Y offset in the map of k-space
-        SingleParticleHamiltonian* currentHamiltonian,
+        NonInteractingOflModel* currentModel,
                                     //!<    Class containing the model data
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
     {
@@ -187,7 +187,7 @@ namespace diagonalization
 	    {
             utilities::cout.SecondaryOutput()<<"\n\t- GENERATING BAND STRUCTURE FOR CURRENT MODEL PARAMETERS"<<std::endl;
         }
-        currentHamiltonian->PopulateDifferenceMatrix();
+        currentModel->PopulateDifferenceMatrix();
         utilities::LatticeVector2D<double> kVector(offsetX,offsetY);
         utilities::LatticeVector2D<double> increment1(reciprocalLattice::G1,(double)1/dimX);
         utilities::LatticeVector2D<double> increment2(reciprocalLattice::G2,(double)1/dimY);
@@ -204,16 +204,16 @@ namespace diagonalization
             {
                 if(mpi.m_firstTask <= (int)counter && mpi.m_lastTask >= (int)counter)
                 {      
-                    currentHamiltonian->UpdateDifferenceDiagonal(kVector);
-                    currentHamiltonian->DiagonalizeDifferenceMatrix();
+                    currentModel->UpdateDifferenceDiagonal(kVector);
+                    currentModel->DiagonalizeDifferenceMatrix();
                     if(getEnergyData)
                     {
-                        lowerBand[x*dimY+y]  = currentHamiltonian->m_eigenvalues[0];
-                        secondBand[x*dimY+y] = currentHamiltonian->m_eigenvalues[1];
+                        lowerBand[x*dimY+y]  = currentModel->m_eigenvalues[0];
+                        secondBand[x*dimY+y] = currentModel->m_eigenvalues[1];
                     }
                     if(getMagnetizationData)
                     {
-                        magnetization[x*dimY+y] = currentHamiltonian->ApplySigmaZ(0);
+                        magnetization[x*dimY+y] = currentModel->ApplySigmaZ(0);
                     }
                 }
                 if(0 == mpi.m_id && mpi.m_lastTask >= (int)counter)	// FOR THE MASTER NODE
@@ -285,7 +285,7 @@ namespace diagonalization
     //!
     //! Note: This function is parallelized
     ////////////////////////////////////////////////////////////////////////////////
-    void NoninteractingOflModelGrid::PlotBandstructure(
+    void NonInteractingOflModelGrid::PlotBandstructure(
         boost::program_options::variables_map* optionList,     
                                                     //!<    Command line arguments
         utilities::MpiWrapper& mpi)                 //!<    Instance of the mpi wrapper class
@@ -300,29 +300,29 @@ namespace diagonalization
         double offsetY;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            dimX    = (*optionList)["x-grid"].as<iSize_t>();
-            dimY    = (*optionList)["y-grid"].as<iSize_t>();
-            offsetX = (*optionList)["x-grid-shift"].as<double>();
-            offsetY = (*optionList)["y-grid-shift"].as<double>();
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+	        GetOption(optionList, offsetY, "x-grid-shift", _AT_, mpi);
         }
         mpi.Sync(&dimX, 1, 0);
         mpi.Sync(&dimY, 1, 0);
         mpi.Sync(&offsetX, 1, 0);
         mpi.Sync(&offsetY, 1, 0);
-        SingleParticleHamiltonian currentHamiltonian(optionList, mpi);
+        NonInteractingOflModel currentModel(optionList, mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             utilities::cout.SecondaryOutput()<<"\n\tGRID: "<<dimX<<" x "<<dimY<<std::endl;
-            utilities::cout.SecondaryOutput()<<"\n\tG_X CUT-OFF = "<<currentHamiltonian.m_xBandCutOff<<std::endl;
-            utilities::cout.SecondaryOutput()<<"\n\tG_Y CUT-OFF = "<<currentHamiltonian.m_yBandCutOff<<std::endl;
+            utilities::cout.SecondaryOutput()<<"\n\tG_X CUT-OFF = "<<currentModel.m_xBandCutOff<<std::endl;
+            utilities::cout.SecondaryOutput()<<"\n\tG_Y CUT-OFF = "<<currentModel.m_yBandCutOff<<std::endl;
         }
-        if(2 != currentHamiltonian.m_nbrBands)
+        if(2 != currentModel.m_nbrBands)
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	        {
                 std::cerr<<"WARNING: ONLY GENERATING DATA FOR THE LOWEST TWO BANDS"<<std::endl;
             }
-            currentHamiltonian.m_nbrBands = 2;
+            currentModel.m_nbrBands = 2;
         }
         //  Allocate memory to store band energy values
         double lowerBand[dimX*dimY];
@@ -331,17 +331,23 @@ namespace diagonalization
         double bandWidth = 0.0;
         double dummy;
         this->CalculateBandstructure(lowerBand, secondBand, bandWidth, bandGap, true, &dummy, 
-                                     false, dimX, dimY, offsetX, offsetY, &currentHamiltonian, mpi);
+                                     false, dimX, dimY, offsetX, offsetY, &currentModel, mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             std::stringstream dataFileName;
             dataFileName.str("");
-            dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_structure_kx_"<<dimX<<"_ky_"<<dimY;
-            if((*optionList)["use-sql"].as<bool>())
+            std::string outPath;
+            GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            dataFileName << optionList << "/band_structure_kx_" << dimX << "_ky_" << dimY;
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            iSize_t sqlId;
+            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            if(useSql)
             {
-                dataFileName<<"_id_"<<(*optionList)["sql-id"].as<iSize_t>();
+                dataFileName << "_id_" << sqlId;
             }
-            dataFileName<<".dat";
+            dataFileName << ".dat";
             std::ofstream f_tmp;
             f_tmp.open(dataFileName.str().c_str(), std::ios::out);
             double* p_lower = lowerBand;
@@ -361,12 +367,16 @@ namespace diagonalization
             }
             f_tmp.close();
             utilities::cout.SecondaryOutput()<<"\n\tData output to file "<<dataFileName.str()<<std::endl;
-            if((*optionList)["plot-bandstructure"].as<bool>())
+            bool plotBandstructure;
+            GetOption(optionList, plotBandstructure, "plot-bandstructure", _AT_, mpi);
+            if(plotBandstructure)
             {
                 utilities::cout.AdditionalInfo()<<"\n\tMAKING PLOT..."<<std::endl;
                 std::stringstream plotFileName;
                 plotFileName.str("");
-                plotFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_structure_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
+                std::string outPath;
+                GetOption(optionList, outPath, "out-path", _AT_, mpi);
+                plotFileName<<outPath<<"/band_structure_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
                 std::stringstream pythonScript;
                 pythonScript.str();
                 pythonScript<<"#! //usr//bin//env python"<<_PYTHON_VERSION_<<"\n"
@@ -408,10 +418,10 @@ namespace diagonalization
         return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Make a plot of the band width as a function of the lattice depth V0
-    ////////////////////////////////////////////////////////////////////////////////
-    void NoninteractingOflModelGrid::PlotBandWidth(
+    //!
+    //! Make a plot of the band width as a function of the lattice depth V0
+    //!
+    void NonInteractingOflModelGrid::PlotBandWidth(
         boost::program_options::variables_map* optionList,     
                                             //!<    Command line arguments
         utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
@@ -427,19 +437,32 @@ namespace diagonalization
         std::stringstream dataFileName;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        dimX = (*optionList)["x-grid"].as<iSize_t>();
-            dimY = (*optionList)["y-grid"].as<iSize_t>();
-	        if((*optionList)["use-sql"].as<bool>())
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        bool useSql;
+	        GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+	        std::string outPath;
+	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
+	        if(useSql)
             {
-                iSize_t sqlId = (*optionList)["sql-id"].as<iSize_t>();
                 std::stringstream fileName;
 	            fileName.str("");
                 //  If sql option is set, then look for model data in an sqlite file
-                fileName<<(*optionList)["in-path"].as<std::string>()<<(*optionList)["sql-name"].as<std::string>();
-                std::string tableName = (*optionList)["sql-table-name"].as<std::string>();
-                utilities::Sqlite sql(fileName.str(), _READ_EXISTING_);
-                mpi.m_exitFlag = !sql.IsOpen();
-                utilities::SqliteRow sqlRow = sql.RetrieveIdFromTable(tableName, sqlId); 
+                std::string inPath;
+                std::string sqlName;
+                std::string sqlTableName;
+                GetOption(optionList, inPath, "in-path", _AT_, mpi);
+                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
+                fileName << inPath << sqlName;
+                utilities::Sqlite sql(fileName.str(), sql::_READ_EXISTING_);
+                if(!mpi.m_exitFlag)
+                {
+                    mpi.m_exitFlag = !sql.IsOpen();
+                }
+                iSize_t sqlId;
+                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                utilities::SqliteRow sqlRow = sql.RetrieveIdFromTable(sqlTableName, sqlId); 
                 if(sqlRow.GetLength() == 0)
                 {
                     mpi.m_exitFlag = true;
@@ -458,14 +481,14 @@ namespace diagonalization
                 mpi.m_exitFlag = sqlRow.GetValue("OffsetX",offsetX);	
                 mpi.m_exitFlag = sqlRow.GetValue("OffsetY",offsetY);	
                 dataFileName.str("");
-                dataFileName<<(*optionList)["out-path"].as<std::string>()<<outFileName<<".dat";;
+                dataFileName << outPath << outFileName << ".dat";
             }
             else
             {
-                offsetX = (*optionList)["x-grid-shift"].as<double>();
-                offsetY = (*optionList)["y-grid-shift"].as<double>();
+                GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+                GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
                 dataFileName.str("");
-                dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_width_kx_"<<dimX<<"_ky_"<<dimY<<".dat";
+                dataFileName << outPath << "/band_width_kx_" << dimX << "_ky_" << dimY << ".dat";
             }
         }
         mpi.ExitFlagTest();
@@ -473,12 +496,12 @@ namespace diagonalization
         mpi.Sync(&dimY, 1, 0);
         mpi.Sync(&offsetX, 1, 0);
         mpi.Sync(&offsetY, 1, 0);
-        SingleParticleHamiltonian currentHamiltonian(optionList, mpi);
+        NonInteractingOflModel currentModel(optionList, mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             utilities::cout.SecondaryOutput()<<"\n\tGRID: "<<dimX<<" x "<<dimY<<std::endl;
-            utilities::cout.SecondaryOutput()<<"\n\tG_X CUT-OFF = "<<currentHamiltonian.m_xBandCutOff<<std::endl;
-            utilities::cout.SecondaryOutput()<<"\n\tG_Y CUT-OFF = "<<currentHamiltonian.m_yBandCutOff<<std::endl;
+            utilities::cout.SecondaryOutput()<<"\n\tG_X CUT-OFF = "<<currentModel.m_xBandCutOff<<std::endl;
+            utilities::cout.SecondaryOutput()<<"\n\tG_Y CUT-OFF = "<<currentModel.m_yBandCutOff<<std::endl;
         }
         //  Allocate memory to store band energy values
         double lowerBand[dimX*dimY];
@@ -487,7 +510,7 @@ namespace diagonalization
         const double V0grid = 0.1;
         const iSize_t gridMax = floor(V0Max/V0grid);
         //  Update the V0 parameter to the first V0 value
-        currentHamiltonian.m_params.m_V0 = V0grid;
+        currentModel.m_params.m_V0 = V0grid;
         //  Output the plot data as a .dat file
         std::ofstream f_tmp;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
@@ -500,19 +523,19 @@ namespace diagonalization
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	        {
-                utilities::cout.SecondaryOutput()<<"\n\tV0 = "<<currentHamiltonian.m_params.m_V0<<" (going up to "<<V0Max+V0grid<<")"<<std::endl;
+                utilities::cout.SecondaryOutput()<<"\n\tV0 = "<<currentModel.m_params.m_V0<<" (going up to "<<V0Max+V0grid<<")"<<std::endl;
             }
             double bandGap;
             double bandWidth;
             double dummy;
             this->CalculateBandstructure(lowerBand, secondBand, bandWidth, bandGap, true, &dummy, 
-                                         false, dimX, dimY, offsetX, offsetY, &currentHamiltonian, mpi);
+                                         false, dimX, dimY, offsetX, offsetY, &currentModel, mpi);
             
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	        {
-                f_tmp<<std::setw(15)<<std::left<<currentHamiltonian.m_params.m_V0/currentHamiltonian.GetRecoilEnergy()<<"\t"<<std::setw(15)<<std::left<<bandWidth/currentHamiltonian.GetRecoilEnergy()<<"\t"<<std::setw(15)<<std::left<<bandGap/currentHamiltonian.GetRecoilEnergy()<<"\n";
+                f_tmp<<std::setw(15)<<std::left<<currentModel.m_params.m_V0/currentModel.GetRecoilEnergy()<<"\t"<<std::setw(15)<<std::left<<bandWidth/currentModel.GetRecoilEnergy()<<"\t"<<std::setw(15)<<std::left<<bandGap/currentModel.GetRecoilEnergy()<<"\n";
             }
-            currentHamiltonian.m_params.m_V0 += V0grid;
+            currentModel.m_params.m_V0 += V0grid;
         }
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
@@ -521,12 +544,16 @@ namespace diagonalization
         }
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            if((*optionList)["plot-band-width"].as<bool>())
+	        bool plotBandWidth;
+	        GetOption(optionList, plotBandWidth, "plot-band-width", _AT_, mpi);
+	        std::string outPath;
+	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            if(plotBandWidth)
             {
                 utilities::cout.SecondaryOutput()<<"\n\tMAKING PLOT..."<<std::endl;
                 std::stringstream plotFileName;
                 plotFileName.str("");
-                plotFileName<<(*optionList)["out-path"].as<std::string>()<<"/band_width_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
+                plotFileName<<outPath<<"/band_width_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
                 std::stringstream pythonScript;
                 pythonScript.str();
                 pythonScript<<"#! //usr//bin//env python"<<_PYTHON_VERSION_<<"\n"
@@ -562,36 +589,44 @@ namespace diagonalization
         }
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        if((*optionList)["use-sql"].as<bool>())
+	        bool useSql;
+	        GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+	        std::string inPath;
+	        GetOption(optionList, inPath, "in-path", _AT_, mpi);
+	        if(useSql)
             {
                 std::stringstream fileName;
 	            fileName.str("");
                 //  If sql option is set, then look for model data in an sqlite file
-                fileName<<(*optionList)["in-path"].as<std::string>()<<(*optionList)["sql-name"].as<std::string>();
-                utilities::Sqlite sql(fileName.str(),_EDIT_EXISTING_);
-                std::string tableName = (*optionList)["sql-table-name"].as<std::string>();
-                iSize_t sqlId = (*optionList)["sql-id"].as<iSize_t>();
+                std::string sqlName;
+                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+                fileName << inPath << sqlName;
+                std::string sqlTableName;
+                iSize_t sqlId;
+                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
+                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                utilities::Sqlite sql(fileName.str(), sql::_EDIT_EXISTING_);
                 {
                     utilities::SqliteVariable var;
                     var.SetValues("Completed", (int)1);
-                    sql.UpdateTableEntry(tableName, sqlId, var);
+                    sql.UpdateTableEntry(sqlTableName, sqlId, var);
                 }
                 //  Record the PBS job id, if known
                 if(getenv("PBS_JOBID")!=NULL)
                 {
                     utilities::SqliteVariable var;
                     var.SetValues("jobId",(int)atoi(getenv("PBS_JOBID")));
-                    sql.UpdateTableEntry(tableName, sqlId, var);
+                    sql.UpdateTableEntry(sqlTableName, sqlId, var);
                 }
                 //  Record the SLURM job id, if known
 		        if(getenv("SLURM_JOB_ID")!=NULL)
                 {
                     utilities::SqliteVariable var;
                     var.SetValues("jobId", (int)atoi(getenv("SLURM_JOB_ID")));
-                    sql.UpdateTableEntry(tableName, sqlId, var);
+                    sql.UpdateTableEntry(sqlTableName, sqlId, var);
                 }
                 //  Update the text copy of the table
-                sql.CopyTableToTextFile(tableName, fileName.str());
+                sql.CopyTableToTextFile(sqlTableName, fileName.str());
             }
         }
         return;
@@ -602,8 +637,7 @@ namespace diagonalization
     //!
     //! Note: This function is parallelized
     ////////////////////////////////////////////////////////////////////////////////
-
-    void NoninteractingOflModelGrid::PlotMagnetization(
+    void NonInteractingOflModelGrid::PlotMagnetization(
         boost::program_options::variables_map* optionList,  
                                                 //!<    Command line arguments
         utilities::MpiWrapper& mpi)             //!<    Instance of the mpi wrapper class
@@ -618,37 +652,43 @@ namespace diagonalization
         double offsetY;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            dimX    = (*optionList)["x-grid"].as<iSize_t>();
-            dimY    = (*optionList)["y-grid"].as<iSize_t>();
-            offsetX = (*optionList)["x-grid-shift"].as<double>();
-            offsetY = (*optionList)["y-grid-shift"].as<double>();
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+	        GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
         }
         mpi.Sync(&dimX, 1, 0);
         mpi.Sync(&dimY, 1, 0);
         mpi.Sync(&offsetX, 1, 0);
         mpi.Sync(&offsetY, 1, 0);
-        SingleParticleHamiltonian currentHamiltonian(optionList, mpi);
+        NonInteractingOflModel currentModel(optionList, mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             utilities::cout.SecondaryOutput()<<"\n\tGRID: "<<dimX<<" x "<<dimY<<std::endl;
-            utilities::cout.SecondaryOutput()<<"\n\tG_X CUT-OFF = "<<currentHamiltonian.m_xBandCutOff<<std::endl;
-            utilities::cout.SecondaryOutput()<<"\n\tG_Y CUT-OFF = "<<currentHamiltonian.m_yBandCutOff<<std::endl;
+            utilities::cout.SecondaryOutput()<<"\n\tG_X CUT-OFF = "<<currentModel.m_xBandCutOff<<std::endl;
+            utilities::cout.SecondaryOutput()<<"\n\tG_Y CUT-OFF = "<<currentModel.m_yBandCutOff<<std::endl;
         }
         //  Get magnetization data
         double dummy;
         double magnetization[dimX*dimY];
         this->CalculateBandstructure(&dummy, &dummy, dummy, dummy, false, magnetization, true, 
-                                     dimX, dimY, offsetX, offsetY, &currentHamiltonian, mpi);
+                                     dimX, dimY, offsetX, offsetY, &currentModel, mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             std::stringstream dataFileName;
             dataFileName.str("");
-            dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/magnetization_map_kx_"<<dimX<<"_ky_"<<dimY;
-            if((*optionList)["use-sql"].as<bool>())
+            std::string outPath;
+            GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            dataFileName << outPath << "/magnetization_map_kx_" << dimX << "_ky_" << dimY;
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            iSize_t sqlId;
+            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            if(useSql)
             {
-                dataFileName<<"_id_"<<(*optionList)["sql-id"].as<iSize_t>();
+                dataFileName << "_id_" << sqlId;
             }
-            dataFileName<<".dat";
+            dataFileName << ".dat";
             std::ofstream f_tmp;
             f_tmp.open(dataFileName.str().c_str(), std::ios::out);
             double* p_magnetization = magnetization;
@@ -667,12 +707,16 @@ namespace diagonalization
             }
             f_tmp.close();
             utilities::cout.SecondaryOutput()<<"\n\tData output to file "<<dataFileName.str()<<std::endl;
-            if((*optionList)["plot-magnetization"].as<bool>())
+            bool plotMagnetization;
+            GetOption(optionList, plotMagnetization, "plot-magnetization", _AT_, mpi);
+            if(plotMagnetization)
             {
                 utilities::cout.AdditionalInfo()<<"\n\tMAKING PLOT..."<<std::endl;
+                std::string outPath;
+                GetOption(optionList, outPath, "out-path", _AT_, mpi);
                 std::stringstream plotFileName;
                 plotFileName.str("");
-                plotFileName<<(*optionList)["out-path"].as<std::string>()<<"/magnetization_map_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
+                plotFileName << outPath << "/magnetization_map_kx_" << dimX << "_ky_" << dimY << ".pdf";
                 std::stringstream pythonScript; 
                 pythonScript.str();
                 pythonScript<<"#! //usr//bin//env python"<<_PYTHON_VERSION_<<"\n"
@@ -734,14 +778,12 @@ namespace diagonalization
     //! V_{(x,ky)_1,...,(x,ky)_4} = sum_{(kx,ky)_1,...,(kx,ky)_4)} V_{(kx,ky)_1,...,(kx,ky)_4}
     //!                           * U^-1_{(kx,ky)_1,(x,ky)_1} U^-1_{(kx,ky)_2,(x,ky)_2} 
     //!                           * U_{(x,ky)_3,(kx,ky)_3} U_{(x,ky)_4,(kx,ky)_4}
-    //!
     ////////////////////////////////////////////////////////////////////////////////
-
-    void NoninteractingOflModelGrid::GenerateWannierCoefficients(
+    void NonInteractingOflModelGrid::GenerateWannierCoefficients(
         const iSize_t dimX,             //!<    X-dimension of k-space grid
         const iSize_t dimY,             //!<    Y-dimension of k-space grid
         const double offsetX,           //!<    Offset in the kx grid
-        SingleParticleHamiltonian* blochTable,
+        NonInteractingOflModel* blochTable,
                                         //!<    Table of Bloch wave functions
                                         //!     corresponding to that k-space grid
         dcmplx* M,                      //!<    A dimX*dimY by dimX*dimY matrix encoding the 
@@ -758,13 +800,13 @@ namespace diagonalization
         //  phase factor phi and the coefficients in the change of basis definition
         //////  Here we implement Eq 26     ////////////////////////////////////////////
         dcmplx* Ax = new dcmplx[dimX*dimY];
-        for(kState_t kx=0;kx<dimX;++kx)
+        for(kState_t kx=0; kx<dimX; ++kx)
         {
-            for(kState_t ky=0;ky<dimY;++ky)
+            for(kState_t ky=0; ky<dimY; ++ky)
             {
                 kState_t kxPlusOnePeriodic = kx==(dimX-1) ? 0 : kx+1;
                 dcmplx aTempX = utilities::linearAlgebra::DotProduct<dcmplx>(blochTable[kx*dimY+ky].m_blochCoefficients,
-                                blochTable[kxPlusOnePeriodic*dimY+ky].m_blochCoefficients,blochTable->m_dim);
+                                blochTable[kxPlusOnePeriodic*dimY+ky].m_blochCoefficients, blochTable->m_dim);
                 //  Set the Berry connection to the normalized accumulated value
                 //  as defined in Eq. 27:
                 Ax[kx*dimY+ky] = aTempX/abs(aTempX);
@@ -772,7 +814,7 @@ namespace diagonalization
         }
         //  As defined in Eq. 30:
         dcmplx* lambdaX = new dcmplx[dimY];
-        for(kState_t ky=0;ky<dimY;++ky)
+        for(kState_t ky=0; ky<dimY; ++ky)
         {
             lambdaX[ky] = 1.0;
         }
@@ -894,10 +936,10 @@ namespace diagonalization
     //! \brief A function to obtain a map of the sigma^z values associated with each
     //!  k-space point
     ////////////////////////////////////////////////////////////////////////////////
-    void NoninteractingOflModelGrid::CalcualteSigmaZMap(
+    void NonInteractingOflModelGrid::CalcualteSigmaZMap(
         const iSize_t dimX,             //!<    X-dimension of k-space grid
         const iSize_t dimY,             //!<    Y-dimension of k-space grid
-        SingleParticleHamiltonian* blochTable,
+        NonInteractingOflModel* blochTable,
                                         //!<    Table of Bloch wave functions
                                         //!     corresponding to that k-space grid
         double* map)                    //!<    A dimX*dimY array to store the sigma^z_k 
@@ -919,7 +961,7 @@ namespace diagonalization
     //!
     //! psi^sigma_{kx,ky} (r) = |<r,sigma|kx,ky>|^2
     ////////////////////////////////////////////////////////////////////////////////
-    void NoninteractingOflModelGrid::CalculateSpatialWaveFunctions(
+    void NonInteractingOflModelGrid::CalculateSpatialWaveFunctions(
         boost::program_options::variables_map* optionList,
                                             //!<    Command line arguments
         utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
@@ -928,7 +970,7 @@ namespace diagonalization
 	    { 
             utilities::cout.MainOutput()<<"\n\t CALCULATING MAPPING TO SPATIAL WAVE FUNCTIONS"<<std::endl;
         }
-        SingleParticleParameters params = SingleParticleParameters(optionList, mpi);          
+        NonInteractingOflModelData params = NonInteractingOflModelData(optionList, mpi);          
         double matrixElementTol;
         iSize_t minBlochCutOff;
         bool useWannierBasis;
@@ -940,15 +982,16 @@ namespace diagonalization
         double gridSpacing;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            matrixElementTol = (*optionList)["tol"].as<double>();
-            realGridDim      = (*optionList)["calculate-spatial-wavefunctions"].as<iSize_t>();
-            dimX             = (*optionList)["x-grid"].as<iSize_t>();
-            dimY             = (*optionList)["y-grid"].as<iSize_t>();    
-            int getBasis     = (*optionList)["sptial-basis"].as<int>();
-            minBlochCutOff   = (*optionList)["x-cut"].as<iSize_t>();
-            offsetX          = (*optionList)["x-grid-shift"].as<double>();
-            offsetY          = (*optionList)["y-grid-shift"].as<double>();
-            gridSpacing      = (*optionList)["grid-spacing"].as<double>();
+	        int getBasis;
+	        GetOption(optionList, matrixElementTol, "tol", _AT_, mpi);
+	        GetOption(optionList, realGridDim, "calculate-spatial-wavefunctions", _AT_, mpi);
+	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        GetOption(optionList, getBasis, "sptial-basis", _AT_, mpi);
+	        GetOption(optionList, minBlochCutOff, "x-cut", _AT_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
+	        GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
+	        GetOption(optionList, gridSpacing, "grid-spacing", _AT_, mpi);
             if(1 == getBasis)
             {
                 useWannierBasis = true;
@@ -978,7 +1021,7 @@ namespace diagonalization
 	        exit(EXIT_FAILURE);
         }
         //////      First generate the Bloch wave functions     ////////////////////
-        SingleParticleHamiltonian* blochWaveFunctionTable = new SingleParticleHamiltonian[dimX*dimY]; 
+        NonInteractingOflModel* blochWaveFunctionTable = new NonInteractingOflModel[dimX*dimY]; 
         this->GenerateBlochWaveFunctionTable(minBlochCutOff, dimX, dimY, offsetX, offsetY, blochWaveFunctionTable, &params, mpi);
         //////      If required, calculate the change of basis matrix       ////////
         dcmplx* basisChangeMatrix = 0;
@@ -1025,7 +1068,7 @@ namespace diagonalization
                         dcmplx* fourierCoefficientsDown = new dcmplx[dimX*dimY];
                         dcmplx* outputCoefficientsDown  = new dcmplx[dimX*dimY];
                         //  Populate the Fourier transform inputs
-                        SingleParticleHamiltonian*  p_blochTable = blochWaveFunctionTable;
+                        NonInteractingOflModel*  p_blochTable = blochWaveFunctionTable;
                         for(kState_t ky=0; ky<dimY; ++ky)
                         {
                             for(kState_t kx=0; kx<dimX; ++kx, ++p_blochTable)
@@ -1073,7 +1116,7 @@ namespace diagonalization
                         //  already calculated
                         //  psi^sigma_{kx,ky} (r) = sum_G a^{kx,ky}_{G,sigma} exp^(ir.(G+{kx,ky})
                         kState_t combinedR = this->CombineIndexes(rx, ry, realGridDim);
-                        SingleParticleHamiltonian*  p_blochTable = blochWaveFunctionTable;
+                        NonInteractingOflModel*  p_blochTable = blochWaveFunctionTable;
                         for(kState_t ky=0; ky<dimY; ++ky)
                         {
                             for(kState_t kx=0; kx<dimX; ++kx, ++p_blochTable)
@@ -1100,21 +1143,38 @@ namespace diagonalization
         //////      Output spatial wave function data to a text file        ////////        
         std::stringstream dataFileName;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
-	    {
+	    {   
+	        std::string outPath;
+	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
             dataFileName.str("");
-            dataFileName<<(*optionList)["out-path"].as<std::string>()<<"/spatial_wave_function_kx_"<<dimX<<"_ky_"<<dimY;
-            if((*optionList)["use-sql"].as<bool>())
+            dataFileName << outPath << "/spatial_wave_function_kx_" << dimX << "_ky_" << dimY;
+            bool useSql;
+            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            if(useSql)
             {
-                dataFileName<<"_id_"<<(*optionList)["sql-id"].as<iSize_t>();
+                iSize_t sqlId;
+                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                dataFileName << "_id_" << sqlId;
             }
-            dataFileName<<"_grid_size_"<<realGridDim;
+            dataFileName << "_grid_size_" << realGridDim;
             if(useWannierBasis)
             {
-                dataFileName<<"_wannier_basis";
+                dataFileName << "_wannier_basis";
             }
-            dataFileName<<".dat";
+            dataFileName << ".dat";
         }
-        spatialWaveFunctionTable.ToFile(dataFileName.str(), 3, mpi);
+        io::fileFormat_t format = io::_TEXT_;
+        std::ofstream f_out;
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
+	    {
+            GenFileStream(f_out, dataFileName.str(), format, mpi);
+        }
+        mpi.ExitFlagTest();
+        spatialWaveFunctionTable.ToFile(f_out, format, 3, mpi);
+        if(f_out.is_open())
+        {
+            f_out.close();
+        }
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {   
             utilities::cout.SecondaryOutput()<<"\n\tFinished writing spatial wave funciton values to a file. See the file here: "<<dataFileName.str()<<std::endl;

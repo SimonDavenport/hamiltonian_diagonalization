@@ -24,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
-#include "optical_flux_lattice_hamiltonian.hpp"
+#include "interacting_ofl_model.hpp"
 
 namespace diagonalization
 {
@@ -125,11 +125,12 @@ namespace diagonalization
         iSize_t cutOffStep;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
         {
-            matrixElementTol = (*optionList)["tol-vkkkk"].as<double>();
-            minBlochCutOff   = (*optionList)["min-k-cut"].as<iSize_t>();
-            maxBlochCutOff   = (*optionList)["max-k-cut"].as<iSize_t>();
-            cutOffStep       = (*optionList)["k-cut-step"].as<iSize_t>();
+            GetOption(optionList, matrixElementTol, "tol-vkkkk", _AT_, mpi);
+            GetOption(optionList, minBlochCutOff, "min-k-cut", _AT_, mpi);
+            GetOption(optionList, maxBlochCutOff, "max-k-cut", _AT_, mpi);
+            GetOption(optionList, cutOffStep, "k-cut-step", _AT_, mpi);
         }
+        mpi.ExitFlagTest();
         mpi.Sync(&matrixElementTol, 1, 0);
         mpi.Sync(&minBlochCutOff, 1, 0);
         mpi.Sync(&maxBlochCutOff, 1, 0);
@@ -155,8 +156,8 @@ namespace diagonalization
         double currentTol = 1000.0;
         double prevTol = currentTol;
         //  Generate the first approximation
-        NonInteractingOflModelArray modelArray;
-        modelArray.GenerateBlochWaveFunctionTable(cutOff, m_params.m_dimX, m_params.m_dimY, m_params.m_offsetX, 
+        NonInteractingOflModelGrid modelGrid;
+        modelGrid.GenerateBlochWaveFunctionTable(cutOff, m_params.m_dimX, m_params.m_dimY, m_params.m_offsetX, 
                                                   m_params.m_offsetY, blochWaveFunctionTable, &m_oflParameters, mpi);
         this->GenerateQuarticTerms(m_quarticTables.GetVTable(), m_quarticTables.GetDimension(), blochWaveFunctionTable, 
                                    &gxTable, &gyTable, mpi);
@@ -166,7 +167,7 @@ namespace diagonalization
             {
                 if(cutOff>maxBlochCutOff)
                 {
-                    std::cerr<<"WARNING in BuildLookUpTables: max Bloch cut off reached without converging!"<<std::endl;
+                    std::cerr<<"WARNING in BuildTermTables: max Bloch cut off reached without converging!"<<std::endl;
                     break;
                 }
                 utilities::cout.DebuggingInfo()<<"\n\t- PERFORMING MORE ACCURATE CALCULATION "<<std::endl;
@@ -175,7 +176,7 @@ namespace diagonalization
             //  Increase the range of Bloch coefficients used in the calculation
             cutOff += cutOffStep;
             //  Re-generate the coefficient table
-            modelArray.GenerateBlochWaveFunctionTable(cutOff, m_params.m_dimX, m_params.m_dimY, m_params.m_offsetX, 
+            modelGrid.GenerateBlochWaveFunctionTable(cutOff, m_params.m_dimX, m_params.m_dimY, m_params.m_offsetX, 
                                                       m_params.m_offsetY, blochWaveFunctionTable, &m_oflParameters, mpi);
             this->GenerateQuarticTerms(&listOfQuarticTerms, m_quarticTables.GetDimension(), blochWaveFunctionTable, 
                                        &gxTable, &gyTable, mpi);
@@ -234,7 +235,7 @@ namespace diagonalization
         m_quadraticTables.MpiSynchronize(0, mpi);
         m_quarticTables.MpiSynchronize(0, mpi);          
         //  Calculate sigmaZ map
-        this->StoreSigmaZMap(blochWaveFunctionTable, mpi);
+        this->CalcualteSigmaZMap(blochWaveFunctionTable, mpi);
         //  Convert to Wannier basis if requested
         if(m_params.m_useWannierBasis)
         {
@@ -294,10 +295,9 @@ namespace diagonalization
 
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Generate a list of the unique k1 value corresponding to a given k2,k3
-    //! and k4 assuming 2D momentum conservation (hash table version)
+    //! and k4 assuming 2D momentum conservation (Wannier basis)
     ////////////////////////////////////////////////////////////////////////////////
-    void InteractingOflModel::Generate4KTable(
-        std::vector<kState_t>* kTable,      //!<    Pre-calculated table of k-values
+    void InteractingOflModel::GenerateWannier4KTable(
         utilities::MultiHashMultiMap<kState_t>* kHashTable,  
                                             //!<    Hash table container
         const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
@@ -306,57 +306,30 @@ namespace diagonalization
 	    {
             utilities::cout.AdditionalInfo()<<"\n\t- GENERATING MOMENTUM CONSERVING k1,k2,k3,k4 TABLE"<<std::endl;
         }
-        
-        if(m_params.m_useWannierBasis)
+        for(kState_t kx4=0; kx4<m_params.m_dimX; ++kx4)
         {
-            for(kState_t kx4=0; kx4<m_params.m_dimX; ++kx4)
+            for(kState_t ky4=0; ky4<m_params.m_dimY; ++ky4)
             {
-                for(kState_t ky4=0; ky4<m_params.m_dimY; ++ky4)
+                for(kState_t kx3=0; kx3<m_params.m_dimX; ++kx3)
                 {
-                    for(kState_t kx3=0; kx3<m_params.m_dimX; ++kx3)
+                    for(kState_t ky3=0; ky3<m_params.m_dimY; ++ky3)
                     {
-                        for(kState_t ky3=0; ky3<m_params.m_dimY; ++ky3)
+                        for(kState_t kx2=0; kx2<m_params.m_dimX; ++kx2)
                         {
-                            for(kState_t kx2=0; kx2<m_params.m_dimX; ++kx2)
+                            for(kState_t ky2=0; ky2<m_params.m_dimY; ++ky2)
                             {
-                                for(kState_t ky2=0; ky2<m_params.m_dimY; ++ky2)
+                                //  Determine an appropriate ky1 value
+                                //  given linear momentum conservation
+                                //  along the ky direction
+                                int gTot2;
+                                kState_t ky1 = this->FindK1(ky2, ky3, ky4, gTot2);
+                                for(kState_t kx1=0; kx1<m_params.m_dimX; ++kx1)
                                 {
-                                    //  Determine an appropriate ky1 value
-                                    //  given linear momentum conservation
-                                    //  along the ky direction
-                                    int gTot2;
-                                    kState_t ky1 = this->FindK1(ky2, ky3, ky4, gTot2);
-                                    for(kState_t kx1=0; kx1<m_params.m_dimX; ++kx1)
-                                    {
-                                        kHashTable->Insert(kx1*m_params.m_dimY+ky1, utilities::Key(kx2*m_params.m_dimY+ky2, 
-                                                           kx3*m_params.m_dimY+ky3, kx4*m_params.m_dimY+ky4));
-                                    }
+                                    kHashTable->Insert(kx1*m_params.m_dimY+ky1, utilities::Key(kx2*m_params.m_dimY+ky2, 
+                                                       kx3*m_params.m_dimY+ky3, kx4*m_params.m_dimY+ky4));
                                 }
                             }
                         }
-                    }
-                }
-            }
-        }
-        else
-        {
-            kState_t kMax = m_params.m_dimX*m_params.m_dimY;
-            for(kState_t k4=0; k4<kMax; ++k4)
-            {
-                for(kState_t k3=0; k3<kMax; ++k3)
-                {
-                    for(kState_t k2=0; k2<kMax; ++k2)
-                    {
-                        kState_t temp1 = k4;
-                        kState_t temp2 = k3;
-                        if(k4>k3)
-                        {
-                            //  Swap and refer to the k3, k4 term in the table
-                            temp1 = k3;
-                            temp2 = k4;
-                        }
-                        kState_t k1 = (*kTable)[(temp1*(kMax) + temp2 - (temp1*(temp1+1))/2 )*kMax + k2];
-                        kHashTable->Insert(k1,utilities::Key(k2, k3, k4));
                     }
                 }
             }
@@ -366,9 +339,9 @@ namespace diagonalization
 
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Generate a list of the unique k1 value corresponding to a given k2
-    //! 
+    //! assuming Wannier basis is used
     ////////////////////////////////////////////////////////////////////////////////
-    void InteractingOflModel::Generate2KTable(
+    void InteractingOflModel::GenerateWannier2KTable(
         utilities::MultiHashMultiMap<kState_t>* kHashTable,   //!<    Hash table container
         const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
     {
@@ -376,29 +349,15 @@ namespace diagonalization
 	    {
             utilities::cout.AdditionalInfo()<<"\n\t- GENERATING MOMENTUM CONSERVING k1,k2 TABLE"<<std::endl;
         }
-        if(m_params.m_useWannierBasis)
+        //  Only ky linear momentum is diagonal
+        for(kState_t kx1=0; kx1<m_params.m_dimX; ++kx1)
         {
-            //  Only ky linear momentum is diagonal
-            for(kState_t kx1=0; kx1<m_params.m_dimX; ++kx1)
+            for(kState_t ky1=0; ky1<m_params.m_dimY; ++ky1)
             {
-                for(kState_t ky1=0; ky1<m_params.m_dimY; ++ky1)
+                for(kState_t kx2=0; kx2<m_params.m_dimX; ++kx2)
                 {
-                    for(kState_t kx2=0; kx2<m_params.m_dimX; ++kx2)
-                    {
-                        kHashTable->Insert(kx1*m_params.m_dimY+ky1, kx2*m_params.m_dimY+ky1);
-                    }
+                    kHashTable->Insert(kx1*m_params.m_dimY+ky1, kx2*m_params.m_dimY+ky1);
                 }
-            }
-        }
-        else
-        {
-            //  There is no 2 momentum value look-up array to convert because 
-            //  the 2 momentum is conserved in general
-            //  Here we simply generate a diagonal hash table
-            kState_t kMax = m_params.m_dimX*m_params.m_dimY;
-            for(kState_t k2=0;k2<kMax;++k2)
-            {
-                kHashTable->Insert(k2, k2);
             }
         }
     }
@@ -635,7 +594,6 @@ namespace diagonalization
     //! the momentum conserving tables from a regular array format to a multi
     //! key hash table format, if not done so already
     ////////////////////////////////////////////////////////////////////////////////
-
     void InteractingOflModel::ConvertTableFormat(
         const utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class 
     {
@@ -649,115 +607,83 @@ namespace diagonalization
             m_quarticHashTables.Clear();
             m_quadraticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
             m_quarticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
-            //  Generate tables of angular momentum conserving values
-            this->Generate2KTable(m_quadraticHashTables.GetKTable(),mpi);
-            this->Generate4KTable(m_quarticTables.GetKTable(), m_quarticHashTables.GetKTable(), mpi);
-            //  First, the quadratic terms
             m_quadraticHashTables.SetQuadraticFromArray(&m_quadraticTables);
-            MPI_Barrier(mpi.m_comm);
-            //  Next the quartic terms
             m_quarticHashTables.SetQuarticFromArray(&m_quarticTables);
-            //  Clear existing non hash tables
             m_quarticTables.Clear();
             m_quadraticTables.Clear();
-            MPI_Barrier(mpi.m_comm);
             m_params.m_tableFormat = _HASH_;
             m_quadraticHashTables.MpiSynchronize(0, mpi);
             m_quarticHashTables.MpiSynchronize(0, mpi);
         }
-        return; 
+        return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Store all tabulated coefficient data in a file
-    ////////////////////////////////////////////////////////////////////////////////
-    void InteractingOflModel::TablesToFile(
-        utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
+    //!
+    //! Store all tabulated coefficient data in a file
+    //!
+    void InteractingOflModel::TermsToFile(
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             utilities::cout.AdditionalInfo()<<"\n\t- STORING QUARTIC AND QUADRATIC COEFFICIENT DATA IN FILES."<<std::endl;
         }
-        std::stringstream fileName;
-        fileName.str("");
-        fileName<<m_params.m_outPath<<"/quartic_coefficient_table_kx_"<<m_params.m_dimX<<"_ky_"<<m_params.m_dimY<<".dat";
+        std::stringstream fileNameQuadratic, filenameQuartic;
+        fileNameQuadratic.str("");
+        filenameQuartic.str("");
+        fileNameQuadratic << m_params.m_outPath << "/quadratic_coefficient_table_kx_" << m_params.m_dimX << "_ky_";
+        fileNameQuadratic << m_params.m_dimY << ".dat";
+        filenameQuartic << m_params.m_outPath << "/quartic_coefficient_table_kx_" << m_params.m_dimX << "_ky_";
+        filenameQuartic << m_params.m_dimY << ".dat";
         if(_ARRAY_ == m_params.m_tableFormat)
         {
-            m_quarticTables.ToFile(fileName.str(),mpi);
+            m_quadraticTables.ToFile(fileNameQuadratic.str(), format, mpi);
+            m_quarticTables.ToFile(filenameQuartic.str(), format, mpi);
         }
         else
         {
-            int nbrMomentumLabels = 4;
-            //  Make a temporary copy since ToFile calls an
-            //  mpi gather function and will change the contents 
-            //  of the map
-            QuarticLookUpHashTables temp = m_quarticHashTables; 
-            temp.ToFile(fileName.str(), nbrMomentumLabels, mpi);
+            m_quadraticHashTables.ToFile(fileNameQuadratic.str(), format, mpi);
+            m_quarticHashTables.ToFile(filenameQuartic.str(), format, mpi);
         }
-	    MPI_Barrier(mpi.m_comm);
-	    fileName.str("");
-        fileName<<m_params.m_outPath<<"/quadratic_coefficient_table_kx_"<<m_params.m_dimX<<"_ky_"<<m_params.m_dimY<<".dat";	
-        if(_ARRAY_ == m_params.m_tableFormat)
-        {
-            m_quadraticTables.ToFile(fileName.str(),mpi);
-        }
-        else
-        {
-            m_quadraticHashTables.ToFile(fileName.str(), nbrMomentumLabels, mpi);
-        }
+        MPI_Barrier(mpi.m_comm);
 	    return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Retrieve all tabulated coefficient data from a file
+    //!
+    //! Retrieve all tabulated coefficient data from a file
     //! 
-    ////////////////////////////////////////////////////////////////////////////////
-    void InteractingOflModel::TablesFromFile(
-        utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
+    void InteractingOflModel::TermsFromFile(
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
             utilities::cout.SecondaryOutput()<<"\n\t- RETRIEVING QUARTIC AND QUADRATIC COEFFICIENT DATA FROM FILES...";
         }
-        //  First generate angular momentum conservation tables (not stored in files)
-        m_quadraticTables.Initialize(m_params.m_dimX*m_params.m_dimY, mpi);
-        m_quarticTables.Initialize(m_params.m_dimX*m_params.m_dimY, mpi);
-        std::vector<int> gxTable(m_quarticTables.GetDimension());
-        std::vector<int> gyTable(m_quarticTables.GetDimension());
-        this->Generate4KTable(m_quarticTables.GetKTable(), &gxTable, &gyTable, mpi);
-        if(_HASH_== m_params.m_setTableFormat)
-        {
-            m_quadraticHashTables.Clear();
-            m_quarticHashTables.Clear();
-            m_quadraticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
-            m_quarticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
-            this->Generate2KTable(m_quadraticHashTables.GetKTable(), mpi);
-            this->Generate4KTable(m_quarticTables.GetKTable(), m_quarticHashTables.GetKTable(), mpi);
-            m_quarticTables.Clear();
-            m_params.m_tableFormat = _HASH_;
-        }
-        //  Retrieve quadratic and quartic term tables from files
-        std::stringstream fileName;
-        fileName.str("");
-        fileName<<m_params.m_outPath<<"/quartic_coefficient_table_kx_"<<m_params.m_dimX<<"_ky_"<<m_params.m_dimY<<".dat";
+        std::stringstream fileNameQuadratic, filenameQuartic;
+        fileNameQuadratic.str("");
+        filenameQuartic.str("");
+        fileNameQuadratic << m_params.m_outPath << "/quadratic_coefficient_table_kx_" << m_params.m_dimX << "_ky_";
+        fileNameQuadratic << m_params.m_dimY << ".dat";
+        filenameQuartic << m_params.m_outPath << "/quartic_coefficient_table_kx_" << m_params.m_dimX << "_ky_";
+        filenameQuartic << m_params.m_dimY << ".dat";
         if(_ARRAY_ == m_params.m_setTableFormat)
         {
-            m_quarticTables.FromFile(fileName.str(), mpi);
+            m_quarticTables.FromFile(filenameQuartic.str(), format, mpi);
+            m_quadraticTables.FromFile(fileNameQuadratic.str(), format, mpi);
         }
         else
         {
-            m_quarticHashTables.FromFile(fileName.str(), mpi);
+            m_quarticHashTables.FromFile(filenameQuartic.str(), format, mpi);
+            m_quadraticHashTables.FromFile(fileNameQuadratic.str(), format, mpi);
         }
-	    MPI_Barrier(mpi.m_comm);
-	    fileName.str("");
-        fileName<<m_params.m_outPath<<"/quadratic_coefficient_table_kx_"<<m_params.m_dimX<<"_ky_"<<m_params.m_dimY<<".dat";	
-        if(_ARRAY_ == m_params.m_setTableFormat)
+        MPI_Barrier(mpi.m_comm);
+        m_params.m_termTablesBuilt = true;
+        m_params.m_tableFormat = m_params.m_setTableFormat;
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
         {
-            m_quadraticTables.FromFile(fileName.str(), mpi);
-        }
-        else
-        {
-            m_quadraticHashTables.FromFile(fileName.str(), mpi);
+            utilities::cout.SecondaryOutput()<<" - DONE"<<std::endl;
         }
 	    return;
     }
@@ -815,8 +741,8 @@ namespace diagonalization
         m_quadraticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
         m_quarticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
         //  Generate tables of angular momentum conserving values for the Wannier basis
-        this->Generate2KTable(m_quadraticHashTables.GetKTable(), mpi);
-        this->Generate4KTable(m_quarticTables.GetKTable(), m_quarticHashTables.GetKTable(), mpi);
+        this->GenerateWannier2KTable(m_quadraticHashTables.GetKTable(), mpi);
+        this->GenerateWannier4KTable(m_quarticHashTables.GetKTable(), mpi);
         m_params.m_tableFormat = _HASH_;
 
         //////      Recalculate quadratic terms     ////////////////////////////////////
@@ -894,9 +820,9 @@ namespace diagonalization
                 utilities::cout.SecondaryOutput()<<"\n\t- RECALCULATING QUARTIC TERMS\n"<<std::endl;
             }
             //////      Calculate and store the change of basis matrix
-            NonInteractingOflModelArray modelArray;
-            modelArray.GenerateWannierCoefficients(m_params.m_dimX, m_params.m_dimY, m_params.m_offsetX, blochTable, 
-                                                   &m_basisChangeMatrix[0], mpi);
+            NonInteractingOflModelGrid modelGrid;
+            modelGrid.GenerateWannierCoefficients(m_params.m_dimX, m_params.m_dimY, m_params.m_offsetX, blochTable, 
+                                                  &m_basisChangeMatrix[0], mpi);
             iSize_t dimBasisChange = m_params.m_dimX*m_params.m_dimY;
             //  Reserve a memory block with which to retrieve the momentum conserving list of k-values
             kState_t kRetrieveBuffer[m_quarticHashTables.GetMaxKCount()];
@@ -999,7 +925,7 @@ namespace diagonalization
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief Calculate the sigma^z map and store in m_magnetization
     ////////////////////////////////////////////////////////////////////////////////
-    void InteractingOflModel::StoreSigmaZMap(
+    void InteractingOflModel::CalcualteSigmaZMap(
         NonInteractingOflModel* blochTable,  //!<    Lookup table of Bloch wave functions
         const utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
     {
@@ -1008,9 +934,9 @@ namespace diagonalization
             utilities::cout.SecondaryOutput()<<"\n\t- GENERATING SIGMA^Z MAP";
             fflush(stdout);
         }
-        NonInteractingOflModelArray modelArray;
+        NonInteractingOflModelGrid modelGrid;
         m_magnetization.resize(m_params.m_dimX*m_params.m_dimY);
-        modelArray.CalcualteSigmaZMap(m_params.m_dimX, m_params.m_dimY, blochTable, &m_magnetization[0]);
+        modelGrid.CalcualteSigmaZMap(m_params.m_dimX, m_params.m_dimY, blochTable, &m_magnetization[0]);
         m_params.m_magnetizationCalculated = true;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
         {
@@ -1199,13 +1125,13 @@ namespace diagonalization
                 m_hamiltonian.UpdateArpackFileNames(inFileName.str(),outFileName.str(),mpi);
                 if(_ARRAY_ == m_params.m_tableFormat)
                 {
-                    MatrixVectorFunction<dcmplx, QuadraticLookUpTables, QuarticLookUpTables> mv(m_hamiltonian, mpi);
+                    MatrixVectorFunction<dcmplx, QuadraticTermTables, QuarticTermTables> mv(m_hamiltonian, mpi);
                     m_params.m_hamiltonianDiagonalized = m_hamiltonian.LanczosDiagonalize(
                     &m_quadraticTables, &m_quarticTables, mv, m_params.m_nbrEigenvaluesToFind, mpi);
                 }
                 else
                 {
-                    MatrixVectorFunction<dcmplx, QuadraticLookUpHashTables, QuarticLookUpHashTables> mv(m_hamiltonian, mpi);
+                    MatrixVectorFunction<dcmplx, QuadraticTermHashTables, QuarticTermHashTables> mv(m_hamiltonian, mpi);
                     m_params.m_hamiltonianDiagonalized = m_hamiltonian.LanczosDiagonalize(
                     &m_quadraticHashTables, &m_quarticHashTables, mv, m_params.m_nbrEigenvaluesToFind, mpi);
                 }
@@ -1214,7 +1140,7 @@ namespace diagonalization
             {
                 if(0 == mpi.m_id)	// FOR THE MASTER NODE
                 {
-                    std::cerr<<"\n\tWARNING - NOT ABLE TO RUN DIAGONALIZATION ROUTINE."<<std::endl;
+                    std::cerr << "\n\tWARNING - NOT ABLE TO RUN DIAGONALIZATION ROUTINE." << std::endl;
                 }
             }
         }
@@ -1226,8 +1152,7 @@ namespace diagonalization
     //! \return true if the calculation was successful, false otherwise
     ////////////////////////////////////////////////////////////////////////////////
     bool InteractingOflModel::PlotHamiltonian(
-        const utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
-        const
+        utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
     {       
         return m_hamiltonian.PlotHamiltonian(m_params.m_outFileName, m_params.m_outPath, mpi);
     }
@@ -1240,6 +1165,7 @@ namespace diagonalization
     void InteractingOflModel::EigensystemToFile(
         const bool writeEigenvalues,    //!<    Option to write eigenvalues to file
         const bool writeEigenvectors,   //!<    Option to write eigenvectors to file
+        const io::fileFormat_t format,  //!<    Format of file
         utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
         if(writeEigenvalues || (writeEigenvectors && m_params.m_hamiltonianDiagonalized))
@@ -1250,8 +1176,8 @@ namespace diagonalization
             }
             std::stringstream ss;
             ss.str("");
-            ss<<m_params.MakeBaseFileName(_OUT_)<<"_eigensystem.dat";
-            m_hamiltonian.EigensystemToFile(ss.str(),writeEigenvalues,writeEigenvectors,mpi);
+            ss << m_params.MakeBaseFileName(io::_OUT_) << "_eigensystem.dat";
+            m_hamiltonian.EigensystemToFile(ss.str(), writeEigenvalues, writeEigenvectors, format, mpi);
             mpi.ExitFlagTest();
         }
         return;
@@ -1265,7 +1191,7 @@ namespace diagonalization
     void InteractingOflModel::EigensystemFromFile(
         const bool readEigenvalues,         //!<    Option to read eigenvalues from file
         const bool readEigenvectors,        //!<    Option to read eigenvalues from file
-        const std::string format,           //!<    Format of file (e.g. "binary", "text")
+        const io::fileFormat_t format,      //!<    Format of file
         utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
     {
         if((readEigenvalues || readEigenvectors) && !m_params.m_hamiltonianDiagonalized)
@@ -1289,7 +1215,7 @@ namespace diagonalization
             }
             std::stringstream ss;
             ss.str("");
-            ss<<m_params.MakeBaseFileName(_IN_)<<"_eigensystem.dat";
+            ss << m_params.MakeBaseFileName(io::_IN_) << "_eigensystem.dat";
             m_hamiltonian.EigensystemFromFile(ss.str(), readEigenvalues, readEigenvectors, format, mpi);
             mpi.ExitFlagTest();
             //  Counts as if the Hamiltonian were diagonalized
@@ -1298,35 +1224,36 @@ namespace diagonalization
         return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Store the full Hamiltonian in (a) file(s) - one file for each node
+    //!
+    //! Store the full Hamiltonian in (a) file(s) - one file for each node
     //! that the storage is distributed over. CRS format is used 
-    ////////////////////////////////////////////////////////////////////////////////
-    void InteractingOflModel::StoreHamiltonian(
-        utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
+    //!
+    void InteractingOflModel::HamiltonianToFile(
+        const io::fileFormat_t format,  //!<    Format of file 
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
         std::stringstream fileName;
         fileName.str("");
-        fileName<<m_params.MakeBaseFileName(_OUT_)<<"_proc_"<<mpi.m_id;
-        fileName<<"_hamiltonian.dat";
-        m_hamiltonian.HamiltonianToFile(fileName.str(),mpi);
+        fileName << m_params.MakeBaseFileName(io::_OUT_) << "_proc_" << mpi.m_id;
+        fileName << "_hamiltonian.dat";
+        m_hamiltonian.HamiltonianToFile(fileName.str(), format, mpi);
         return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Retrieve the full Hamiltonian from file(s) - one file for each node
+    //!
+    //! Retrieve the full Hamiltonian from file(s) - one file for each node
     //! that the storage is distributed over. CCS format is used 
-    ////////////////////////////////////////////////////////////////////////////////
-    void InteractingOflModel::RetrieveHamiltonian(
-        utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
+    //!
+    void InteractingOflModel::HamiltonianFromFile(
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class
     {
         m_hamiltonian.Initialize(m_params.m_nbrParticles,m_params.m_dimX*m_params.m_dimY,utilities::_SPARSE_CRS_,mpi);
         std::stringstream fileName;  
         fileName.str("");    
-        fileName<<m_params.MakeBaseFileName(_IN_)<<"_proc_"<<mpi.m_id;
-        fileName<<"_hamiltonian.dat";
-        m_hamiltonian.HamiltonianFromFile(fileName.str(),mpi);
-        //  Counts as if the Hamiltonian were built
+        fileName << m_params.MakeBaseFileName(io::_IN_) << "_proc_" << mpi.m_id;
+        fileName << "_hamiltonian.dat";
+        m_hamiltonian.HamiltonianFromFile(fileName.str(), format, mpi);
         m_params.m_hamiltonianBuilt = true;
         return;
     }
@@ -1377,7 +1304,7 @@ namespace diagonalization
                     std::ofstream f_out;
                     std::stringstream fileName;
                     fileName.str("");
-                    fileName<<m_params.MakeBaseFileName(_OUT_);
+                    fileName<<m_params.MakeBaseFileName(io::_OUT_);
                     fileName<<"_eig_"<<eigenvectorIndex<<"_occupations.dat";
                     f_out.open(fileName.str().c_str(), std::ios::out);
                     if(!f_out.is_open())
@@ -1467,7 +1394,7 @@ namespace diagonalization
                     std::ofstream f_out;
                     std::stringstream fileName;
                     fileName.str("");
-                    fileName<<m_params.MakeBaseFileName(_OUT_);
+                    fileName<<m_params.MakeBaseFileName(io::_OUT_);
                     fileName<<"_eig_"<<eigenvectorIndex<<"_susceptibility.dat";
                     f_out.open(fileName.str().c_str(), std::ios::out);
                     if(!f_out.is_open())
@@ -1552,7 +1479,7 @@ namespace diagonalization
                 //  Prepare to output a list of squared overlap values into a file
                 std::stringstream outFileName;
                 outFileName.str("");
-                outFileName<<m_params.MakeBaseFileName(_OUT_)<<"_most_probable.dat";
+                outFileName<<m_params.MakeBaseFileName(io::_OUT_)<<"_most_probable.dat";
                 std::ofstream f_probable;
                 f_probable.open(outFileName.str().c_str(), std::ios::out);
                 if(!f_probable.is_open())
@@ -1635,7 +1562,7 @@ namespace diagonalization
                     std::ofstream f_out;
                     std::stringstream fileName;
                     fileName.str("");
-                    fileName<<m_params.MakeBaseFileName(_OUT_);
+                    fileName<<m_params.MakeBaseFileName(io::_OUT_);
                     fileName<<"_eig_"<<eigenvectorIndex<<"_density_density.dat";
                     f_out.open(fileName.str().c_str(), std::ios::out);
                     if(!f_out.is_open())
@@ -1720,7 +1647,7 @@ namespace diagonalization
                     std::ofstream f_out;
                     std::stringstream fileName;
                     fileName.str("");
-                    fileName<<m_params.MakeBaseFileName(_OUT_);
+                    fileName<<m_params.MakeBaseFileName(io::_OUT_);
                     fileName<<"_eig_"<<eigenvectorIndex<<"_participation_ratio.dat";
                     f_out.open(fileName.str().c_str(), std::ios::out);
                     if(!f_out.is_open())
@@ -1788,7 +1715,7 @@ namespace diagonalization
                     std::ofstream f_out;
                     std::stringstream fileName;
                     fileName.str("");
-                    fileName<<m_params.MakeBaseFileName(_OUT_);                   
+                    fileName<<m_params.MakeBaseFileName(io::_OUT_);                   
                     fileName<<"_eig_"<<eigenvectorIndex<<"_translational_density_density.dat";
                     f_out.open(fileName.str().c_str(), std::ios::out);
                     if(!f_out.is_open())
@@ -1872,7 +1799,7 @@ namespace diagonalization
                     std::ofstream f_out;
                     std::stringstream fileName;
                     fileName.str("");
-                    fileName<<m_params.MakeBaseFileName(_OUT_);
+                    fileName<<m_params.MakeBaseFileName(io::_OUT_);
                     fileName<<"_eig_"<<eigenvectorIndex<<"_rotational_density_density.dat";
                     f_out.open(fileName.str().c_str(), std::ios::out);
                     if(!f_out.is_open())

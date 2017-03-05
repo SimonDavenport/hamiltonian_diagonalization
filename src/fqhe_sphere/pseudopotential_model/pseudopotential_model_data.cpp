@@ -46,7 +46,7 @@ namespace diagonalization
         m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
-        m_lookupTablesBuilt(false),
+        m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
@@ -72,7 +72,7 @@ namespace diagonalization
         m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
-        m_lookupTablesBuilt(false),
+        m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
@@ -102,7 +102,7 @@ namespace diagonalization
         m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
-        m_lookupTablesBuilt(false),
+        m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
@@ -137,7 +137,7 @@ namespace diagonalization
         m_method(other.m_method),
         m_initialVectorFile(other.m_initialVectorFile),
         m_finalVectorFile(other.m_finalVectorFile),
-        m_lookupTablesBuilt(other.m_lookupTablesBuilt),
+        m_termTablesBuilt(other.m_termTablesBuilt),
         m_fockBasisBuilt(other.m_fockBasisBuilt),
         m_hamiltonianBuilt(other.m_hamiltonianBuilt),
         m_hamiltonianDiagonalized(other.m_hamiltonianDiagonalized)
@@ -165,7 +165,7 @@ namespace diagonalization
         m_method = other.m_method;
         m_initialVectorFile = other.m_initialVectorFile;
         m_finalVectorFile = other.m_finalVectorFile;
-        m_lookupTablesBuilt = other.m_lookupTablesBuilt;
+        m_termTablesBuilt = other.m_termTablesBuilt;
         m_fockBasisBuilt = other.m_fockBasisBuilt;
         m_hamiltonianBuilt = other.m_hamiltonianBuilt;
         m_hamiltonianDiagonalized = other.m_hamiltonianDiagonalized;
@@ -212,7 +212,7 @@ namespace diagonalization
         }
         mpi.Sync(m_initialVectorFile, nodeId);
         mpi.Sync(m_finalVectorFile, nodeId);
-        mpi.Sync(&m_lookupTablesBuilt, 1, nodeId);
+        mpi.Sync(&m_termTablesBuilt, 1, nodeId);
         mpi.Sync(&m_fockBasisBuilt, 1, nodeId);
         mpi.Sync(&m_hamiltonianBuilt, 1, nodeId);
         mpi.Sync(&m_hamiltonianDiagonalized, 1, nodeId);
@@ -230,25 +230,25 @@ namespace diagonalization
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
         :
         m_totalLz(0),
-	    m_lookupTablesBuilt(false),
+	    m_termTablesBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
 	        //////      Read in parameter values from command line parser       ////
-	        m_nbrOrbitals           =  (*optionList)["nbr-orbitals"].as<iSize_t>();
-	        m_nbrParticles          =  (*optionList)["nbr-particles"].as<iSize_t>();
-            m_outPath               =  (*optionList)["out-path"].as<std::string>();
-            m_inPath                =  (*optionList)["in-path"].as<std::string>();
-            m_nbrEigenvaluesToFind  =  (*optionList)["nbr-eigenvalues"].as<iSize_t>();
-            m_initialVectorFile     =  (*optionList)["initial-file"].as<std::string>();
-            m_finalVectorFile       =  (*optionList)["final-file"].as<std::string>();
-            m_blockDiagonalize      =  (*optionList)["block-diagonalize"].as<bool>();
-            m_nbrLevels             =  (*optionList)["nbr-levels"].as<iSize_t>();
+	        GetOption(optionList, m_nbrOrbitals, "nbr-orbitals", _AT_, mpi);
+	        GetOption(optionList, m_nbrParticles, "nbr-particles", _AT_, mpi);
+	        GetOption(optionList, m_outPath, "out-path", _AT_, mpi);
+	        GetOption(optionList, m_inPath, "in-path", _AT_, mpi);
+	        GetOption(optionList, m_nbrEigenvaluesToFind, "nbr-eigenvalues", _AT_, mpi);
+	        GetOption(optionList, m_initialVectorFile, "initial-file", _AT_, mpi);
+	        GetOption(optionList, m_finalVectorFile, "final-file", _AT_, mpi);
+	        GetOption(optionList, m_blockDiagonalize, "block-diagonalize", _AT_, mpi);
+	        GetOption(optionList, m_nbrLevels, "nbr-levels", _AT_, mpi);
             if(optionList->count("two-body-pseudopotentials"))
             {
-                m_twoBodyPseudopotentials = (*optionList)["two-body-pseudopotentials"].as<std::vector<double> >();
+                GetOption(optionList, m_twoBodyPseudopotentials, "two-body-pseudopotentials", _AT_, mpi);
             }
             else
             {
@@ -257,7 +257,7 @@ namespace diagonalization
             }
             if(optionList->count("two-body-pseudopotentials-2ll"))
             {
-                m_twoBodyPseudopotentials2LL = (*optionList)["two-body-pseudopotentials-2ll"].as<std::vector<double> >();
+                GetOption(optionList, m_twoBodyPseudopotentials2LL, "two-body-pseudopotentials-2ll", _AT_, mpi);
             }
             else
             {
@@ -358,20 +358,9 @@ namespace diagonalization
                     }
 	            }
                 utilities::cout.SecondaryOutput()<<std::endl;
-	            int tmp = (*optionList)["method"].as<iSize_t>();
-                if(0==tmp)	    
-                {
-                    m_method = _FULL_;
-                }
-                else if(1==tmp)	
-                {
-                    m_method = _LANCZOS_;
-                }
-                else 
-                {
-                    std::cerr<<"\n\tERROR: INVALID METHOD : "<<tmp<<std::endl;
-                    mpi.m_exitFlag = true;
-                }
+                int diagonalizationMethod;
+                GetOption(optionList, diagonalizationMethod, "method", _AT_, mpi);
+                m_method = myOptions::GetDiagonalizationMethod(diagonalizationMethod, mpi);
                 if(_FULL_ == m_method)
                 {
                     utilities::cout.SecondaryOutput()<<"\n\tDiagonalization method: Full (LAPACK)"<<std::endl;
@@ -406,23 +395,23 @@ namespace diagonalization
     //! Generate an output file name base, using struct parameters
     //!
     std::string PseudopotentialModelData::MakeBaseFileName(
-        const io_t io)  //!<    Flag to set input/output file name
+        const io::io_t io)  //!<    Flag to set input/output file name
     const
     {
-        std::stringstream fileName;      
+        std::stringstream fileName;
         fileName.str("");
-        if(_OUT_ == io)
+        if(io::_OUT_ == io)
         {
-            fileName<<m_outPath;
+            fileName << m_outPath;
         }
-        else if(_IN_ == io)
+        else if(io::_IN_ == io)
         {
-            fileName<<m_inPath;
+            fileName << m_inPath;
         }
-        fileName<<"/"<<m_outFileName;
+        fileName << "/" << m_outFileName;
         if(m_blockDiagonalize)
         {
-            fileName<<"_sector_"<<m_totalLz;
+            fileName << "_sector_" << m_totalLz;
         }
         return fileName.str();
     }
