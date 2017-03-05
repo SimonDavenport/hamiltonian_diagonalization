@@ -73,9 +73,9 @@ namespace diagonalization
     //! Write quadratic terms to a file
     //!
     void QuadraticTermHashTables::ToFile(
-        const std::string fileName, //!<    Name of file
-        const std::string format,   //!<    Format of file (e.g. "binary", "text")
-        utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
+        const std::string fileName,     //!<    Name of file
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
     {
         this->ToFileBase(fileName, format, 2, mpi);
     }
@@ -84,9 +84,9 @@ namespace diagonalization
     //! Read quadratic terms from a file
     //!
     void QuadraticTermHashTables::FromFile(
-        const std::string fileName, //!<    Name of file
-        const std::string format,   //!<    Format of file (e.g. "binary", "text")
-        utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
+        const std::string fileName,     //!<    Name of file
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
     {
         this->FromFileBase(fileName, format, mpi);
     }
@@ -135,9 +135,9 @@ namespace diagonalization
     //! Write quartic terms to a file
     //!
     void QuarticTermHashTables::ToFile(
-        const std::string fileName, //!<    Name of file
-        const std::string format,   //!<    Format of file (e.g. "binary", "text")
-        utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
+        const std::string fileName,     //!<    Name of file
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
     {
         this->ToFileBase(fileName, format, 4, mpi);
     }
@@ -146,9 +146,9 @@ namespace diagonalization
     //! Read quartic terms from a file
     //!
     void QuarticTermHashTables::FromFile(
-        const std::string fileName, //!<    Name of file
-        const std::string format,   //!<    Format of file (e.g. "binary", "text")
-        utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class 
+        const std::string fileName,     //!<    Name of file
+        const io::fileFormat_t format,  //!<    Format of file
+        utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
     {
         this->FromFileBase(fileName, format, mpi);
     }

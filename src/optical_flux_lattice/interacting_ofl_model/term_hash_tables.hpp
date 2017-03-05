@@ -28,7 +28,7 @@
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../../utilities/general/dcmplx_type_def.hpp"
-#include "../../utilities/data_structures/term_hash_tables_base.hpp"
+#include "../../hamiltonians/term_hash_tables_base.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
 #endif    
@@ -41,9 +41,9 @@ namespace diagonalization
         iSize_t GetMaxKCount() const;
         void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const;
         dcmplx GetEkk(const kState_t k1, const kState_t k2) const;
-        void ToFile(const std::string fileName, const std::string format, 
+        void ToFile(const std::string fileName, const io::fileFormat_t format, 
                     utilities::MpiWrapper& mpi);
-        void FromFile(const std::string fileName, const std::string format,
+        void FromFile(const std::string fileName, const io::fileFormat_t format,
                       utilities::MpiWrapper& mpi);
     };
     
@@ -55,9 +55,9 @@ namespace diagonalization
                    const kState_t k3, const kState_t k4) const;
         dcmplx GetVkkkk(const kState_t k1, const kState_t k2, const kState_t k3, 
                         const kState_t k4) const;
-        void ToFile(const std::string fileName, const std::string format, 
+        void ToFile(const std::string fileName, const io::fileFormat_t format, 
                     utilities::MpiWrapper& mpi);
-        void FromFile(const std::string fileName, const std::string format,
+        void FromFile(const std::string fileName, const io::fileFormat_t format,
                       utilities::MpiWrapper& mpi);
     };
 }   //  End diagonalization namespace
