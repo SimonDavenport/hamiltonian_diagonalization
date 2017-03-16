@@ -1,4 +1,3 @@
-# exact_diagonalization
 An "exact diagonalization" program - mapping many-particle quantum mechanical Hamiltonians onto large-scale sparse eigenvalue problems. This code was used for calculating results presented in this research paper: https://arxiv.org/abs/1504.07232.
 
 INSTALL:
