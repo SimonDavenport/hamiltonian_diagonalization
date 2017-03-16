@@ -1,0 +1,4 @@
+var structutilities_1_1Compare_3_01std_1_1pair_3_01uint64__t_00_01dcmplx_01_4_00_01__ASCENDING__ORDER___01_4 =
+[
+    [ "Value", "structutilities_1_1Compare_3_01std_1_1pair_3_01uint64__t_00_01dcmplx_01_4_00_01__ASCENDING__ORDER___01_4.html#a3be8241ac3561255cddef06c6cd5a6d8", null ]
+];
