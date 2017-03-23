@@ -30,24 +30,26 @@
 
 namespace utilities
 {
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief A template to check that two types are the same
+    //!
+    //! A template to check that two types are the same
     //! (as implemented by the function std::is_same in C++11)
-    ////////////////////////////////////////////////////////////////////////////////
+    //!
     template<typename T, typename U>
     struct is_same 
     {
         static const bool value = false; 
     };
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief A template to check that two types are the same
+    
+    //!
+    //! A template to check that two types are the same
     //! (as implemented by the function std::is_same in C++11)
-    ////////////////////////////////////////////////////////////////////////////////
+    //!
     template<typename T>
     struct is_same<T,T>  //specialization
     { 
        static const bool value = true; 
     };
+    
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief g++ does not correctly implemented partial variadic template function
     //! specialization. The workaround is to use a recursive set of classes,
@@ -55,6 +57,7 @@ namespace utilities
     ////////////////////////////////////////////////////////////////////////////////
     template <typename... Ts>
     struct SizeOfImpl;
+    
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief A template class to count the total number of bytes in a variadic
     //! template parameter pack (requires c++11). Count total number of bytes - 
@@ -70,6 +73,7 @@ namespace utilities
             return 0;
         }
     };
+    
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief A template class to count the total number of bytes in a variadic
     //! template parameter pack (requires c++11). Count total number of bytes -
@@ -83,6 +87,7 @@ namespace utilities
             return sizeof(T)+SizeOfImpl<Ts...>::Value();
         }
     };
+    
     ////////////////////////////////////////////////////////////////////////////////
     //! \brief A template function to count the total number of bytes in a variadic
     //! template parameter pack (requires c++11)

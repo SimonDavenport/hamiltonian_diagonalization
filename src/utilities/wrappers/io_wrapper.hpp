@@ -13,6 +13,7 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include "../wrappers/mpi_wrapper.hpp"
 #include "../general/template_tools.hpp"
 #include "../general/dcmplx_type_def.hpp"
