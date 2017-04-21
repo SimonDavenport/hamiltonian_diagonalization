@@ -125,10 +125,10 @@ namespace diagonalization
         iSize_t cutOffStep;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
         {
-            GetOption(optionList, matrixElementTol, "tol-vkkkk", _AT_, mpi);
-            GetOption(optionList, minBlochCutOff, "min-k-cut", _AT_, mpi);
-            GetOption(optionList, maxBlochCutOff, "max-k-cut", _AT_, mpi);
-            GetOption(optionList, cutOffStep, "k-cut-step", _AT_, mpi);
+            GetOption(optionList, matrixElementTol, "tol-vkkkk", _LINE_, mpi);
+            GetOption(optionList, minBlochCutOff, "min-k-cut", _LINE_, mpi);
+            GetOption(optionList, maxBlochCutOff, "max-k-cut", _LINE_, mpi);
+            GetOption(optionList, cutOffStep, "k-cut-step", _LINE_, mpi);
         }
         mpi.ExitFlagTest();
         mpi.Sync(&matrixElementTol, 1, 0);

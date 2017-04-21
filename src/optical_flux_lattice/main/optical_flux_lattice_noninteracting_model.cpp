@@ -49,16 +49,16 @@ int main(int argc, char *argv[])
     bool calculateMagnetizationFlag = false;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    GetOption(&optionList, spatialWaveFunctionsFlag, "calculate-spatial-wavefunctions", _AT_, mpi);
-	    GetOption(&optionList, calculateBandstructureFlag, "calculate-bandstructure", _AT_, mpi);
-	    GetOption(&optionList, calculateBandWidthFlag, "calculate-band-width", _AT_, mpi);
-	    GetOption(&optionList, calculateMagnetizationFlag, "calculate-magnetization", _AT_, mpi);
+	    GetOption(&optionList, spatialWaveFunctionsFlag, "calculate-spatial-wavefunctions", _LINE_, mpi);
+	    GetOption(&optionList, calculateBandstructureFlag, "calculate-bandstructure", _LINE_, mpi);
+	    GetOption(&optionList, calculateBandWidthFlag, "calculate-band-width", _LINE_, mpi);
+	    GetOption(&optionList, calculateMagnetizationFlag, "calculate-magnetization", _LINE_, mpi);
 	    bool plotBandStructureFlag;
 	    bool plotBandWidthFlag;
 	    bool plotMagnetizationFlag;
-	    GetOption(&optionList, plotBandStructureFlag, "plot-bandstructure", _AT_, mpi);
-	    GetOption(&optionList, plotBandWidthFlag, "plot-band-width", _AT_, mpi);
-	    GetOption(&optionList, plotMagnetizationFlag, "plot-magnetization", _AT_, mpi);
+	    GetOption(&optionList, plotBandStructureFlag, "plot-bandstructure", _LINE_, mpi);
+	    GetOption(&optionList, plotBandWidthFlag, "plot-band-width", _LINE_, mpi);
+	    GetOption(&optionList, plotMagnetizationFlag, "plot-magnetization", _LINE_, mpi);
 	    calculateBandstructureFlag = calculateBandstructureFlag || plotBandStructureFlag;
 	    calculateBandWidthFlag = calculateBandWidthFlag || plotBandWidthFlag;
 	    calculateMagnetizationFlag = calculateMagnetizationFlag || plotMagnetizationFlag;
@@ -131,7 +131,7 @@ boost::program_options::variables_map ParseCommandLine(
 	if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{   
 	    int verbosity;
-	    GetOption(&vm, verbosity, "verbose", _AT_, mpi);
+	    GetOption(&vm, verbosity, "verbose", _LINE_, mpi);
 	    utilities::cout.SetVerbosity(verbosity);
     }
     utilities::cout.MpiSync(0, mpi.m_comm);

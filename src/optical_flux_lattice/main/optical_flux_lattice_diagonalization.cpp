@@ -55,12 +55,12 @@ int main(int argc, char *argv[])
     int formatCode;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    GetOption(&optionList, diagonalizeFlag, "diagonalize", _AT_, mpi);
-	    GetOption(&optionList, eigenvaluesFlag, "eigenvalues-file", _AT_, mpi);
-	    GetOption(&optionList, eigenvectorsFlag, "eigenvectors-file", _AT_, mpi);
-	    GetOption(&optionList, storeTermsFlag, "store-terms", _AT_, mpi);
-	    GetOption(&optionList, retrieveTermsFlag, "retrieve-terms", _AT_, mpi);
-	    GetOption(&optionList, formatCode, "file-format", _AT_, mpi);
+	    GetOption(&optionList, diagonalizeFlag, "diagonalize", _LINE_, mpi);
+	    GetOption(&optionList, eigenvaluesFlag, "eigenvalues-file", _LINE_, mpi);
+	    GetOption(&optionList, eigenvectorsFlag, "eigenvectors-file", _LINE_, mpi);
+	    GetOption(&optionList, storeTermsFlag, "store-terms", _LINE_, mpi);
+	    GetOption(&optionList, retrieveTermsFlag, "retrieve-terms", _LINE_, mpi);
+	    GetOption(&optionList, formatCode, "file-format", _LINE_, mpi);
 	}
 	mpi.ExitFlagTest();
     mpi.Sync(&diagonalizeFlag, 1, 0);
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
         bool calculateSusceptibilityFlag = false;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        GetOption(&optionList, calculateSusceptibilityFlag, "calculate-susceptibility", _AT_, mpi);
+	        GetOption(&optionList, calculateSusceptibilityFlag, "calculate-susceptibility", _LINE_, mpi);
 	    }
         mpi.Sync(&calculateSusceptibilityFlag, 1, 0);
         if(calculateSusceptibilityFlag)
@@ -218,7 +218,7 @@ boost::program_options::variables_map ParseCommandLine(
 	if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
 	    int verbosity;
-	    GetOption(&vm, verbosity, "verbose", _AT_, mpi);
+	    GetOption(&vm, verbosity, "verbose", _LINE_, mpi);
 	    utilities::cout.SetVerbosity(verbosity);
     }
     utilities::cout.MpiSync(0, mpi.m_comm);
@@ -246,19 +246,19 @@ std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(
 	{
 	    std::vector<diagonalization::iSize_t> tempList;
 	    bool blockDiagonalize;
-	    GetOption(optionList, blockDiagonalize, "block-diagonalize", _AT_, mpi);
+	    GetOption(optionList, blockDiagonalize, "block-diagonalize", _LINE_, mpi);
 	    if(optionList->count("sectors"))
 	    {
-	        utilities::GetOption(optionList, tempList, "sectors", _AT_, mpi);
+	        utilities::GetOption(optionList, tempList, "sectors", _LINE_, mpi);
         }
         else if(blockDiagonalize)
         {
             diagonalization::iSize_t kx;
             diagonalization::iSize_t ky;
             int basisCode;
-            GetOption(optionList, kx, "kx", _AT_, mpi);
-            GetOption(optionList, ky, "ky", _AT_, mpi);
-            GetOption(optionList, basisCode, "basis", _AT_, mpi);
+            GetOption(optionList, kx, "kx", _LINE_, mpi);
+            GetOption(optionList, ky, "ky", _LINE_, mpi);
+            GetOption(optionList, basisCode, "basis", _LINE_, mpi);
             if(0 == basisCode)  // use kx,ky basis
             {
                 for(diagonalization::iSize_t x=0;x<kx;++x)

@@ -226,25 +226,25 @@ namespace diagonalization
 	    {
 	        {
 	            bool diagonalize;
-	            GetOption(optionList, diagonalize, "diagonalize", _AT_, mpi);
-	            GetOption(optionList, m_dimX, "kx", _AT_, mpi);
-	            GetOption(optionList, m_dimY, "ky", _AT_, mpi);
-	            GetOption(optionList, m_offsetX, "kx-shift", _AT_, mpi);
-	            GetOption(optionList, m_offsetY, "ky-shift", _AT_, mpi);
+	            GetOption(optionList, diagonalize, "diagonalize", _LINE_, mpi);
+	            GetOption(optionList, m_dimX, "kx", _LINE_, mpi);
+	            GetOption(optionList, m_dimY, "ky", _LINE_, mpi);
+	            GetOption(optionList, m_offsetX, "kx-shift", _LINE_, mpi);
+	            GetOption(optionList, m_offsetY, "ky-shift", _LINE_, mpi);
 	            //  Note the offset values set from the command line will be overrided
                 //  by the values optionally provided from an SQL database
-	            GetOption(optionList, m_nbrParticles, "nbr", _AT_, mpi);
-	            GetOption(optionList, m_outPath, "out-path", _AT_, mpi);
-	            GetOption(optionList, m_inPath, "in-path", _AT_, mpi);
-	            GetOption(optionList, m_nbrEigenvaluesToFind, "nbr-eigenvalues", _AT_, mpi);
-	            GetOption(optionList, m_useSql, "use-sql", _AT_, mpi);
-	            GetOption(optionList, m_sqlName, "sql-name", _AT_, mpi);
-	            GetOption(optionList, m_sqlId, "sql-id", _AT_, mpi);
-	            GetOption(optionList, m_sqlTableName, "sql-table-name", _AT_, mpi);
-	            GetOption(optionList, m_initialVectorFile, "initial-file", _AT_, mpi);
-	            GetOption(optionList, m_finalVectorFile, "final-file", _AT_, mpi);
+	            GetOption(optionList, m_nbrParticles, "nbr", _LINE_, mpi);
+	            GetOption(optionList, m_outPath, "out-path", _LINE_, mpi);
+	            GetOption(optionList, m_inPath, "in-path", _LINE_, mpi);
+	            GetOption(optionList, m_nbrEigenvaluesToFind, "nbr-eigenvalues", _LINE_, mpi);
+	            GetOption(optionList, m_useSql, "use-sql", _LINE_, mpi);
+	            GetOption(optionList, m_sqlName, "sql-name", _LINE_, mpi);
+	            GetOption(optionList, m_sqlId, "sql-id", _LINE_, mpi);
+	            GetOption(optionList, m_sqlTableName, "sql-table-name", _LINE_, mpi);
+	            GetOption(optionList, m_initialVectorFile, "initial-file", _LINE_, mpi);
+	            GetOption(optionList, m_finalVectorFile, "final-file", _LINE_, mpi);
 	            bool useHash;
-	            GetOption(optionList, useHash, "use-hash", _AT_, mpi);
+	            GetOption(optionList, useHash, "use-hash", _LINE_, mpi);
 	            m_setTableFormat = myOptions::GetTermStorageType(useHash, mpi);
 	            if(mpi.m_exitFlag) 
 	            {
@@ -268,7 +268,7 @@ namespace diagonalization
                 {
                     //  Default to look for model data in the specified text file
                     std::string paramsFileName;
-                    GetOption(optionList, paramsFileName, "params-file", _AT_, mpi);
+                    GetOption(optionList, paramsFileName, "params-file", _LINE_, mpi);
                     fileName << m_inPath << paramsFileName;
                     this->ReadFromFile(fileName.str(), mpi);
                     if(mpi.m_exitFlag) goto escape;
@@ -298,7 +298,7 @@ namespace diagonalization
                     utilities::cout.SecondaryOutput()<<"\t\tOut file name \t\t"<<m_outFileName<<std::endl;
                 }
                 int methodCode;
-                GetOption(optionList, methodCode, "method", _AT_, mpi);
+                GetOption(optionList, methodCode, "method", _LINE_, mpi);
                 m_method = myOptions::GetDiagonalizationMethod(methodCode, mpi);
                 if(mpi.m_exitFlag) 
                 {
@@ -313,7 +313,7 @@ namespace diagonalization
                     utilities::cout.SecondaryOutput()<<"\n\tDiagonalization method: Lanczos (ARPACK)"<<std::endl;
                 }
                 int basisCode;
-                GetOption(optionList, basisCode, "basis" , _AT_, mpi);
+                GetOption(optionList, basisCode, "basis" , _LINE_, mpi);
                 m_useWannierBasis = myOptions::GetBasisType(basisCode, mpi);
                 if(mpi.m_exitFlag) 
                 {

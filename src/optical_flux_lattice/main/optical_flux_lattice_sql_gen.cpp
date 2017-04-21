@@ -41,13 +41,13 @@ int main(int argc, char *argv[])
     boost::program_options::variables_map optionList;
     optionList = ParseCommandLine(argc, argv);
     bool buildSqlTable = false;
-    utilities::GetOption(&optionList, buildSqlTable, "build-sql-table", _AT_);
+    utilities::GetOption(&optionList, buildSqlTable, "build-sql-table", _LINE_);
     bool buildSqlTableOffset = false;
-    utilities::GetOption(&optionList, buildSqlTableOffset, "build-sql-table-offset", _AT_);
+    utilities::GetOption(&optionList, buildSqlTableOffset, "build-sql-table-offset", _LINE_);
     bool buildSqlTableSingleParticle = false;
-    utilities::GetOption(&optionList, buildSqlTableOffset, "build-sql-table-single-particle", _AT_);
+    utilities::GetOption(&optionList, buildSqlTableOffset, "build-sql-table-single-particle", _LINE_);
     bool sqlCompleted = false;
-    utilities::GetOption(&optionList, sqlCompleted, "sql-completed", _AT_);
+    utilities::GetOption(&optionList, sqlCompleted, "sql-completed", _LINE_);
     if(buildSqlTable)
     {
         //////      GENERATE AN SQL TABLE FOR A CUT THROUGH PARAMETER SPACE     ////////
@@ -62,14 +62,14 @@ int main(int argc, char *argv[])
         double interactionStep;
         double offsetX;
         double offsetY;
-        utilities::GetOption(&optionList, xGrid, "sql-v0-nbr", _AT_);
-        utilities::GetOption(&optionList, yGrid, "sql-g-nbr", _AT_);
-        utilities::GetOption(&optionList, v0Min, "sql-v0-min", _AT_);
-        utilities::GetOption(&optionList, v0Step, "sql-v0-step", _AT_);
-        utilities::GetOption(&optionList, interactionMin, "sql-g-min", _AT_);
-        utilities::GetOption(&optionList, interactionStep, "sql-g-step", _AT_);
-        utilities::GetOption(&optionList, offsetX, "kx-shift", _AT_);
-        utilities::GetOption(&optionList, offsetY, "ky-shift", _AT_);
+        utilities::GetOption(&optionList, xGrid, "sql-v0-nbr", _LINE_);
+        utilities::GetOption(&optionList, yGrid, "sql-g-nbr", _LINE_);
+        utilities::GetOption(&optionList, v0Min, "sql-v0-min", _LINE_);
+        utilities::GetOption(&optionList, v0Step, "sql-v0-step", _LINE_);
+        utilities::GetOption(&optionList, interactionMin, "sql-g-min", _LINE_);
+        utilities::GetOption(&optionList, interactionStep, "sql-g-step", _LINE_);
+        utilities::GetOption(&optionList, offsetX, "kx-shift", _LINE_);
+        utilities::GetOption(&optionList, offsetY, "ky-shift", _LINE_);
         //  Other parameters are fixed
         const double defaultTheta   = 0.3;
         const double defaultEpsilon = 0.4;
@@ -86,9 +86,9 @@ int main(int argc, char *argv[])
         std::stringstream fileName;
         fileName.str("");
         std::string outPath;
-        utilities::GetOption(&optionList, outPath, "out-path", _AT_);
+        utilities::GetOption(&optionList, outPath, "out-path", _LINE_);
         std::string sqlName;
-        utilities::GetOption(&optionList, sqlName, "sql-name", _AT_);
+        utilities::GetOption(&optionList, sqlName, "sql-name", _LINE_);
         //  Generate an sql database with the following name
         fileName << outPath << sqlName;
         utilities::cout.SecondaryOutput()<<fileName.str()<<std::endl<<std::endl;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
         sqlRow.AddField("GotParticipationRatio", completedFlag);
         //  Generate a table to contain these data
         std::string tableName;
-        utilities::GetOption(&optionList, tableName, "sql-table-name", _AT_);
+        utilities::GetOption(&optionList, tableName, "sql-table-name", _LINE_);
         sql.CreateTable(tableName,&sqlRow);
         //////      POPULATE THE TABLE WITH A CUT THROUGH PARAMETER SPACE   ///////
         double currV0 = v0Min;
@@ -190,14 +190,14 @@ int main(int argc, char *argv[])
         double offsetYmin;
         diagonalization::iSize_t offsetYnbr;
         double offsetYstep;
-        utilities::GetOption(&optionList, defaultV0, "sql-v0-min", _AT_);
-        utilities::GetOption(&optionList, defaultG, "sql-g-min", _AT_);
-        utilities::GetOption(&optionList, offsetXmin, "sql-kx-shift-min", _AT_);
-        utilities::GetOption(&optionList, offsetXnbr, "sql-kx-shift-nbr", _AT_);
-        utilities::GetOption(&optionList, offsetXstep, "sql-kx-shift-step", _AT_);
-        utilities::GetOption(&optionList, offsetYmin, "sql-ky-shift-min", _AT_);
-        utilities::GetOption(&optionList, offsetYnbr, "sql-ky-shift-nbr", _AT_);
-        utilities::GetOption(&optionList, offsetYstep, "sql-ky-shift-step", _AT_);
+        utilities::GetOption(&optionList, defaultV0, "sql-v0-min", _LINE_);
+        utilities::GetOption(&optionList, defaultG, "sql-g-min", _LINE_);
+        utilities::GetOption(&optionList, offsetXmin, "sql-kx-shift-min", _LINE_);
+        utilities::GetOption(&optionList, offsetXnbr, "sql-kx-shift-nbr", _LINE_);
+        utilities::GetOption(&optionList, offsetXstep, "sql-kx-shift-step", _LINE_);
+        utilities::GetOption(&optionList, offsetYmin, "sql-ky-shift-min", _LINE_);
+        utilities::GetOption(&optionList, offsetYnbr, "sql-ky-shift-nbr", _LINE_);
+        utilities::GetOption(&optionList, offsetYstep, "sql-ky-shift-step", _LINE_);
         //  Other parameters are fixed
         const double defaultTheta   = 0.3;
         const double defaultEpsilon = 0.4;
@@ -217,9 +217,9 @@ int main(int argc, char *argv[])
         fileName.str("");
         //  Generate an sql database with the following name
         std::string outPath;
-        utilities::GetOption(&optionList, outPath, "out-path", _AT_);
+        utilities::GetOption(&optionList, outPath, "out-path", _LINE_);
         std::string sqlName;
-        utilities::GetOption(&optionList, sqlName, "sql-name", _AT_);
+        utilities::GetOption(&optionList, sqlName, "sql-name", _LINE_);
         fileName << outPath << sqlName;
         utilities::cout.SecondaryOutput()<<fileName.str()<<std::endl<<std::endl;
         utilities::Sqlite sql(fileName.str(), sql::_CREATE_NEW_);
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
         sqlRow.AddField("GotParticipationRatio", completedFlag);
         //  Generate a table to contain these data
         std::string tableName;
-        utilities::GetOption(&optionList, tableName, "sql-table-name", _AT_);
+        utilities::GetOption(&optionList, tableName, "sql-table-name", _LINE_);
         sql.CreateTable(tableName, &sqlRow);
         //////      POPULATE THE TABLE WITH A CUT THROUGH OFFSET SPACE   ///////
         double currxOffsetX = offsetXmin;
@@ -287,8 +287,8 @@ int main(int argc, char *argv[])
         //////      SET PARAMETER CUT VALUES HERE       ////////////
         double offsetX;
         double offsetY;
-        utilities::GetOption(&optionList, offsetX, "kx-shift", _AT_);
-        utilities::GetOption(&optionList, offsetY, "ky-shift", _AT_);
+        utilities::GetOption(&optionList, offsetX, "kx-shift", _LINE_);
+        utilities::GetOption(&optionList, offsetY, "ky-shift", _LINE_);
         const diagonalization::iSize_t epsilonNbr = 10;
         const double epsilonMin = 0.1;
         const double epsilonStep = 0.1;
@@ -309,9 +309,9 @@ int main(int argc, char *argv[])
         fileName.str("");
         //  Generate an sql database with the following name
         std::string outPath;
-        utilities::GetOption(&optionList, outPath, "out-path", _AT_);
+        utilities::GetOption(&optionList, outPath, "out-path", _LINE_);
         std::string sqlName;
-        utilities::GetOption(&optionList, sqlName, "sql-name", _AT_);
+        utilities::GetOption(&optionList, sqlName, "sql-name", _LINE_);
         fileName << outPath << sqlName;
         utilities::cout.SecondaryOutput()<<fileName.str()<<std::endl<<std::endl;
         utilities::Sqlite sql(fileName.str(), sql::_CREATE_NEW_);
@@ -334,7 +334,7 @@ int main(int argc, char *argv[])
         }
         sqlRow.AddField("Completed", completedFlag);
         std::string tableName;
-        utilities::GetOption(&optionList, tableName, "sql-table-name", _AT_);
+        utilities::GetOption(&optionList, tableName, "sql-table-name", _LINE_);
         sql.CreateTable(tableName,&sqlRow);
         //////      POPULATE THE TABLE WITH A CUT THROUGH PARAMETER SPACE   ///////
         double currEpsilon = epsilonMin;
@@ -403,7 +403,7 @@ boost::program_options::variables_map ParseCommandLine(
         exit(EXIT_SUCCESS);
     }
     int verbosity;
-    utilities::GetOption(&vm, verbosity, "verbose", _AT_);
+    utilities::GetOption(&vm, verbosity, "verbose", _LINE_);
     utilities::cout.SetVerbosity(verbosity);
     utilities::cout.MainOutput()<<"\n\tRun with -h option to see program options"<<std::endl;
     return vm;

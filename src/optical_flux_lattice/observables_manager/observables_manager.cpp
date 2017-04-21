@@ -127,9 +127,9 @@ namespace diagonalization
         {
             for(const auto &pair : m_observablesList)
             {
-                GetOption(optionList, m_observablesList[pair.first], pair.first, _AT_, mpi);
+                GetOption(optionList, m_observablesList[pair.first], pair.first, _LINE_, mpi);
             }
-            GetOption(optionList, m_nbrMostProbable, "nbr-most-probable", _AT_, mpi);
+            GetOption(optionList, m_nbrMostProbable, "nbr-most-probable", _LINE_, mpi);
         }
         mpi.ExitFlagTest();
         this->MpiSynchronize(0, mpi);
@@ -192,15 +192,15 @@ namespace diagonalization
         if(0 == mpi.m_id)    //  FOR THE MASTER NODE
         {
             std::string inPath;
-            GetOption(optionList, inPath, "in-path", _AT_, mpi);
+            GetOption(optionList, inPath, "in-path", _LINE_, mpi);
             bool useSql;
-            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
             iSize_t sqlId;
-            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            GetOption(optionList, sqlId, "sql-id", _LINE_, mpi);
             std::string sqlName;
-            GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+            GetOption(optionList, sqlName, "sql-name", _LINE_, mpi);
             std::string sqlTableName;
-            GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
+            GetOption(optionList, sqlTableName, "sql-table-name", _LINE_, mpi);
             if(m_calcualtedObservables && useSql)
             {
                 std::stringstream fileName;

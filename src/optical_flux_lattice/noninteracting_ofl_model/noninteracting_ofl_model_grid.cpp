@@ -300,10 +300,10 @@ namespace diagonalization
         double offsetY;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
-	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
-	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
-	        GetOption(optionList, offsetY, "x-grid-shift", _AT_, mpi);
+	        GetOption(optionList, dimX, "x-grid", _LINE_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _LINE_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _LINE_, mpi);
+	        GetOption(optionList, offsetY, "x-grid-shift", _LINE_, mpi);
         }
         mpi.Sync(&dimX, 1, 0);
         mpi.Sync(&dimY, 1, 0);
@@ -337,12 +337,12 @@ namespace diagonalization
             std::stringstream dataFileName;
             dataFileName.str("");
             std::string outPath;
-            GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            GetOption(optionList, outPath, "out-path", _LINE_, mpi);
             dataFileName << optionList << "/band_structure_kx_" << dimX << "_ky_" << dimY;
             bool useSql;
-            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
             iSize_t sqlId;
-            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            GetOption(optionList, sqlId, "sql-id", _LINE_, mpi);
             if(useSql)
             {
                 dataFileName << "_id_" << sqlId;
@@ -368,14 +368,14 @@ namespace diagonalization
             f_tmp.close();
             utilities::cout.SecondaryOutput()<<"\n\tData output to file "<<dataFileName.str()<<std::endl;
             bool plotBandstructure;
-            GetOption(optionList, plotBandstructure, "plot-bandstructure", _AT_, mpi);
+            GetOption(optionList, plotBandstructure, "plot-bandstructure", _LINE_, mpi);
             if(plotBandstructure)
             {
                 utilities::cout.AdditionalInfo()<<"\n\tMAKING PLOT..."<<std::endl;
                 std::stringstream plotFileName;
                 plotFileName.str("");
                 std::string outPath;
-                GetOption(optionList, outPath, "out-path", _AT_, mpi);
+                GetOption(optionList, outPath, "out-path", _LINE_, mpi);
                 plotFileName<<outPath<<"/band_structure_kx_"<<dimX<<"_ky_"<<dimY<<".pdf";
                 std::stringstream pythonScript;
                 pythonScript.str();
@@ -437,12 +437,12 @@ namespace diagonalization
         std::stringstream dataFileName;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
-	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
+	        GetOption(optionList, dimX, "x-grid", _LINE_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _LINE_, mpi);
 	        bool useSql;
-	        GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+	        GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
 	        std::string outPath;
-	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
+	        GetOption(optionList, outPath, "out-path", _LINE_, mpi);
 	        if(useSql)
             {
                 std::stringstream fileName;
@@ -451,9 +451,9 @@ namespace diagonalization
                 std::string inPath;
                 std::string sqlName;
                 std::string sqlTableName;
-                GetOption(optionList, inPath, "in-path", _AT_, mpi);
-                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
-                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
+                GetOption(optionList, inPath, "in-path", _LINE_, mpi);
+                GetOption(optionList, sqlName, "sql-name", _LINE_, mpi);
+                GetOption(optionList, sqlTableName, "sql-table-name", _LINE_, mpi);
                 fileName << inPath << sqlName;
                 utilities::Sqlite sql(fileName.str(), sql::_READ_EXISTING_);
                 if(!mpi.m_exitFlag)
@@ -461,7 +461,7 @@ namespace diagonalization
                     mpi.m_exitFlag = !sql.IsOpen();
                 }
                 iSize_t sqlId;
-                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                GetOption(optionList, sqlId, "sql-id", _LINE_, mpi);
                 utilities::SqliteRow sqlRow = sql.RetrieveIdFromTable(sqlTableName, sqlId); 
                 if(sqlRow.GetLength() == 0)
                 {
@@ -485,8 +485,8 @@ namespace diagonalization
             }
             else
             {
-                GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
-                GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
+                GetOption(optionList, offsetX, "x-grid-shift", _LINE_, mpi);
+                GetOption(optionList, offsetY, "y-grid-shift", _LINE_, mpi);
                 dataFileName.str("");
                 dataFileName << outPath << "/band_width_kx_" << dimX << "_ky_" << dimY << ".dat";
             }
@@ -545,9 +545,9 @@ namespace diagonalization
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
 	        bool plotBandWidth;
-	        GetOption(optionList, plotBandWidth, "plot-band-width", _AT_, mpi);
+	        GetOption(optionList, plotBandWidth, "plot-band-width", _LINE_, mpi);
 	        std::string outPath;
-	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
+	        GetOption(optionList, outPath, "out-path", _LINE_, mpi);
             if(plotBandWidth)
             {
                 utilities::cout.SecondaryOutput()<<"\n\tMAKING PLOT..."<<std::endl;
@@ -590,21 +590,21 @@ namespace diagonalization
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
 	        bool useSql;
-	        GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+	        GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
 	        std::string inPath;
-	        GetOption(optionList, inPath, "in-path", _AT_, mpi);
+	        GetOption(optionList, inPath, "in-path", _LINE_, mpi);
 	        if(useSql)
             {
                 std::stringstream fileName;
 	            fileName.str("");
                 //  If sql option is set, then look for model data in an sqlite file
                 std::string sqlName;
-                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
+                GetOption(optionList, sqlName, "sql-name", _LINE_, mpi);
                 fileName << inPath << sqlName;
                 std::string sqlTableName;
                 iSize_t sqlId;
-                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
-                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                GetOption(optionList, sqlTableName, "sql-table-name", _LINE_, mpi);
+                GetOption(optionList, sqlId, "sql-id", _LINE_, mpi);
                 utilities::Sqlite sql(fileName.str(), sql::_EDIT_EXISTING_);
                 {
                     utilities::SqliteVariable var;
@@ -652,10 +652,10 @@ namespace diagonalization
         double offsetY;
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
-	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
-	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
-	        GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
+	        GetOption(optionList, dimX, "x-grid", _LINE_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _LINE_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _LINE_, mpi);
+	        GetOption(optionList, offsetY, "y-grid-shift", _LINE_, mpi);
         }
         mpi.Sync(&dimX, 1, 0);
         mpi.Sync(&dimY, 1, 0);
@@ -678,12 +678,12 @@ namespace diagonalization
             std::stringstream dataFileName;
             dataFileName.str("");
             std::string outPath;
-            GetOption(optionList, outPath, "out-path", _AT_, mpi);
+            GetOption(optionList, outPath, "out-path", _LINE_, mpi);
             dataFileName << outPath << "/magnetization_map_kx_" << dimX << "_ky_" << dimY;
             bool useSql;
-            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
             iSize_t sqlId;
-            GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+            GetOption(optionList, sqlId, "sql-id", _LINE_, mpi);
             if(useSql)
             {
                 dataFileName << "_id_" << sqlId;
@@ -708,12 +708,12 @@ namespace diagonalization
             f_tmp.close();
             utilities::cout.SecondaryOutput()<<"\n\tData output to file "<<dataFileName.str()<<std::endl;
             bool plotMagnetization;
-            GetOption(optionList, plotMagnetization, "plot-magnetization", _AT_, mpi);
+            GetOption(optionList, plotMagnetization, "plot-magnetization", _LINE_, mpi);
             if(plotMagnetization)
             {
                 utilities::cout.AdditionalInfo()<<"\n\tMAKING PLOT..."<<std::endl;
                 std::string outPath;
-                GetOption(optionList, outPath, "out-path", _AT_, mpi);
+                GetOption(optionList, outPath, "out-path", _LINE_, mpi);
                 std::stringstream plotFileName;
                 plotFileName.str("");
                 plotFileName << outPath << "/magnetization_map_kx_" << dimX << "_ky_" << dimY << ".pdf";
@@ -983,15 +983,15 @@ namespace diagonalization
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
 	        int getBasis;
-	        GetOption(optionList, matrixElementTol, "tol", _AT_, mpi);
-	        GetOption(optionList, realGridDim, "calculate-spatial-wavefunctions", _AT_, mpi);
-	        GetOption(optionList, dimX, "x-grid", _AT_, mpi);
-	        GetOption(optionList, dimY, "y-grid", _AT_, mpi);
-	        GetOption(optionList, getBasis, "sptial-basis", _AT_, mpi);
-	        GetOption(optionList, minBlochCutOff, "x-cut", _AT_, mpi);
-	        GetOption(optionList, offsetX, "x-grid-shift", _AT_, mpi);
-	        GetOption(optionList, offsetY, "y-grid-shift", _AT_, mpi);
-	        GetOption(optionList, gridSpacing, "grid-spacing", _AT_, mpi);
+	        GetOption(optionList, matrixElementTol, "tol", _LINE_, mpi);
+	        GetOption(optionList, realGridDim, "calculate-spatial-wavefunctions", _LINE_, mpi);
+	        GetOption(optionList, dimX, "x-grid", _LINE_, mpi);
+	        GetOption(optionList, dimY, "y-grid", _LINE_, mpi);
+	        GetOption(optionList, getBasis, "sptial-basis", _LINE_, mpi);
+	        GetOption(optionList, minBlochCutOff, "x-cut", _LINE_, mpi);
+	        GetOption(optionList, offsetX, "x-grid-shift", _LINE_, mpi);
+	        GetOption(optionList, offsetY, "y-grid-shift", _LINE_, mpi);
+	        GetOption(optionList, gridSpacing, "grid-spacing", _LINE_, mpi);
             if(1 == getBasis)
             {
                 useWannierBasis = true;
@@ -1145,15 +1145,15 @@ namespace diagonalization
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {   
 	        std::string outPath;
-	        GetOption(optionList, outPath, "out-path", _AT_, mpi);
+	        GetOption(optionList, outPath, "out-path", _LINE_, mpi);
             dataFileName.str("");
             dataFileName << outPath << "/spatial_wave_function_kx_" << dimX << "_ky_" << dimY;
             bool useSql;
-            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
             if(useSql)
             {
                 iSize_t sqlId;
-                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                GetOption(optionList, sqlId, "sql-id", _LINE_, mpi);
                 dataFileName << "_id_" << sqlId;
             }
             dataFileName << "_grid_size_" << realGridDim;

@@ -82,18 +82,18 @@ namespace diagonalization
             std::stringstream fileName;
 	        fileName.str("");
             bool useSql;
-            GetOption(optionList, useSql, "use-sql", _AT_, mpi);
+            GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
             std::string inPath;
-            GetOption(optionList, inPath, "in-path", _AT_, mpi);
+            GetOption(optionList, inPath, "in-path", _LINE_, mpi);
             if(useSql)
             {
                 //  If sql option is set, then look for model data in an sqlite file
                 std::string sqlName;
                 std::string sqlTableName;
                 int sqlId;
-                GetOption(optionList, sqlName, "sql-name", _AT_, mpi);
-                GetOption(optionList, sqlTableName, "sql-table-name", _AT_, mpi);
-                GetOption(optionList, sqlId, "sql-id", _AT_, mpi);
+                GetOption(optionList, sqlName, "sql-name", _LINE_, mpi);
+                GetOption(optionList, sqlTableName, "sql-table-name", _LINE_, mpi);
+                GetOption(optionList, sqlId, "sql-id", _LINE_, mpi);
                 fileName << inPath << sqlName;
                 this->ReadFromSql(sqlTableName, fileName.str(), sqlId, mpi);
                 if(mpi.m_exitFlag) 
@@ -105,7 +105,7 @@ namespace diagonalization
             { 
                 //  Default to look for model data in the specified text file
                 std::string paramsFile;
-                GetOption(optionList, paramsFile, "params-file", _AT_, mpi);
+                GetOption(optionList, paramsFile, "params-file", _LINE_, mpi);
                 fileName << inPath << paramsFile;
                 this->ReadFromFile(fileName.str(), mpi);
                 if(mpi.m_exitFlag) 

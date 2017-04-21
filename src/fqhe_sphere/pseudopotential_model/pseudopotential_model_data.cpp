@@ -237,18 +237,18 @@ namespace diagonalization
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
 	        //////      Read in parameter values from command line parser       ////
-	        GetOption(optionList, m_nbrOrbitals, "nbr-orbitals", _AT_, mpi);
-	        GetOption(optionList, m_nbrParticles, "nbr-particles", _AT_, mpi);
-	        GetOption(optionList, m_outPath, "out-path", _AT_, mpi);
-	        GetOption(optionList, m_inPath, "in-path", _AT_, mpi);
-	        GetOption(optionList, m_nbrEigenvaluesToFind, "nbr-eigenvalues", _AT_, mpi);
-	        GetOption(optionList, m_initialVectorFile, "initial-file", _AT_, mpi);
-	        GetOption(optionList, m_finalVectorFile, "final-file", _AT_, mpi);
-	        GetOption(optionList, m_blockDiagonalize, "block-diagonalize", _AT_, mpi);
-	        GetOption(optionList, m_nbrLevels, "nbr-levels", _AT_, mpi);
+	        GetOption(optionList, m_nbrOrbitals, "nbr-orbitals", _LINE_, mpi);
+	        GetOption(optionList, m_nbrParticles, "nbr-particles", _LINE_, mpi);
+	        GetOption(optionList, m_outPath, "out-path", _LINE_, mpi);
+	        GetOption(optionList, m_inPath, "in-path", _LINE_, mpi);
+	        GetOption(optionList, m_nbrEigenvaluesToFind, "nbr-eigenvalues", _LINE_, mpi);
+	        GetOption(optionList, m_initialVectorFile, "initial-file", _LINE_, mpi);
+	        GetOption(optionList, m_finalVectorFile, "final-file", _LINE_, mpi);
+	        GetOption(optionList, m_blockDiagonalize, "block-diagonalize", _LINE_, mpi);
+	        GetOption(optionList, m_nbrLevels, "nbr-levels", _LINE_, mpi);
             if(optionList->count("two-body-pseudopotentials"))
             {
-                GetOption(optionList, m_twoBodyPseudopotentials, "two-body-pseudopotentials", _AT_, mpi);
+                GetOption(optionList, m_twoBodyPseudopotentials, "two-body-pseudopotentials", _LINE_, mpi);
             }
             else
             {
@@ -257,7 +257,7 @@ namespace diagonalization
             }
             if(optionList->count("two-body-pseudopotentials-2ll"))
             {
-                GetOption(optionList, m_twoBodyPseudopotentials2LL, "two-body-pseudopotentials-2ll", _AT_, mpi);
+                GetOption(optionList, m_twoBodyPseudopotentials2LL, "two-body-pseudopotentials-2ll", _LINE_, mpi);
             }
             else
             {
@@ -359,7 +359,7 @@ namespace diagonalization
 	            }
                 utilities::cout.SecondaryOutput()<<std::endl;
                 int diagonalizationMethod;
-                GetOption(optionList, diagonalizationMethod, "method", _AT_, mpi);
+                GetOption(optionList, diagonalizationMethod, "method", _LINE_, mpi);
                 m_method = myOptions::GetDiagonalizationMethod(diagonalizationMethod, mpi);
                 if(_FULL_ == m_method)
                 {

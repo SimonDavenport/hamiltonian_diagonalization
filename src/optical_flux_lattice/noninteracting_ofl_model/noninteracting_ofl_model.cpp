@@ -65,9 +65,9 @@ namespace diagonalization
         m_params = NonInteractingOflModelData(optionList,mpi);
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        GetOption(optionList, m_xBandCutOff, "x-cut", _AT_, mpi);
-	        GetOption(optionList, m_yBandCutOff, "y-cut", _AT_, mpi);
-	        GetOption(optionList, m_nbrBands, "nbr-bands", _AT_, mpi);
+	        GetOption(optionList, m_xBandCutOff, "x-cut", _LINE_, mpi);
+	        GetOption(optionList, m_yBandCutOff, "y-cut", _LINE_, mpi);
+	        GetOption(optionList, m_nbrBands, "nbr-bands", _LINE_, mpi);
         }
         mpi.ExitFlagTest();
         mpi.Sync(&m_xBandCutOff, 1, 0);

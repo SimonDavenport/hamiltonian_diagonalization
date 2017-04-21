@@ -56,14 +56,14 @@ int main(int argc, char *argv[])
     int formatCode;
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
-	    GetOption(&optionList, diagonalizeFlag, "diagonalize", _AT_, mpi);
-	    GetOption(&optionList, eigenvaluesFlag, "eigenvalues-file", _AT_, mpi);
-	    GetOption(&optionList, eigenvectorsFlag, "eigenvectors-file", _AT_, mpi);
-	    GetOption(&optionList, hamiltonianFlag, "hamiltonian-file", _AT_, mpi);
-	    GetOption(&optionList, nbrLevels, "nbr-levels", _AT_, mpi);
-	    GetOption(&optionList, storeTermsFlag, "store-terms", _AT_, mpi);
-	    GetOption(&optionList, retrieveTermsFlag, "retrieve-terms", _AT_, mpi);
-	    GetOption(&optionList, formatCode, "file-format", _AT_, mpi);
+	    GetOption(&optionList, diagonalizeFlag, "diagonalize", _LINE_, mpi);
+	    GetOption(&optionList, eigenvaluesFlag, "eigenvalues-file", _LINE_, mpi);
+	    GetOption(&optionList, eigenvectorsFlag, "eigenvectors-file", _LINE_, mpi);
+	    GetOption(&optionList, hamiltonianFlag, "hamiltonian-file", _LINE_, mpi);
+	    GetOption(&optionList, nbrLevels, "nbr-levels", _LINE_, mpi);
+	    GetOption(&optionList, storeTermsFlag, "store-terms", _LINE_, mpi);
+	    GetOption(&optionList, retrieveTermsFlag, "retrieve-terms", _LINE_, mpi);
+	    GetOption(&optionList, formatCode, "file-format", _LINE_, mpi);
 	}
     //  MPI sync the flags from node 0
     mpi.Sync(&diagonalizeFlag, 1, 0);
@@ -225,7 +225,7 @@ boost::program_options::variables_map ParseCommandLine(
 	if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	{
 	    int verbosity;
-	    GetOption(&vm, verbosity, "verbose", _AT_, mpi);
+	    GetOption(&vm, verbosity, "verbose", _LINE_, mpi);
 	    utilities::cout.SetVerbosity(verbosity);
     }
     //  MPI sync verbosity level
@@ -251,10 +251,10 @@ std::vector<diagonalization::iSize_t> GenerateSectorList(
     if(0 == mpi.m_id)	// FOR THE MASTER NODE
     {
         bool blockDiagonalize;
-        GetOption(optionList, blockDiagonalize, "block-diagonalize", _AT_, mpi);
+        GetOption(optionList, blockDiagonalize, "block-diagonalize", _LINE_, mpi);
         if(optionList->count("lz-sectors"))
         {
-            GetOption(optionList, sectorList, "lz_sectors", _AT_, mpi);
+            GetOption(optionList, sectorList, "lz_sectors", _LINE_, mpi);
         }
         else if(blockDiagonalize)
         {
@@ -262,9 +262,9 @@ std::vector<diagonalization::iSize_t> GenerateSectorList(
             diagonalization::iSize_t nbrParticles;
             diagonalization::iSize_t nbrOrbitals;
             diagonalization::iSize_t nbrLevels;
-            GetOption(optionList, nbrParticles, "nbr-particles", _AT_, mpi);
-            GetOption(optionList, nbrOrbitals, "nbr-orbitals", _AT_, mpi);
-            GetOption(optionList, nbrLevels, "nbr-levels", _AT_, mpi);
+            GetOption(optionList, nbrParticles, "nbr-particles", _LINE_, mpi);
+            GetOption(optionList, nbrOrbitals, "nbr-orbitals", _LINE_, mpi);
+            GetOption(optionList, nbrLevels, "nbr-levels", _LINE_, mpi);
             bool nbrParticlesOdd = nbrParticles & 1;
             bool nbrOrbitalsOdd  = nbrOrbitals & 1;
             if(!nbrOrbitalsOdd && nbrParticlesOdd)

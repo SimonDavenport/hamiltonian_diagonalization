@@ -74,8 +74,8 @@ namespace diagonalization
 	         "Specify the state basis:\n\t 0: Finite 2D k-space grid (kx,ky) \n\t 1: Hybrid localized Wannier basis (x,ky).\n")
 	        ("sectors,s", po::value<std::vector<iSize_t> >()->multitoken(),
 	         "Specify the total linear momentum sector as a list of integer pairs kx_tot ky_tot. e.g. -s 1 1 2 0 3 2 would diagonalize 3 sectors in succession. Note that for the Wannier basis, only ky_tot data is used but you still need to specify pairs of sectors.\n")
-	        ("use-hash", po::value<bool>()->default_value(false),
-	         "Set to 1 in order to use multi-key hash tables to store Hamiltonian coefficient tables Vkkkk, Ekk and momentum conserving lists. This option is automatically selected for the Wannier basis case.\n");
+	        ("use-hash", po::bool_switch()->default_value(false),
+	         "Set to use multi-key hash tables to store Hamiltonian coefficient tables Vkkkk, Ekk and momentum conserving lists. This option is automatically selected for the Wannier basis case.\n");
         }
         
         bool GetBasisType(const int basisCode, utilities::MpiWrapper& mpi);

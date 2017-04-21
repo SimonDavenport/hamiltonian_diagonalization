@@ -39,13 +39,13 @@ namespace myOptions
     {
         po::options_description arOpt("ARPACK options");
 	    arOpt.add_options()
-        ("use-initial",po::value<bool>()->default_value(false),
-          "Option to read in an initial ARPACK vector from a binary file.\n")
-        ("initial-file",po::value<std::string>()->default_value("initVector"),
+        ("use-initial", po::bool_switch()->default_value(false),
+          "Set to read in an initial ARPACK vector from a binary file.\n")
+        ("initial-file", po::value<std::string>()->default_value("initVector"),
           "Specify the name of the initial vector file (additional information and extension .bin will be added by the program).\n")
-        ("store-final",po::value<bool>()->default_value(false),
-          "Option to store the final ARPACK vector in a binary file.\n")
-        ("final-file",po::value<std::string>()->default_value("finalVector"),
+        ("store-final", po::bool_switch()->default_value(false),
+          "Set to store the final ARPACK vector in a binary file.\n")
+        ("final-file", po::value<std::string>()->default_value("finalVector"),
           "Specify the name of the final vector file (additional information and extension .bin will be added by the program).\n");
 	    return arOpt;
     };
