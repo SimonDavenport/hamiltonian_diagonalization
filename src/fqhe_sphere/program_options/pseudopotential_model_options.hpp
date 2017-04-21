@@ -49,6 +49,8 @@ namespace myOptions
 	     "A list of 2-body pseudopotential coefficients in order of lz value. e.g. 0.0 1.0 specifies V1=1 and all other pseudopotentials 0 (default).\n")
 	    ("two-body-pseudopotentials-2ll", po::value<std::vector<double> >()->multitoken(),
 	     "A list of 2nd Landau level 2-body pseudopotential coefficients in order of lz value. e.g. 0.0 1.0 specifies V1=1 and all other pseudopotentials 0 (default).\n")
+	    ("coulomb-interaction", po::bool_switch()->default_value(false),
+	     "Set to use Coulomb interaction pseudopotentials\n")
 	    ("lz-sectors", po::value<std::vector<iSize_t> >()->multitoken(),
 	     "Specify (2x) the total angular momentum sector to be diagonalized. Multiple sectors are specified as a list of integers.\n");
         return modelOpt;

@@ -60,6 +60,7 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/pseudopotential_model_data.cpp \
 fqhe_sphere/pseudopotential_model/term_tables.cpp \
+fqhe_sphere/interaction_pseudopotentials/coulomb_pseudopotentials.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp \
 basis/two_level_fermion_fock_basis.cpp \

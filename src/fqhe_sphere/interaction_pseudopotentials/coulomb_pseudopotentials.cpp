@@ -28,7 +28,7 @@
 
 namespace diagonalization
 {
-    ////////////////////////////////////////////////////////////////////////////////
+    //!
     //! \brief Funciton to generate the set of two-body Haldane Pseudopotentials
     //! for the Coulomb interaciton in the Sphere goemetry. The analytic form
     //! for the lowest Landau level is
@@ -36,29 +36,15 @@ namespace diagonalization
     //! V_L = 2/R [4Q-2L]C[2Q-L] * [4Q+2L+2]C[2Q+L+1] / ([4Q+2]C[2Q+1])^2
     //!
     //! Where R is the sphere raduis, given by sqrt(Q)
-    ////////////////////////////////////////////////////////////////////////////////
+    //!
     std::vector<double> GenCoulombPseudopotentials(
-        const iSize_t nbrOrbitals,  //!<    Total number of orbitals
+        const iSize_t maxLz,        //!<    Highest angular momentum value = 2Q
         const iSize_t llIndex,      //!<    Landau level index (0 is lowest)
         const double mulFactor)     //!<    Additional multiplicative factor
     {
-        //  Calcualte 2*Maximum Lz value in the highest LL
-        iSize_t maxLz = 0;
-        if(llIndex==0)
-        {
-            maxLz = nbrOrbitals-1;
-        }
-        else
-        {
-            std::cerr<<"llIndex > 0 NOT YET PROGRAMMED!"<<std::endl;
-        }
-        //else if(llIndex==1)
-        //{
-        //    maxLz = (nbrOrbitals-2)/2+1;
-        //}
         //   Vector containing pseudopotential data
-        std::vector<double> p(maxLz+1);       
-        for(int L=0;L<maxLz+1;++L)
+        std::vector<double> p(maxLz+1);
+        for(int L=0; L<(int)maxLz+1; ++L)
         {
             double temp = utilities::BinomialFromTable(2*maxLz+2, maxLz+1);
             p[maxLz-L] = mulFactor*2.0/sqrt((double)maxLz/2.0) * 
@@ -67,4 +53,15 @@ namespace diagonalization
         }
         return p;
     }
+    
+    //!
+    //! Compute the background coulomb energy 
+    //!
+    double GetBackgroundEnergy(
+        const iSize_t nbrParticles, //!<    Number of particles
+        const iSize_t maxLz)        //!<    Highest angular momentum value = 2Q
+    {
+        return nbrParticles*nbrParticles/(2.0*sqrt((double)maxLz/2.0));
+    }
+    
 }   //  End namespace diagonalization 

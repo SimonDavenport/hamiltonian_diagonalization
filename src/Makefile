@@ -98,6 +98,7 @@ am_fqhe_sphere_spinless_fermions_diagonalization_OBJECTS = fqhe_sphere/main/fqhe
 	fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.$(OBJEXT) \
 	fqhe_sphere/pseudopotential_model/pseudopotential_model_data.$(OBJEXT) \
 	fqhe_sphere/pseudopotential_model/term_tables.$(OBJEXT) \
+	fqhe_sphere/interaction_pseudopotentials/coulomb_pseudopotentials.$(OBJEXT) \
 	hamiltonians/hamiltonian_data.$(OBJEXT) \
 	basis/fermion_fock_basis.$(OBJEXT) \
 	basis/two_level_fermion_fock_basis.$(OBJEXT) \
@@ -352,6 +353,7 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/pseudopotential_model_data.cpp \
 fqhe_sphere/pseudopotential_model/term_tables.cpp \
+fqhe_sphere/interaction_pseudopotentials/coulomb_pseudopotentials.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp \
 basis/two_level_fermion_fock_basis.cpp \
@@ -467,6 +469,15 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model_data.$(OBJEXT):  \
 fqhe_sphere/pseudopotential_model/term_tables.$(OBJEXT):  \
 	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
 	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
+fqhe_sphere/interaction_pseudopotentials/$(am__dirstamp):
+	@$(MKDIR_P) fqhe_sphere/interaction_pseudopotentials
+	@: > fqhe_sphere/interaction_pseudopotentials/$(am__dirstamp)
+fqhe_sphere/interaction_pseudopotentials/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) fqhe_sphere/interaction_pseudopotentials/$(DEPDIR)
+	@: > fqhe_sphere/interaction_pseudopotentials/$(DEPDIR)/$(am__dirstamp)
+fqhe_sphere/interaction_pseudopotentials/coulomb_pseudopotentials.$(OBJEXT):  \
+	fqhe_sphere/interaction_pseudopotentials/$(am__dirstamp) \
+	fqhe_sphere/interaction_pseudopotentials/$(DEPDIR)/$(am__dirstamp)
 hamiltonians/$(am__dirstamp):
 	@$(MKDIR_P) hamiltonians
 	@: > hamiltonians/$(am__dirstamp)
@@ -619,6 +630,7 @@ optical_flux_lattice_sql_gen$(EXEEXT): $(optical_flux_lattice_sql_gen_OBJECTS) $
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f basis/*.$(OBJEXT)
+	-rm -f fqhe_sphere/interaction_pseudopotentials/*.$(OBJEXT)
 	-rm -f fqhe_sphere/main/*.$(OBJEXT)
 	-rm -f fqhe_sphere/pseudopotential_model/*.$(OBJEXT)
 	-rm -f hamiltonians/*.$(OBJEXT)
@@ -636,6 +648,7 @@ distclean-compile:
 
 include basis/$(DEPDIR)/fermion_fock_basis.Po
 include basis/$(DEPDIR)/two_level_fermion_fock_basis.Po
+include fqhe_sphere/interaction_pseudopotentials/$(DEPDIR)/coulomb_pseudopotentials.Po
 include fqhe_sphere/main/$(DEPDIR)/fqhe_sphere_spinless_fermions_diagonalization.Po
 include fqhe_sphere/pseudopotential_model/$(DEPDIR)/pseudopotential_model.Po
 include fqhe_sphere/pseudopotential_model/$(DEPDIR)/pseudopotential_model_data.Po
@@ -798,6 +811,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f basis/$(DEPDIR)/$(am__dirstamp)
 	-rm -f basis/$(am__dirstamp)
+	-rm -f fqhe_sphere/interaction_pseudopotentials/$(DEPDIR)/$(am__dirstamp)
+	-rm -f fqhe_sphere/interaction_pseudopotentials/$(am__dirstamp)
 	-rm -f fqhe_sphere/main/$(DEPDIR)/$(am__dirstamp)
 	-rm -f fqhe_sphere/main/$(am__dirstamp)
 	-rm -f fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
@@ -829,7 +844,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf basis/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_model/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/interacting_ofl_model/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) optical_flux_lattice/program_options/$(DEPDIR) program_options/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
+	-rm -rf basis/$(DEPDIR) fqhe_sphere/interaction_pseudopotentials/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_model/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/interacting_ofl_model/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) optical_flux_lattice/program_options/$(DEPDIR) program_options/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -875,7 +890,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf basis/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_model/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/interacting_ofl_model/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) optical_flux_lattice/program_options/$(DEPDIR) program_options/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
+	-rm -rf basis/$(DEPDIR) fqhe_sphere/interaction_pseudopotentials/$(DEPDIR) fqhe_sphere/main/$(DEPDIR) fqhe_sphere/pseudopotential_model/$(DEPDIR) hamiltonians/$(DEPDIR) optical_flux_lattice/interacting_ofl_model/$(DEPDIR) optical_flux_lattice/main/$(DEPDIR) optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR) optical_flux_lattice/observables_manager/$(DEPDIR) optical_flux_lattice/program_options/$(DEPDIR) program_options/$(DEPDIR) utilities/mathematics/$(DEPDIR) utilities/wrappers/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -40,8 +40,16 @@ namespace myOptions
     {
         po::options_description singleParticleOpt("Noninteracting optical flux lattice model options");
         singleParticleOpt.add_options()
-        ("params-file",po::value<std::string>()->default_value("parameters.dat"),
-         "Specify the name of the file where the single particle model data are stored\nDefault behaviour is to look for this file.\n");
+        ("theta", po::value<double>()->default_value(0.3),
+         "Model parameter theta\n")
+        ("V0", po::value<double>()->default_value(1.0),
+         "Model parameter V0 (lattice depth)\n")
+        ("epsilon", po::value<double>()->default_value(0.4),
+         "Model parameter epsilon\n")
+        ("kappa", po::value<double>()->default_value(1.0),
+         "Model parameter kappa\n")
+        ("mass", po::value<double>()->default_value(1.0),
+         "Model parameter mass\n");
         return singleParticleOpt;
     };
     
@@ -74,7 +82,7 @@ namespace myOptions
          "Specify the number of single particle bands calculated (for making band structure plots only)\n")
 	    ("plot-band-width", po::bool_switch()->default_value(false),
 	    "Set to make a pdf plot of single particle band width and band gap vs lattice depth (V0) from 0.1 tp 5.0.\n")
-	    ("plot-magnetization", po::bool_switch()->default_value(0),
+	    ("plot-magnetization", po::bool_switch()->default_value(false),
 	     "Set to generate a plot of the magnetization map\n")
 	    ("x-grid", po::value<iSize_t>()->default_value(4),
 	    "Set the kx discretisation used for the single particle model.\n")

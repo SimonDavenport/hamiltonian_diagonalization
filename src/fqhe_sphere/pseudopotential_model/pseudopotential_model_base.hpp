@@ -144,7 +144,7 @@ namespace diagonalization
         //!
         //! The coefficients are given by:
         //!
-        //! \[ V_{k1,k2,k3,k4}  = \delta (k3+k4-k1-k2) * sum_{L=0^m_maxLz} sum_{M=-L^L}
+        //! \[ V_{k1,k2,k3,k4}  = 0.5 * \delta (k3+k4-k1-k2) * sum_{L=0^m_maxLz} sum_{M=-L^L}
         //!                                             V_L <L,M||k1>|k2> <k4|<k3||L,M>
         ////////////////////////////////////////////////////////////////////////////////
         void BaseTermsFromPseudopotentials(
@@ -156,7 +156,8 @@ namespace diagonalization
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	        {
-                utilities::cout.AdditionalInfo()<<"\n\t- GENERATING TERM COEFFICIENTS FROM TWO-BODY PSEUDOPOTENTIALS for LL "<<llIndex<<std::endl;
+                utilities::cout.AdditionalInfo()<<"\n\t- GENERATING TERM COEFFICIENTS FROM "
+                    << "TWO-BODY PSEUDOPOTENTIALS for LL "<<llIndex<<std::endl;
             }
             mState_t maxLz;
             std::vector<double> pseudopotentials;
@@ -174,7 +175,8 @@ namespace diagonalization
             {
                 if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	            {
-                    utilities::cout.AdditionalInfo()<<"\n\tERROR in GetTermsFromPseudopotentials: Invalid ll index "<<llIndex<<std::endl;
+                    utilities::cout.AdditionalInfo()<<"\n\tERROR in GetTermsFromPseudopotentials: "
+                        << "Invalid ll index "<<llIndex<<std::endl;
                 }
                 
                 exit(EXIT_FAILURE);
@@ -185,7 +187,8 @@ namespace diagonalization
             clebschGordan.AddMultiplet(maxLz, maxLz);
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	        {
-                utilities::cout.AdditionalInfo()<<"\n\t- GENERATED TEMPORARY TABLE OF "<<clebschGordan.GetSize()<<" CLEBSCH GORDAN COEFFICIENTS."<<std::endl;
+                utilities::cout.AdditionalInfo()<<"\n\t- GENERATED TEMPORARY TABLE OF "
+                    <<clebschGordan.GetSize()<<" CLEBSCH GORDAN COEFFICIENTS."<<std::endl;
             }
             for(mState_t m4=maxLz; m4>=-maxLz; m4-=2)
             {
@@ -212,7 +215,8 @@ namespace diagonalization
                                     {
                                         //  Add terms of the form
                                         //  <L,M||m1>|m2> <m4|<m3||L,M>
-                                        temp += clebschGordan.Value(maxLz,m1,maxLz,m2,Lact,M)*clebschGordan.Value(maxLz,m3,maxLz,m4,Lact,M); 
+                                        temp += clebschGordan.Value(maxLz,m1,maxLz,m2,Lact,M)
+                                                *clebschGordan.Value(maxLz,m3,maxLz,m4,Lact,M); 
                                     }
                                     if(L/2<pseudopotentials.size())
                                     {
@@ -220,7 +224,7 @@ namespace diagonalization
                                     }
                                 }
                             }
-                            *it_table = total;
+                            *it_table = 0.5*total;
                         }
                     }
                 }

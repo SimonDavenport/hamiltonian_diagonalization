@@ -79,6 +79,10 @@ int main(int argc, char *argv[])
     //////      BUILD AND DIAGONALIZE HAMILTONIAN       ////////////////////////
     if(diagonalizeFlag)
     {
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
+	    {
+            utilities::cout.MainOutput() << "\n\tDIAGONALIZATION\n" << std::endl;
+        }
         std::vector<diagonalization::iSize_t> sectorList = GenerateSectorList(&optionList, mpi);
         if(nbrLevels==1)
         {
@@ -164,6 +168,10 @@ int main(int argc, char *argv[])
     //////      GENERATE AND STORE TERM TABLES       ///////////////////////////
     if(storeTermsFlag)
     {
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
+	    {
+            utilities::cout.MainOutput() << "\n\tCOMPUTE TERMS FOR STORAGE\n" << std::endl;
+        }
         if(nbrLevels==1)
         {
             diagonalization::SpherePseudopotentialModel model(&optionList, mpi);
@@ -254,7 +262,7 @@ std::vector<diagonalization::iSize_t> GenerateSectorList(
         GetOption(optionList, blockDiagonalize, "block-diagonalize", _LINE_, mpi);
         if(optionList->count("lz-sectors"))
         {
-            GetOption(optionList, sectorList, "lz_sectors", _LINE_, mpi);
+            GetOption(optionList, sectorList, "lz-sectors", _LINE_, mpi);
         }
         else if(blockDiagonalize)
         {

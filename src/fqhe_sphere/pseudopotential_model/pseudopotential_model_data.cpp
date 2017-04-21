@@ -38,6 +38,7 @@ namespace diagonalization
         m_maxLz2(10),
         m_totalLz(0),
         m_nbrLevels(1),
+        m_background(0.0),
         m_outPath("./"),
         m_inPath("./"),
         m_outFileName("out"),
@@ -63,6 +64,7 @@ namespace diagonalization
         m_nbrParticles(nbrParticles),
         m_totalLz(0),
         m_nbrLevels(1),
+        m_background(0.0),
         m_twoBodyPseudopotentials(pseudopotentials),
         m_outPath("./"),
         m_inPath("./"),
@@ -92,6 +94,7 @@ namespace diagonalization
         m_nbrParticles(nbrParticles),
         m_totalLz(0),
         m_nbrLevels(2),
+        m_background(0.0),
         m_twoBodyPseudopotentials(pseudopotentials),
         m_twoBodyPseudopotentials2LL(pseudopotentials2LL),
         m_outPath("./"),
@@ -127,6 +130,7 @@ namespace diagonalization
         m_maxLz2(other.m_maxLz2),
         m_totalLz(other.m_totalLz),
         m_nbrLevels(other.m_nbrLevels),
+        m_background(other.m_background),
         m_twoBodyPseudopotentials(other.m_twoBodyPseudopotentials),
         m_twoBodyPseudopotentials2LL(other.m_twoBodyPseudopotentials2LL),
         m_outPath(other.m_outPath),
@@ -154,6 +158,7 @@ namespace diagonalization
         m_maxLz = other.m_maxLz;
         m_maxLz2 = other.m_maxLz2;
         m_nbrLevels = other.m_nbrLevels;
+        m_background = other.m_background;
         m_totalLz = other.m_totalLz;
         m_twoBodyPseudopotentials = other.m_twoBodyPseudopotentials;
         m_twoBodyPseudopotentials2LL = other.m_twoBodyPseudopotentials2LL;
@@ -185,6 +190,7 @@ namespace diagonalization
         mpi.Sync(&m_maxLz2, 1, nodeId);
         mpi.Sync(&m_totalLz, 1, nodeId);
         mpi.Sync(&m_nbrLevels, 1, nodeId);
+        mpi.Sync(&m_background, 1, nodeId);
         mpi.Sync(&m_twoBodyPseudopotentials, nodeId);
         mpi.Sync(&m_twoBodyPseudopotentials2LL, nodeId);
         mpi.Sync(m_inPath, nodeId);
@@ -246,24 +252,38 @@ namespace diagonalization
 	        GetOption(optionList, m_finalVectorFile, "final-file", _LINE_, mpi);
 	        GetOption(optionList, m_blockDiagonalize, "block-diagonalize", _LINE_, mpi);
 	        GetOption(optionList, m_nbrLevels, "nbr-levels", _LINE_, mpi);
+	        bool coulombInteraction;
+	        GetOption(optionList, coulombInteraction, "coulomb-interaction", _LINE_, mpi);
+	        this->SetMaxLz(m_nbrOrbitals, m_nbrLevels);
             if(optionList->count("two-body-pseudopotentials"))
             {
                 GetOption(optionList, m_twoBodyPseudopotentials, "two-body-pseudopotentials", _LINE_, mpi);
+            }
+            else if(coulombInteraction)
+            {
+                m_twoBodyPseudopotentials = GenCoulombPseudopotentials(m_maxLz, 0, 1.0);
             }
             else
             {
                 m_twoBodyPseudopotentials.push_back(0);
                 m_twoBodyPseudopotentials.push_back(1);
             }
-            if(optionList->count("two-body-pseudopotentials-2ll"))
+            if(m_nbrLevels>1)
             {
-                GetOption(optionList, m_twoBodyPseudopotentials2LL, "two-body-pseudopotentials-2ll", _LINE_, mpi);
+                if(optionList->count("two-body-pseudopotentials-2ll"))
+                {
+                    GetOption(optionList, m_twoBodyPseudopotentials2LL, "two-body-pseudopotentials-2ll", _LINE_, mpi);
+                }
+                else if(coulombInteraction)
+                {
+                    m_twoBodyPseudopotentials = GenCoulombPseudopotentials(m_maxLz2, 1, 1.0);
+                }
+                else
+                {
+                    m_twoBodyPseudopotentials2LL.push_back(0);
+                    m_twoBodyPseudopotentials2LL.push_back(1);
+                }
             }
-            else
-            {
-                m_twoBodyPseudopotentials2LL.push_back(0);
-                m_twoBodyPseudopotentials2LL.push_back(1);
-            }     
             //////      Perform consistency checks       ///////////////////////////
             {
                 if(m_nbrLevels==2 && (2 >= m_nbrOrbitals || (m_nbrOrbitals & 1)))
@@ -279,16 +299,15 @@ namespace diagonalization
                     mpi.m_exitFlag = true;
                     goto errorPoint;
                 }
-	            this->SetMaxLz(m_nbrOrbitals, m_nbrLevels);
 	            //////      Check that the number of pseudopotentials       ////////////
                 //////      specified does not exceed 2S                    ////////////
-                if((int)m_twoBodyPseudopotentials.size()>m_maxLz)
+                if((int)m_twoBodyPseudopotentials.size()>m_maxLz+1)
                 {
                     std::cerr<<"\n\tERROR: TOO MANY 2-BODY PSEUDOPOTENTIAL COEFFICIENTS SPECIFIED"<<std::endl;
                     mpi.m_exitFlag = true;
                     goto errorPoint;
                 }
-                if((int)m_twoBodyPseudopotentials2LL.size()>m_maxLz2)
+                if((int)m_twoBodyPseudopotentials2LL.size()>m_maxLz2+1)
                 {
                     std::cerr<<"\n\tERROR: TOO MANY 2-BODY 2LL PSEUDOPOTENTIAL COEFFICIENTS SPECIFIED"<<std::endl;
                     mpi.m_exitFlag = true;
@@ -301,6 +320,12 @@ namespace diagonalization
                 utilities::cout.MainOutput()<<"\t\tMonopole strength 2S: \t\t"<<m_nbrOrbitals-1<<std::endl;
                 utilities::cout.MainOutput()<<"\t\tNumber of particles: \t\t"<<m_nbrParticles<<std::endl;
                 utilities::cout.MainOutput()<<"\t\tNumber of eigs to find: \t"<<m_nbrEigenvaluesToFind<<std::endl;
+                if(coulombInteraction)
+                {
+                    m_background = GetBackgroundEnergy(m_nbrParticles, m_maxLz);
+                    utilities::cout.SecondaryOutput().precision(10);
+                    utilities::cout.SecondaryOutput() << "\t\tCoulomb background energy: \t" << m_background << std::endl;
+                }
                 utilities::cout.MainOutput()<<"\t\tOut Path: \t\t"<<m_outPath<<std::endl;
                 utilities::cout.MainOutput()<<"\t\tIn Path: \t\t"<<m_inPath<<std::endl;   
                 utilities::cout.SecondaryOutput()<<"\n\tORBITAL LABELS:"<<std::endl<<"\t";

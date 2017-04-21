@@ -62,12 +62,16 @@ namespace diagonalization
 	         "Set to generate and diagonalize the model's Hamiltonian.\n")
 	        ("block-diagonalize,b",po::bool_switch()->default_value(false),
 	         "Set to enable block diagonalization of all available quantum number sectors.\n")
+	        ("use-params-file", po::bool_switch()->default_value(false),
+	         "Set to look for model parameters in a file (if not using SQL).\n")
+	        ("params-file", po::value<std::string>()->default_value("parameters.dat"),
+             "Specify the name of the file where model data are stored\n")
 	        ("method", po::value<int>()->default_value(0),
 	         "Specify the diagonalization method:\n\t 0 Full (LAPACK) \n\t 1 Lanczos (ARPACK)\n")
 	        ("nbr-eigenvalues,e", po::value<diagonalization::iSize_t>()->default_value(4),
 	         "Specify number of lowest lying eigenvalues of the interacting Hamiltonian that will be calculated\n")
 	        ("file-format,f", po::value<int>()->default_value(0),
-	         "Specify the file format used throughout:\n\t 0 Text files \n\t 1 Binary files\n")
+	         "Specify the file format:\n\t 0 Text files \n\t 1 Binary files\n")
 	        ("eigenvalues-file", po::bool_switch()->default_value(false),
 	         "Set to store/retrieve eigenvalues in/from a file\n")
 	        ("eigenvectors-file", po::bool_switch()->default_value(false),
@@ -82,7 +86,8 @@ namespace diagonalization
         };
         
         io::fileFormat_t GetFileFormat(const int formatCode, utilities::MpiWrapper& mpi);
-        diagonalizationMethod_t GetDiagonalizationMethod(const int methodCode, utilities::MpiWrapper& mpi);
+        diagonalizationMethod_t GetDiagonalizationMethod(const int methodCode,          
+                                                         utilities::MpiWrapper& mpi);
         tableFormat_t GetTermStorageType(const bool useHash, utilities::MpiWrapper& mpi);
     }   //  End namespace myOptions
 }   //  End namespace diagonalization

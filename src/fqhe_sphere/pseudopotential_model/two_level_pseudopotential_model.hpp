@@ -64,7 +64,7 @@ namespace diagonalization
         void BuildTermTables(const utilities::MpiWrapper& mpi);
         void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi) const;
         void TermsFromFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi);
-        void SetOccupationEnergies(double* energyLevels, const iSize_t dim, const utilities::MpiWrapper& mpi);
+        void SetOccupationEnergies(std::vector<double>& energyLevels, const utilities::MpiWrapper& mpi);
         void BuildFockBasis(utilities::MpiWrapper& mpi);
         void SetFockBasis(fock_t* buffer1, fock_t* buffer2, const fock_t dim);
         void BuildHamiltonian(utilities::MpiWrapper& mpi);

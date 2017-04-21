@@ -80,6 +80,10 @@ int main(int argc, char *argv[])
     //////      BUILD AND DIAGONALIZE HAMILTONIAN       ////////////////////////
     if(diagonalizeFlag)
     {
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
+	    {
+            utilities::cout.MainOutput() << "\n\tDIAGONALIZATION\n" << std::endl;
+        }
         std::vector<std::complex<diagonalization::iSize_t> > sectorList = GenerateSectorList(&optionList, mpi);
         diagonalization::InteractingOflModel model(&optionList, mpi);
         if(retrieveTermsFlag)
@@ -120,6 +124,7 @@ int main(int argc, char *argv[])
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
+	        utilities::cout.MainOutput() << "\n\tCOMPUTE OBSERVABLES\n" << std::endl;
             utilities::cout.MainOutput()<<"\n\tLooking for existing eigensystem data to analyse."<<std::endl;
         }
         std::vector<std::complex<diagonalization::iSize_t> > sectorList = GenerateSectorList(&optionList, mpi);
@@ -166,6 +171,10 @@ int main(int argc, char *argv[])
     //////      GENERATE AND STORE TERM TABLES       ///////////////////////////
     if(storeTermsFlag)
     {
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
+	    {
+            utilities::cout.MainOutput() << "\n\tCOMPUTE TERMS FOR STORAGE\n" << std::endl;
+        }
         diagonalization::InteractingOflModel model(&optionList, mpi);
         model.BuildTermTables(&optionList, mpi);
         model.TermsToFile(fileFormat, mpi);
@@ -281,7 +290,8 @@ std::vector<std::complex<diagonalization::iSize_t> > GenerateSectorList(
         }
         if((tempList.size() & 1) != 0)
         {
-            std::cerr<<"\n\tERROR WITH \"sectors\" ARGUMENT: odd number of k values specified.\n\tExpecting pairs of kx_tot ky_tot [kx_tot ignored for Wannier basis case]."<<std::endl;
+            std::cerr<<"\n\tERROR WITH \"sectors\" ARGUMENT: odd number of k values specified."
+                <<"\n\tExpecting pairs of kx_tot ky_tot [kx_tot ignored for Wannier basis case]."<<std::endl;
             mpi.m_exitFlag = true;
         }
         //  Convert to int array (this is required in order to use MPI functions)

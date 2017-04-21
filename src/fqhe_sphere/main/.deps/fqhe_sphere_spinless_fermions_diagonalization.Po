@@ -810,6 +810,9 @@ fqhe_sphere/main/fqhe_sphere_spinless_fermions_diagonalization.o: \
  fqhe_sphere/main/../pseudopotential_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp \
  fqhe_sphere/main/../pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp \
  fqhe_sphere/main/../pseudopotential_model/pseudopotential_model_data.hpp \
+ fqhe_sphere/main/../pseudopotential_model/../interaction_pseudopotentials/coulomb_pseudopotentials.hpp \
+ fqhe_sphere/main/../pseudopotential_model/../interaction_pseudopotentials/../../utilities/general/orbital_and_state_defs.hpp \
+ fqhe_sphere/main/../pseudopotential_model/../interaction_pseudopotentials/../../utilities/mathematics/binomials.hpp \
  fqhe_sphere/main/../pseudopotential_model/../../utilities/general/cout_tools.hpp \
  fqhe_sphere/main/../pseudopotential_model/../../utilities/wrappers/mpi_wrapper.hpp \
  fqhe_sphere/main/../pseudopotential_model/../../utilities/wrappers/program_options_wrapper.hpp \
@@ -2655,6 +2658,12 @@ fqhe_sphere/main/../pseudopotential_model/../program_options/../../utilities/gen
 fqhe_sphere/main/../pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp:
 
 fqhe_sphere/main/../pseudopotential_model/pseudopotential_model_data.hpp:
+
+fqhe_sphere/main/../pseudopotential_model/../interaction_pseudopotentials/coulomb_pseudopotentials.hpp:
+
+fqhe_sphere/main/../pseudopotential_model/../interaction_pseudopotentials/../../utilities/general/orbital_and_state_defs.hpp:
+
+fqhe_sphere/main/../pseudopotential_model/../interaction_pseudopotentials/../../utilities/mathematics/binomials.hpp:
 
 fqhe_sphere/main/../pseudopotential_model/../../utilities/general/cout_tools.hpp:
 

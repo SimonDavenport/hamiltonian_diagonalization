@@ -922,9 +922,9 @@ namespace diagonalization
         MPI_Barrier(mpi.m_comm);
     }
     
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Calculate the sigma^z map and store in m_magnetization
-    ////////////////////////////////////////////////////////////////////////////////
+    //!
+    //! Calculate the sigma^z map and store in m_magnetization
+    //!
     void InteractingOflModel::CalcualteSigmaZMap(
         NonInteractingOflModel* blochTable,  //!<    Lookup table of Bloch wave functions
         const utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
@@ -945,10 +945,9 @@ namespace diagonalization
         return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Generate a Fock basis 
+    //!
+    //! Generate a Fock basis 
     //! 
-    ////////////////////////////////////////////////////////////////////////////////
     void InteractingOflModel::BuildFockBasis(
         utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
     { 
@@ -1013,7 +1012,7 @@ namespace diagonalization
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             { 
-                utilities::cout.SecondaryOutput()<<"\n\t============ FOCK BASIS IS ZERO DIMENSIONAL ============ "<<std::endl;
+                utilities::cout.SecondaryOutput()<<"\n\tERROR: FOCK BASIS IS ZERO DIMENSIONAL ON ONE OR MORE NODES "<<std::endl;
             }
             m_params.m_fockBasisBuilt = false;
             return;
@@ -1072,10 +1071,9 @@ namespace diagonalization
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! \brief Diagonalize our Hamiltonian using a selected method
+    //!
+    //! Diagonalize our Hamiltonian using a selected method
     //! 
-    ////////////////////////////////////////////////////////////////////////////////
     void InteractingOflModel::Diagonalize(
         utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class
     {

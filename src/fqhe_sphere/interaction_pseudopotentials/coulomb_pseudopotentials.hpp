@@ -28,7 +28,7 @@
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../../utilities/general/orbital_and_state_defs.hpp"
-#include "../../utilities/mathematics/binomial_table.hpp"
+#include "../../utilities/mathematics/binomials.hpp"
 #include <vector>
 #include <iostream> 
 #if _DEBUG_
@@ -37,7 +37,9 @@
 
 namespace diagonalization
 {
-    std::vector<double> GenCoulombPseudopotentials(const iSize_t nbrOrbitals, 
+    std::vector<double> GenCoulombPseudopotentials(const iSize_t lzMax, 
         const iSize_t llIndex, const double mulFactor);
+    double GetBackgroundEnergy(const iSize_t nbrParticles, 
+                               const iSize_t lzMax);
 }   //  End namespace diagonalization 
 #endif

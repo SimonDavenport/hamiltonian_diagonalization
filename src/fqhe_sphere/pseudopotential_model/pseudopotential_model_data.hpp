@@ -27,6 +27,7 @@
 #define _PSEUDOPOTENTIAL_MODEL_DATA_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
+#include "../interaction_pseudopotentials/coulomb_pseudopotentials.hpp"
 #include "../../program_options/general_options.hpp"
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 #include "../../utilities/general/cout_tools.hpp"
@@ -52,6 +53,7 @@ namespace diagonalization
         mState_t m_maxLz2;                  //!<    Twice the minimum Lz value used in orbital labelling the 2nd LL
         mState_t m_totalLz;                 //!<    Total orbital angular momentum sector
         iSize_t m_nbrLevels;                //!<    Number of Landau levels
+        double m_background;                //!<    Background energy offset
         std::vector<double> m_twoBodyPseudopotentials; 
                                             //!<    List of two-body pseudopotential coefficients
         std::vector<double> m_twoBodyPseudopotentials2LL; 

@@ -246,6 +246,8 @@ namespace diagonalization
 	            bool useHash;
 	            GetOption(optionList, useHash, "use-hash", _LINE_, mpi);
 	            m_setTableFormat = myOptions::GetTermStorageType(useHash, mpi);
+	            bool useFile;
+                GetOption(optionList, useFile, "use-params-file", _LINE_, mpi);
 	            if(mpi.m_exitFlag) 
 	            {
 	                goto escape;
@@ -264,9 +266,8 @@ namespace diagonalization
                         goto escape;
                     }
                 }
-                else
+                else if(useFile)
                 {
-                    //  Default to look for model data in the specified text file
                     std::string paramsFileName;
                     GetOption(optionList, paramsFileName, "params-file", _LINE_, mpi);
                     fileName << m_inPath << paramsFileName;
@@ -276,6 +277,13 @@ namespace diagonalization
                     fileName.str("");
                     fileName << "optical_flux_model_n_" << m_nbrParticles << "_kx_" << m_dimX << "_ky_" << m_dimY;
                     m_outFileName = fileName.str();
+                }
+                else
+                {
+                    double mass;
+                    GetOption(optionList, mass, "mass", _LINE_, mpi);
+                    GetOption(optionList, m_interactionStrength, "interaction-strength", _LINE_, mpi);
+                    this->RescaleInteractionStrength(mass);   
                 }
                 //  Update the interaction strength with a factor 2*Pi/m as required
                 utilities::cout.MainOutput()<<"\n\tMANY PARTICLE HAMILTONIAN PARAMETERS:"<<std::endl;

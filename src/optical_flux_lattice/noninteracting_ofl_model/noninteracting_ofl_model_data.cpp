@@ -83,6 +83,8 @@ namespace diagonalization
 	        fileName.str("");
             bool useSql;
             GetOption(optionList, useSql, "use-sql", _LINE_, mpi);
+            bool useFile;
+            GetOption(optionList, useFile, "use-params-file", _LINE_, mpi);
             std::string inPath;
             GetOption(optionList, inPath, "in-path", _LINE_, mpi);
             if(useSql)
@@ -101,9 +103,8 @@ namespace diagonalization
                     return;
                 }
             }
-            else
-            { 
-                //  Default to look for model data in the specified text file
+            else if(useFile)
+            {
                 std::string paramsFile;
                 GetOption(optionList, paramsFile, "params-file", _LINE_, mpi);
                 fileName << inPath << paramsFile;
@@ -113,13 +114,21 @@ namespace diagonalization
                     return;
                 }
             }
+            else
+            {
+                GetOption(optionList, m_theta, "theta", _LINE_, mpi);
+                GetOption(optionList, m_V0, "V0", _LINE_, mpi);
+                GetOption(optionList, m_epsilon, "epsilon", _LINE_, mpi);
+                GetOption(optionList, m_kappa, "kappa", _LINE_, mpi);
+                GetOption(optionList, m_mass, "mass", _LINE_, mpi);
+            }
             //  Print out summary of model parameters:
-            utilities::cout.MainOutput()<<"\n\tNON-INTERACTING MODEL PARAMETERS:\n"<<std::endl;
-            utilities::cout.MainOutput()<<"\t\ttheta: \t\t"<<m_theta<<std::endl;
-            utilities::cout.MainOutput()<<"\t\tV0: \t\t"<<m_V0<<std::endl;
-            utilities::cout.MainOutput()<<"\t\tepsilon: \t"<<m_epsilon<<std::endl;
-            utilities::cout.MainOutput()<<"\t\tkappa: \t\t"<<m_kappa<<std::endl;
-            utilities::cout.MainOutput()<<"\t\tmass: \t\t"<<m_mass<<std::endl;
+            utilities::cout.MainOutput() << "\n\tNON-INTERACTING MODEL PARAMETERS:\n" << std::endl;
+            utilities::cout.MainOutput() << "\t\ttheta: \t\t" << m_theta << std::endl;
+            utilities::cout.MainOutput() << "\t\tV0: \t\t" << m_V0 << std::endl;
+            utilities::cout.MainOutput() << "\t\tepsilon: \t" << m_epsilon << std::endl;
+            utilities::cout.MainOutput() << "\t\tkappa: \t\t" << m_kappa << std::endl;
+            utilities::cout.MainOutput() << "\t\tmass: \t\t" << m_mass << std::endl;
         }
         mpi.ExitFlagTest();
 	    this->MpiSynchronize(0, mpi);
@@ -141,7 +150,8 @@ namespace diagonalization
 	    }
 	    else
 	    {
-	        utilities::cout.MainOutput()<<"\n\tReading model parameters from file "<<fileName<<std::endl;
+	        utilities::cout.MainOutput() << "\n\tReading model parameters from file " 
+	                                     << fileName << std::endl;
 	    }
 	    std::string line;
 	    while(getline(f_param,line))

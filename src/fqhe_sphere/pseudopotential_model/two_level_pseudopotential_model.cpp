@@ -76,6 +76,12 @@ namespace diagonalization
         m_quarticTables2LL.Initialize(nbrOrbitalsLLL+2, mpi);
         this->BaseGenerate4KTable(m_quarticTables2LL.GetKTable(), 1, mpi);
         this->BaseTermsFromPseudopotentials(m_quarticTables2LL.GetVTable(), 1, mpi);
+        if(m_params.m_background != 0.0)
+	    {
+	        std::vector<double> backgroundPerParticle(m_params.m_nbrOrbitals, 
+	                                                  -this->m_params.m_background / m_params.m_nbrParticles);
+	        this->SetOccupationEnergies(backgroundPerParticle, mpi);
+	    }
         //  Synchronize with the master node
         if(0 == mpi.m_id)    // FOR THE MASTER NODE
         { 
@@ -91,11 +97,10 @@ namespace diagonalization
     //! Set optional CdC terms
     //! 
     void SphereTwoLevelPseudopotentialModel::SetOccupationEnergies(
-        double* energyLevels,               //!<    Single particle energy levels
-        const iSize_t dim,                  //!<    Length of array given
+        std::vector<double>& energyLevels,  //!<    Single particle energy levels
         const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
     {
-        if(dim != m_params.m_nbrOrbitals)
+        if(energyLevels.size() != m_params.m_nbrOrbitals)
         {
             std::cerr<<"\n\tERROR in SetOccupationEnergies: Must specify same number of energy levels as orbitals"<<std::endl;
             exit(EXIT_FAILURE);
@@ -104,8 +109,8 @@ namespace diagonalization
         iSize_t nbrOrbitalsLLL = (m_params.m_nbrOrbitals-2)/2;
         m_quadraticTables.Initialize(nbrOrbitalsLLL, mpi);
         m_quadraticTables2LL.Initialize(nbrOrbitalsLLL+2, mpi);
-        memcpy(m_quadraticTables.GetVTable()->data(), energyLevels,sizeof(double)*nbrOrbitalsLLL);
-        memcpy(m_quadraticTables2LL.GetVTable()->data(), energyLevels+nbrOrbitalsLLL, sizeof(double)*(nbrOrbitalsLLL+2));
+        memcpy(m_quadraticTables.GetVTable()->data(), energyLevels.data(), sizeof(double)*nbrOrbitalsLLL);
+        memcpy(m_quadraticTables2LL.GetVTable()->data(), &energyLevels[0]+nbrOrbitalsLLL, sizeof(double)*(nbrOrbitalsLLL+2));
     }
 
     //!
@@ -157,7 +162,7 @@ namespace diagonalization
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             { 
-                utilities::cout.SecondaryOutput()<<"\n\t============ FOCK BASIS IS ZERO DIMENSIONAL ============ "<<std::endl;
+                utilities::cout.SecondaryOutput()<<"\n\tERROR: FOCK BASIS IS ZERO DIMENSIONAL ON ONE OR MORE NODES "<<std::endl;
             }
             m_params.m_fockBasisBuilt = false;
             return;
@@ -211,7 +216,7 @@ namespace diagonalization
             m_hamiltonian.Add_CdCdCC_Terms(&m_quarticTables, 0, 0, 0, 0, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
             m_hamiltonian.Add_CdCdCC_Terms(&m_quarticTables2LL, 1, 1, 1, 1, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);     
             m_hamiltonian.PrintMemoryAllocation(mpi);
-            m_hamiltonian.PrintHamiltonian(0, mpi);
+            //m_hamiltonian.PrintHamiltonian(0, mpi);
             m_params.m_hamiltonianBuilt = true;
         }
         else

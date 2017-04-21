@@ -41,15 +41,17 @@ namespace diagonalization
         {
             po::options_description modelOpt("Interacting optical flux lattice model options");
 	        modelOpt.add_options()
-	        ("kx,x",po::value<iSize_t>()->default_value(2),
+	        ("interaction-strength", po::value<double>()->default_value(1.0),
+	         "Set the interaction strength\n")
+	        ("kx,x", po::value<iSize_t>()->default_value(2),
 	         "Specify k-space discretization in the x direction\n")
-	        ("ky,y",po::value<iSize_t>()->default_value(2),
+	        ("ky,y", po::value<iSize_t>()->default_value(2),
 	         "Specify k-space discretization in the y direction\n")
-	        ("nbr,n",po::value<iSize_t>()->default_value(2),
+	        ("nbr,n", po::value<iSize_t>()->default_value(2),
 	         "Specify number of particles in the state\n")
-	        ("kx-shift",po::value<double>()->default_value(0.0),
+	        ("kx-shift", po::value<double>()->default_value(0.0),
 	          "Specify the shift in the kx value when constructing the k-space grid")
-	        ("ky-shift",po::value<double>()->default_value(0.0),
+	        ("ky-shift", po::value<double>()->default_value(0.0),
 	          "Specify the shift in the ky value when constructing the k-space grid");
             return modelOpt;
         }

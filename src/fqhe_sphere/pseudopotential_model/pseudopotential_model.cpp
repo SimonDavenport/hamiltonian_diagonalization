@@ -84,6 +84,12 @@ namespace diagonalization
         }
         this->BaseTermsFromPseudopotentials(m_quarticTables.GetVTable(), 0, mpi);
 	    MPI_Barrier(mpi.m_comm);
+	    if(m_params.m_background != 0.0)
+	    {
+	        std::vector<double> backgroundPerParticle(m_params.m_nbrOrbitals, 
+	                                                  -this->m_params.m_background / m_params.m_nbrParticles);
+	        this->SetOccupationEnergies(backgroundPerParticle, mpi);
+	    }
         //  Synchronize with the master node
         if(0 == mpi.m_id)    // FOR THE MASTER NODE
         { 
@@ -141,17 +147,16 @@ namespace diagonalization
     //! Set optional CdC terms
     //! 
     void SpherePseudopotentialModel::SetOccupationEnergies(
-        double* energyLevels,               //!<    Single particle energy levels
-        const iSize_t dim,                  //!<    Length of array given
+        std::vector<double>& energyLevels,  //!<    Single particle energy levels
         const utilities::MpiWrapper& mpi)   //!<    Instance of the mpi wrapper class
     {
-        if(dim != m_params.m_nbrOrbitals)
+        if(energyLevels.size() != m_params.m_nbrOrbitals)
         {
             std::cerr<<"\n\tERROR in SetOccupationEnergies: Must specify same number of energy levels as orbitals"<<std::endl;
             exit(EXIT_FAILURE);
         }
         m_quadraticTables.Initialize(m_params.m_nbrOrbitals, mpi);
-        memcpy(m_quadraticTables.GetVTable()->data(), energyLevels, sizeof(double)*dim);
+        memcpy(m_quadraticTables.GetVTable()->data(), energyLevels.data(), sizeof(double)*m_params.m_nbrOrbitals);
     }
 
     //!
@@ -201,7 +206,7 @@ namespace diagonalization
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             { 
-                utilities::cout.SecondaryOutput()<<"\n\t============ FOCK BASIS IS ZERO DIMENSIONAL ============ "<<std::endl;
+                utilities::cout.SecondaryOutput()<<"\n\tERROR: FOCK BASIS IS ZERO DIMENSIONAL ON ONE OR MORE NODES "<<std::endl;
             }
             m_params.m_fockBasisBuilt = false;
             return;
@@ -243,13 +248,13 @@ namespace diagonalization
             m_hamiltonian.Initialize(m_params.m_nbrParticles, m_params.m_nbrOrbitals, utilities::_SPARSE_MAPPED_, mpi);
             MPI_Barrier(mpi.m_comm);
             //////      Build the Hamiltonian
-            if(m_quadraticTables.GetDimension()>0)
+            if(m_quadraticTables.GetDimension())
             {
                 m_hamiltonian.Add_CdC_Terms(&m_quadraticTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
             }
             m_hamiltonian.Add_CdCdCC_Terms(&m_quarticTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
             m_hamiltonian.PrintMemoryAllocation(mpi);
-            m_hamiltonian.PrintHamiltonian(0, mpi);
+            //m_hamiltonian.PrintHamiltonian(0, mpi);
             m_params.m_hamiltonianBuilt = true;
         }
         else

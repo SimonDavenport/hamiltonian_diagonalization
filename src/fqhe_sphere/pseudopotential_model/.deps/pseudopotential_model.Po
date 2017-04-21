@@ -807,6 +807,9 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  fqhe_sphere/pseudopotential_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp \
  fqhe_sphere/pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp \
  fqhe_sphere/pseudopotential_model/pseudopotential_model_data.hpp \
+ fqhe_sphere/pseudopotential_model/../interaction_pseudopotentials/coulomb_pseudopotentials.hpp \
+ fqhe_sphere/pseudopotential_model/../interaction_pseudopotentials/../../utilities/general/orbital_and_state_defs.hpp \
+ fqhe_sphere/pseudopotential_model/../interaction_pseudopotentials/../../utilities/mathematics/binomials.hpp \
  fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp \
  fqhe_sphere/pseudopotential_model/../../utilities/wrappers/mpi_wrapper.hpp \
  fqhe_sphere/pseudopotential_model/../../utilities/wrappers/program_options_wrapper.hpp \
@@ -2635,6 +2638,12 @@ fqhe_sphere/pseudopotential_model/../program_options/../../utilities/general/orb
 fqhe_sphere/pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp:
 
 fqhe_sphere/pseudopotential_model/pseudopotential_model_data.hpp:
+
+fqhe_sphere/pseudopotential_model/../interaction_pseudopotentials/coulomb_pseudopotentials.hpp:
+
+fqhe_sphere/pseudopotential_model/../interaction_pseudopotentials/../../utilities/general/orbital_and_state_defs.hpp:
+
+fqhe_sphere/pseudopotential_model/../interaction_pseudopotentials/../../utilities/mathematics/binomials.hpp:
 
 fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp:
 
