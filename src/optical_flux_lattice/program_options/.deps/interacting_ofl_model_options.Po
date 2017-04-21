@@ -1,9 +1,7 @@
-fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
- fqhe_sphere/pseudopotential_model/pseudopotential_model.cpp \
+optical_flux_lattice/program_options/interacting_ofl_model_options.o: \
+ optical_flux_lattice/program_options/interacting_ofl_model_options.cpp \
  /usr/include/stdc-predef.h \
- fqhe_sphere/pseudopotential_model/pseudopotential_model.hpp \
- fqhe_sphere/pseudopotential_model/pseudopotential_model_base.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp \
+ optical_flux_lattice/program_options/interacting_ofl_model_options.hpp \
  /usr/local/include/boost/program_options.hpp \
  /usr/local/include/boost/program_options/options_description.hpp \
  /usr/local/include/boost/program_options/config.hpp \
@@ -757,10 +755,12 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/local/include/boost/program_options/detail/convert.hpp \
  /usr/local/include/boost/program_options/variables_map.hpp \
  /usr/local/include/boost/program_options/version.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/cout_tools.hpp \
+ optical_flux_lattice/program_options/../../utilities/general/orbital_and_state_defs.hpp \
+ optical_flux_lattice/program_options/../../program_options/general_options.hpp \
+ optical_flux_lattice/program_options/../../program_options/../utilities/general/orbital_and_state_defs.hpp \
+ optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/mpi_wrapper.hpp \
+ optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../general/dcmplx_type_def.hpp \
+ optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../general/cout_tools.hpp \
  /usr/lib/openmpi/include/mpi.h \
  /usr/lib/openmpi/include/mpi_portable_platform.h \
  /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/mpicxx.h \
@@ -798,129 +798,16 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++io.h \
  /usr/include/c++/4.8/bits/fstream.tcc \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/template_tools.hpp \
+ optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../general/template_tools.hpp \
  /usr/include/c++/4.8/iomanip /usr/include/c++/4.8/chrono \
  /usr/include/c++/4.8/ratio \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../program_options/pseudopotential_model_options.hpp \
- fqhe_sphere/pseudopotential_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/pseudopotential_model_data.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/program_options_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/clebsch_gordan_coefficients.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/lapack_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/clebsch_gordan_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../mathematics/clebsch_gordan_coefficients.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/multi_key_hash.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/murmur_hash_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/../mathematics/murmur_hash2.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/serialize.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/quick_sort.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/../general/dcmplx_type_def.hpp \
- /usr/local/include/sparsehash/dense_hash_map \
- /usr/local/include/sparsehash/internal/sparseconfig.h \
- /usr/local/include/sparsehash/internal/densehashtable.h \
- /usr/local/include/sparsehash/internal/hashtable-common.h \
- /usr/local/include/sparsehash/internal/libc_allocator_with_realloc.h \
- /usr/local/include/sparsehash/type_traits.h \
- /usr/local/include/sparsehash/template_util.h \
- /usr/include/c++/4.8/tr1/functional /usr/include/c++/4.8/tr1/tuple \
- /usr/include/c++/4.8/tr1/type_traits \
- /usr/include/c++/4.8/tr1/functional_hash.h \
- /usr/include/c++/4.8/unordered_map /usr/include/c++/4.8/bits/hashtable.h \
- /usr/include/c++/4.8/bits/hashtable_policy.h \
- /usr/include/c++/4.8/bits/unordered_map.h \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/load_bar.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binomials.hpp \
- /usr/include/c++/4.8/bitset \
- fqhe_sphere/pseudopotential_model/angular_momentum_constraint.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/matrix_vector_routines.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/spinless_fermion_hamiltonian.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_base.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_data.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/arpack_options.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/arpack_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/crs_sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../algorithms/quick_sort.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/mapped_sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/murmur_hash_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/serialize.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/sparse_linear_algebra.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../data_structures/crs_sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/timer.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/load_bar.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/lapack_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/run_script.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/fermions.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/fermion_fock_basis.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/algorithms/binary_search.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binomials.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/two_level_spinless_fermion_hamiltonian.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/two_level_fermion_fock_basis.hpp \
- /usr/local/include/boost/bind.hpp /usr/local/include/boost/bind/bind.hpp \
- /usr/local/include/boost/is_placeholder.hpp \
- /usr/local/include/boost/bind/arg.hpp \
- /usr/local/include/boost/visit_each.hpp \
- /usr/local/include/boost/bind/storage.hpp \
- /usr/local/include/boost/bind/bind_template.hpp \
- /usr/local/include/boost/bind/bind_cc.hpp \
- /usr/local/include/boost/bind/bind_mf_cc.hpp \
- /usr/local/include/boost/bind/bind_mf2_cc.hpp \
- /usr/local/include/boost/bind/placeholders.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/spinless_fermion_hamiltonian.hpp \
- fqhe_sphere/pseudopotential_model/term_tables.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/term_tables_base.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp
+ optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/io_wrapper.hpp \
+ optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
+ optical_flux_lattice/program_options/../../utilities/wrappers/mpi_wrapper.hpp
 
 /usr/include/stdc-predef.h:
 
-fqhe_sphere/pseudopotential_model/pseudopotential_model.hpp:
-
-fqhe_sphere/pseudopotential_model/pseudopotential_model_base.hpp:
-
-fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
+optical_flux_lattice/program_options/interacting_ofl_model_options.hpp:
 
 /usr/local/include/boost/program_options.hpp:
 
@@ -2534,13 +2421,17 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/local/include/boost/program_options/version.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/general/orbital_and_state_defs.hpp:
+optical_flux_lattice/program_options/../../utilities/general/orbital_and_state_defs.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/mpi_wrapper.hpp:
+optical_flux_lattice/program_options/../../program_options/general_options.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/dcmplx_type_def.hpp:
+optical_flux_lattice/program_options/../../program_options/../utilities/general/orbital_and_state_defs.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/cout_tools.hpp:
+optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/mpi_wrapper.hpp:
+
+optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../general/dcmplx_type_def.hpp:
+
+optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../general/cout_tools.hpp:
 
 /usr/lib/openmpi/include/mpi.h:
 
@@ -2616,7 +2507,7 @@ fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/..
 
 /usr/include/c++/4.8/bits/fstream.tcc:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/template_tools.hpp:
+optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../general/template_tools.hpp:
 
 /usr/include/c++/4.8/iomanip:
 
@@ -2624,232 +2515,8 @@ fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/..
 
 /usr/include/c++/4.8/ratio:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/io_wrapper.hpp:
+optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/io_wrapper.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
+optical_flux_lattice/program_options/../../program_options/../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
 
-fqhe_sphere/pseudopotential_model/../program_options/pseudopotential_model_options.hpp:
-
-fqhe_sphere/pseudopotential_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/pseudopotential_model_data.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/program_options_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/clebsch_gordan_coefficients.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/lapack_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/clebsch_gordan_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../mathematics/clebsch_gordan_coefficients.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/multi_key_hash.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/murmur_hash_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/../mathematics/murmur_hash2.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/serialize.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/quick_sort.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/../general/dcmplx_type_def.hpp:
-
-/usr/local/include/sparsehash/dense_hash_map:
-
-/usr/local/include/sparsehash/internal/sparseconfig.h:
-
-/usr/local/include/sparsehash/internal/densehashtable.h:
-
-/usr/local/include/sparsehash/internal/hashtable-common.h:
-
-/usr/local/include/sparsehash/internal/libc_allocator_with_realloc.h:
-
-/usr/local/include/sparsehash/type_traits.h:
-
-/usr/local/include/sparsehash/template_util.h:
-
-/usr/include/c++/4.8/tr1/functional:
-
-/usr/include/c++/4.8/tr1/tuple:
-
-/usr/include/c++/4.8/tr1/type_traits:
-
-/usr/include/c++/4.8/tr1/functional_hash.h:
-
-/usr/include/c++/4.8/unordered_map:
-
-/usr/include/c++/4.8/bits/hashtable.h:
-
-/usr/include/c++/4.8/bits/hashtable_policy.h:
-
-/usr/include/c++/4.8/bits/unordered_map.h:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/load_bar.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binomials.hpp:
-
-/usr/include/c++/4.8/bitset:
-
-fqhe_sphere/pseudopotential_model/angular_momentum_constraint.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/matrix_vector_routines.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/spinless_fermion_hamiltonian.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_base.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_data.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/arpack_options.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/arpack_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/crs_sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../algorithms/quick_sort.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/mapped_sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/murmur_hash_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/serialize.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/sparse_linear_algebra.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../data_structures/crs_sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/timer.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/load_bar.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/lapack_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/run_script.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/fermions.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/fermion_fock_basis.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/algorithms/binary_search.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binomials.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/two_level_spinless_fermion_hamiltonian.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/two_level_fermion_fock_basis.hpp:
-
-/usr/local/include/boost/bind.hpp:
-
-/usr/local/include/boost/bind/bind.hpp:
-
-/usr/local/include/boost/is_placeholder.hpp:
-
-/usr/local/include/boost/bind/arg.hpp:
-
-/usr/local/include/boost/visit_each.hpp:
-
-/usr/local/include/boost/bind/storage.hpp:
-
-/usr/local/include/boost/bind/bind_template.hpp:
-
-/usr/local/include/boost/bind/bind_cc.hpp:
-
-/usr/local/include/boost/bind/bind_mf_cc.hpp:
-
-/usr/local/include/boost/bind/bind_mf2_cc.hpp:
-
-/usr/local/include/boost/bind/placeholders.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/spinless_fermion_hamiltonian.hpp:
-
-fqhe_sphere/pseudopotential_model/term_tables.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/term_tables_base.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp:
+optical_flux_lattice/program_options/../../utilities/wrappers/mpi_wrapper.hpp:

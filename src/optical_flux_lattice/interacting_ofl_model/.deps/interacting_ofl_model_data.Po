@@ -1,18 +1,10 @@
-fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
- fqhe_sphere/pseudopotential_model/pseudopotential_model.cpp \
+optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.o: \
+ optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.cpp \
  /usr/include/stdc-predef.h \
- fqhe_sphere/pseudopotential_model/pseudopotential_model.hpp \
- fqhe_sphere/pseudopotential_model/pseudopotential_model_base.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp \
- /usr/local/include/boost/program_options.hpp \
- /usr/local/include/boost/program_options/options_description.hpp \
- /usr/local/include/boost/program_options/config.hpp \
- /usr/local/include/boost/config.hpp \
- /usr/local/include/boost/config/user.hpp \
- /usr/local/include/boost/config/select_compiler_config.hpp \
- /usr/local/include/boost/config/compiler/gcc.hpp \
- /usr/local/include/boost/config/select_stdlib_config.hpp \
- /usr/include/c++/4.8/cstddef \
+ optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/io_wrapper.hpp \
+ /usr/include/c++/4.8/fstream /usr/include/c++/4.8/istream \
+ /usr/include/c++/4.8/ios /usr/include/c++/4.8/iosfwd \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -20,91 +12,79 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/cpu_defines.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h \
- /usr/local/include/boost/config/no_tr1/utility.hpp \
- /usr/include/c++/4.8/utility /usr/include/c++/4.8/bits/stl_relops.h \
- /usr/include/c++/4.8/bits/stl_pair.h /usr/include/c++/4.8/bits/move.h \
- /usr/include/c++/4.8/bits/concept_check.h \
- /usr/include/c++/4.8/type_traits /usr/include/c++/4.8/initializer_list \
- /usr/local/include/boost/config/stdlib/libstdcpp3.hpp \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
- /usr/include/x86_64-linux-gnu/bits/environments.h \
- /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h \
- /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
- /usr/include/x86_64-linux-gnu/bits/unistd.h \
- /usr/local/include/boost/config/select_platform_config.hpp \
- /usr/local/include/boost/config/platform/linux.hpp \
- /usr/include/c++/4.8/cstdlib /usr/include/stdlib.h \
- /usr/include/x86_64-linux-gnu/bits/waitflags.h \
- /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/endian.h \
- /usr/include/x86_64-linux-gnu/bits/endian.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap-16.h /usr/include/xlocale.h \
- /usr/include/x86_64-linux-gnu/sys/types.h /usr/include/time.h \
- /usr/include/x86_64-linux-gnu/sys/select.h \
- /usr/include/x86_64-linux-gnu/bits/select.h \
- /usr/include/x86_64-linux-gnu/bits/sigset.h \
- /usr/include/x86_64-linux-gnu/bits/time.h \
- /usr/include/x86_64-linux-gnu/bits/select2.h \
- /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib.h \
- /usr/local/include/boost/config/posix_features.hpp \
- /usr/local/include/boost/config/suffix.hpp \
- /usr/local/include/boost/version.hpp \
- /usr/local/include/boost/config/auto_link.hpp \
- /usr/local/include/boost/program_options/errors.hpp \
- /usr/include/c++/4.8/string /usr/include/c++/4.8/bits/stringfwd.h \
+ /usr/include/c++/4.8/bits/stringfwd.h \
  /usr/include/c++/4.8/bits/memoryfwd.h \
- /usr/include/c++/4.8/bits/char_traits.h \
- /usr/include/c++/4.8/bits/stl_algobase.h \
- /usr/include/c++/4.8/bits/functexcept.h \
- /usr/include/c++/4.8/bits/exception_defines.h \
- /usr/include/c++/4.8/bits/cpp_type_traits.h \
- /usr/include/c++/4.8/ext/type_traits.h \
- /usr/include/c++/4.8/ext/numeric_traits.h \
- /usr/include/c++/4.8/bits/stl_iterator_base_types.h \
- /usr/include/c++/4.8/bits/stl_iterator_base_funcs.h \
- /usr/include/c++/4.8/debug/debug.h \
- /usr/include/c++/4.8/bits/stl_iterator.h \
  /usr/include/c++/4.8/bits/postypes.h /usr/include/c++/4.8/cwchar \
  /usr/include/wchar.h /usr/include/stdio.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /usr/include/x86_64-linux-gnu/bits/wchar2.h /usr/include/c++/4.8/cstdint \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
- /usr/include/c++/4.8/bits/allocator.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++allocator.h \
- /usr/include/c++/4.8/ext/new_allocator.h /usr/include/c++/4.8/new \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h \
+ /usr/include/xlocale.h /usr/include/x86_64-linux-gnu/bits/wchar2.h \
  /usr/include/c++/4.8/exception \
  /usr/include/c++/4.8/bits/atomic_lockfree_defines.h \
  /usr/include/c++/4.8/bits/exception_ptr.h \
+ /usr/include/c++/4.8/bits/exception_defines.h \
  /usr/include/c++/4.8/bits/nested_exception.h \
+ /usr/include/c++/4.8/bits/char_traits.h \
+ /usr/include/c++/4.8/bits/stl_algobase.h \
+ /usr/include/c++/4.8/bits/functexcept.h \
+ /usr/include/c++/4.8/bits/cpp_type_traits.h \
+ /usr/include/c++/4.8/ext/type_traits.h \
+ /usr/include/c++/4.8/ext/numeric_traits.h \
+ /usr/include/c++/4.8/bits/stl_pair.h /usr/include/c++/4.8/bits/move.h \
+ /usr/include/c++/4.8/bits/concept_check.h \
+ /usr/include/c++/4.8/type_traits \
+ /usr/include/c++/4.8/bits/stl_iterator_base_types.h \
+ /usr/include/c++/4.8/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/4.8/debug/debug.h \
+ /usr/include/c++/4.8/bits/stl_iterator.h /usr/include/c++/4.8/cstdint \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
  /usr/include/c++/4.8/bits/localefwd.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++locale.h \
  /usr/include/c++/4.8/clocale /usr/include/locale.h \
- /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/4.8/iosfwd \
- /usr/include/c++/4.8/cctype /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/4.8/cctype \
+ /usr/include/ctype.h /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
+ /usr/include/c++/4.8/bits/ios_base.h \
+ /usr/include/c++/4.8/ext/atomicity.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr-default.h \
+ /usr/include/pthread.h /usr/include/sched.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+ /usr/include/x86_64-linux-gnu/bits/setjmp.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/atomic_word.h \
+ /usr/include/c++/4.8/bits/locale_classes.h /usr/include/c++/4.8/string \
+ /usr/include/c++/4.8/bits/allocator.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++allocator.h \
+ /usr/include/c++/4.8/ext/new_allocator.h /usr/include/c++/4.8/new \
  /usr/include/c++/4.8/bits/ostream_insert.h \
  /usr/include/c++/4.8/bits/cxxabi_forced.h \
  /usr/include/c++/4.8/bits/stl_function.h \
  /usr/include/c++/4.8/backward/binders.h \
  /usr/include/c++/4.8/bits/range_access.h \
  /usr/include/c++/4.8/bits/basic_string.h \
- /usr/include/c++/4.8/ext/atomicity.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr-default.h \
- /usr/include/pthread.h /usr/include/sched.h \
- /usr/include/x86_64-linux-gnu/bits/sched.h \
- /usr/include/x86_64-linux-gnu/bits/timex.h \
- /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/atomic_word.h \
+ /usr/include/c++/4.8/initializer_list \
  /usr/include/c++/4.8/ext/string_conversions.h \
- /usr/include/c++/4.8/cstdio /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+ /usr/include/c++/4.8/cstdlib /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+ /usr/include/x86_64-linux-gnu/sys/types.h \
+ /usr/include/x86_64-linux-gnu/sys/select.h \
+ /usr/include/x86_64-linux-gnu/bits/select.h \
+ /usr/include/x86_64-linux-gnu/bits/sigset.h \
+ /usr/include/x86_64-linux-gnu/bits/select2.h \
+ /usr/include/x86_64-linux-gnu/sys/sysmacros.h /usr/include/alloca.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib.h /usr/include/c++/4.8/cstdio \
+ /usr/include/libio.h /usr/include/_G_config.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
  /usr/include/x86_64-linux-gnu/bits/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/c++/4.8/cerrno \
@@ -114,27 +94,32 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/include/c++/4.8/bits/functional_hash.h \
  /usr/include/c++/4.8/bits/hash_bytes.h \
  /usr/include/c++/4.8/bits/basic_string.tcc \
- /usr/include/c++/4.8/stdexcept /usr/include/c++/4.8/vector \
- /usr/include/c++/4.8/bits/stl_construct.h \
- /usr/include/c++/4.8/ext/alloc_traits.h \
- /usr/include/c++/4.8/bits/alloc_traits.h \
- /usr/include/c++/4.8/bits/ptr_traits.h \
- /usr/include/c++/4.8/bits/stl_uninitialized.h \
- /usr/include/c++/4.8/bits/stl_vector.h \
- /usr/include/c++/4.8/bits/stl_bvector.h \
- /usr/include/c++/4.8/bits/vector.tcc /usr/include/c++/4.8/map \
- /usr/include/c++/4.8/bits/stl_tree.h /usr/include/c++/4.8/bits/stl_map.h \
- /usr/include/c++/4.8/tuple /usr/include/c++/4.8/array \
- /usr/include/c++/4.8/bits/uses_allocator.h \
- /usr/include/c++/4.8/bits/stl_multimap.h \
- /usr/local/include/boost/program_options/value_semantic.hpp \
- /usr/local/include/boost/any.hpp /usr/include/c++/4.8/algorithm \
- /usr/include/c++/4.8/bits/stl_algo.h \
- /usr/include/c++/4.8/bits/algorithmfwd.h \
- /usr/include/c++/4.8/bits/stl_heap.h \
- /usr/include/c++/4.8/bits/stl_tempbuf.h /usr/include/c++/4.8/random \
- /usr/include/c++/4.8/cmath /usr/include/math.h \
- /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ /usr/include/c++/4.8/bits/locale_classes.tcc \
+ /usr/include/c++/4.8/streambuf /usr/include/c++/4.8/bits/streambuf.tcc \
+ /usr/include/c++/4.8/bits/basic_ios.h \
+ /usr/include/c++/4.8/bits/locale_facets.h /usr/include/c++/4.8/cwctype \
+ /usr/include/wctype.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_base.h \
+ /usr/include/c++/4.8/bits/streambuf_iterator.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_inline.h \
+ /usr/include/c++/4.8/bits/locale_facets.tcc \
+ /usr/include/c++/4.8/bits/basic_ios.tcc /usr/include/c++/4.8/ostream \
+ /usr/include/c++/4.8/bits/ostream.tcc \
+ /usr/include/c++/4.8/bits/istream.tcc \
+ /usr/include/c++/4.8/bits/codecvt.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++io.h \
+ /usr/include/c++/4.8/bits/fstream.tcc /usr/include/c++/4.8/iostream \
+ /usr/include/c++/4.8/iomanip /usr/include/c++/4.8/locale \
+ /usr/include/c++/4.8/bits/locale_facets_nonio.h \
+ /usr/include/c++/4.8/ctime \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/4.8/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/4.8/bits/locale_facets_nonio.tcc \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/../general/dcmplx_type_def.hpp \
+ /usr/include/c++/4.8/complex /usr/include/c++/4.8/cmath \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
  /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
  /usr/include/x86_64-linux-gnu/bits/inf.h \
@@ -142,7 +127,98 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/include/x86_64-linux-gnu/bits/mathdef.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- /usr/include/c++/4.8/limits /usr/include/c++/4.8/bits/random.h \
+ /usr/include/c++/4.8/sstream /usr/include/c++/4.8/bits/sstream.tcc \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/../general/cout_tools.hpp \
+ /usr/lib/openmpi/include/mpi.h \
+ /usr/lib/openmpi/include/mpi_portable_platform.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/mpicxx.h \
+ /usr/include/c++/4.8/map /usr/include/c++/4.8/bits/stl_tree.h \
+ /usr/include/c++/4.8/bits/alloc_traits.h \
+ /usr/include/c++/4.8/bits/ptr_traits.h \
+ /usr/include/c++/4.8/bits/stl_map.h /usr/include/c++/4.8/tuple \
+ /usr/include/c++/4.8/utility /usr/include/c++/4.8/bits/stl_relops.h \
+ /usr/include/c++/4.8/array /usr/include/c++/4.8/stdexcept \
+ /usr/include/c++/4.8/bits/uses_allocator.h \
+ /usr/include/c++/4.8/bits/stl_multimap.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/constants.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/exception.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions_inln.h \
+ /usr/include/string.h /usr/include/x86_64-linux-gnu/bits/string3.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win_inln.h \
+ /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file_inln.h \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/../general/template_tools.hpp \
+ /usr/include/c++/4.8/vector /usr/include/c++/4.8/bits/stl_construct.h \
+ /usr/include/c++/4.8/ext/alloc_traits.h \
+ /usr/include/c++/4.8/bits/stl_uninitialized.h \
+ /usr/include/c++/4.8/bits/stl_vector.h \
+ /usr/include/c++/4.8/bits/stl_bvector.h \
+ /usr/include/c++/4.8/bits/vector.tcc /usr/include/c++/4.8/chrono \
+ /usr/include/c++/4.8/ratio /usr/include/c++/4.8/limits \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../general/template_tools.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../general/dcmplx_type_def.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/general/orbital_and_state_defs.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/general/cout_tools.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/mpi_wrapper.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/sqlite_wrapper.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../general/cout_tools.hpp \
+ /usr/local/include/sqlite3.h /usr/include/c++/4.8/cassert \
+ /usr/include/assert.h \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/general/pi_const_def.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/program_options_wrapper.hpp \
+ /usr/local/include/boost/program_options.hpp \
+ /usr/local/include/boost/program_options/options_description.hpp \
+ /usr/local/include/boost/program_options/config.hpp \
+ /usr/local/include/boost/config.hpp \
+ /usr/local/include/boost/config/user.hpp \
+ /usr/local/include/boost/config/select_compiler_config.hpp \
+ /usr/local/include/boost/config/compiler/gcc.hpp \
+ /usr/local/include/boost/config/select_stdlib_config.hpp \
+ /usr/include/c++/4.8/cstddef \
+ /usr/local/include/boost/config/no_tr1/utility.hpp \
+ /usr/local/include/boost/config/stdlib/libstdcpp3.hpp \
+ /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/environments.h \
+ /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd.h \
+ /usr/local/include/boost/config/select_platform_config.hpp \
+ /usr/local/include/boost/config/platform/linux.hpp \
+ /usr/local/include/boost/config/posix_features.hpp \
+ /usr/local/include/boost/config/suffix.hpp \
+ /usr/local/include/boost/version.hpp \
+ /usr/local/include/boost/config/auto_link.hpp \
+ /usr/local/include/boost/program_options/errors.hpp \
+ /usr/local/include/boost/program_options/value_semantic.hpp \
+ /usr/local/include/boost/any.hpp /usr/include/c++/4.8/algorithm \
+ /usr/include/c++/4.8/bits/stl_algo.h \
+ /usr/include/c++/4.8/bits/algorithmfwd.h \
+ /usr/include/c++/4.8/bits/stl_heap.h \
+ /usr/include/c++/4.8/bits/stl_tempbuf.h /usr/include/c++/4.8/random \
+ /usr/include/c++/4.8/bits/random.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/opt_random.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/x86intrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/ia32intrin.h \
@@ -276,13 +352,11 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/local/include/boost/static_assert.hpp \
  /usr/local/include/boost/utility/enable_if.hpp \
  /usr/local/include/boost/type_traits/is_same.hpp \
- /usr/include/c++/4.8/cstring /usr/include/string.h \
- /usr/include/x86_64-linux-gnu/bits/string3.h \
+ /usr/include/c++/4.8/cstring \
  /usr/local/include/boost/function/function1.hpp \
  /usr/local/include/boost/function/detail/maybe_include.hpp \
  /usr/local/include/boost/function/function_template.hpp \
  /usr/local/include/boost/function/detail/prologue.hpp \
- /usr/include/c++/4.8/cassert /usr/include/assert.h \
  /usr/local/include/boost/config/no_tr1/functional.hpp \
  /usr/local/include/boost/function/function_base.hpp \
  /usr/include/c++/4.8/memory \
@@ -293,23 +367,7 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/include/c++/4.8/bits/shared_ptr_base.h \
  /usr/include/c++/4.8/backward/auto_ptr.h \
  /usr/local/include/boost/detail/sp_typeinfo.hpp \
- /usr/local/include/boost/assert.hpp /usr/include/c++/4.8/iostream \
- /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
- /usr/include/c++/4.8/bits/ios_base.h \
- /usr/include/c++/4.8/bits/locale_classes.h \
- /usr/include/c++/4.8/bits/locale_classes.tcc \
- /usr/include/c++/4.8/streambuf /usr/include/c++/4.8/bits/streambuf.tcc \
- /usr/include/c++/4.8/bits/basic_ios.h \
- /usr/include/c++/4.8/bits/locale_facets.h /usr/include/c++/4.8/cwctype \
- /usr/include/wctype.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_base.h \
- /usr/include/c++/4.8/bits/streambuf_iterator.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_inline.h \
- /usr/include/c++/4.8/bits/locale_facets.tcc \
- /usr/include/c++/4.8/bits/basic_ios.tcc \
- /usr/include/c++/4.8/bits/ostream.tcc /usr/include/c++/4.8/istream \
- /usr/include/c++/4.8/bits/istream.tcc \
- /usr/local/include/boost/integer.hpp \
+ /usr/local/include/boost/assert.hpp /usr/local/include/boost/integer.hpp \
  /usr/local/include/boost/integer_fwd.hpp /usr/include/c++/4.8/climits \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/limits.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/syslimits.h \
@@ -361,14 +419,6 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/local/include/boost/lexical_cast.hpp \
  /usr/local/include/boost/detail/lcast_precision.hpp \
  /usr/local/include/boost/type_traits/is_abstract.hpp \
- /usr/include/c++/4.8/locale \
- /usr/include/c++/4.8/bits/locale_facets_nonio.h \
- /usr/include/c++/4.8/ctime \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/time_members.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/4.8/bits/codecvt.h \
- /usr/include/c++/4.8/bits/locale_facets_nonio.tcc \
- /usr/include/c++/4.8/sstream /usr/include/c++/4.8/bits/sstream.tcc \
  /usr/local/include/boost/array.hpp /usr/local/include/boost/swap.hpp \
  /usr/local/include/boost/utility/swap.hpp \
  /usr/local/include/boost/detail/iterator.hpp \
@@ -641,7 +691,6 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/local/include/boost/mpl/greater_equal.hpp \
  /usr/local/include/boost/mpl/aux_/preprocessed/gcc/greater_equal.hpp \
  /usr/local/include/boost/config/no_tr1/complex.hpp \
- /usr/include/c++/4.8/complex \
  /usr/local/include/boost/math/special_functions/detail/fp_traits.hpp \
  /usr/local/include/boost/detail/endian.hpp \
  /usr/local/include/boost/predef/detail/endian_compat.h \
@@ -757,188 +806,28 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/local/include/boost/program_options/detail/convert.hpp \
  /usr/local/include/boost/program_options/variables_map.hpp \
  /usr/local/include/boost/program_options/version.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/cout_tools.hpp \
- /usr/lib/openmpi/include/mpi.h \
- /usr/lib/openmpi/include/mpi_portable_platform.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/mpicxx.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/constants.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/exception.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win_inln.h \
- /usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file_inln.h \
- /usr/include/c++/4.8/fstream \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/basic_file.h \
- /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++io.h \
- /usr/include/c++/4.8/bits/fstream.tcc \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/template_tools.hpp \
- /usr/include/c++/4.8/iomanip /usr/include/c++/4.8/chrono \
- /usr/include/c++/4.8/ratio \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../program_options/pseudopotential_model_options.hpp \
- fqhe_sphere/pseudopotential_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/pseudopotential_model_data.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/program_options_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/clebsch_gordan_coefficients.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/lapack_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/clebsch_gordan_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../mathematics/clebsch_gordan_coefficients.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/multi_key_hash.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/murmur_hash_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/../mathematics/murmur_hash2.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/serialize.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/quick_sort.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/../general/dcmplx_type_def.hpp \
- /usr/local/include/sparsehash/dense_hash_map \
- /usr/local/include/sparsehash/internal/sparseconfig.h \
- /usr/local/include/sparsehash/internal/densehashtable.h \
- /usr/local/include/sparsehash/internal/hashtable-common.h \
- /usr/local/include/sparsehash/internal/libc_allocator_with_realloc.h \
- /usr/local/include/sparsehash/type_traits.h \
- /usr/local/include/sparsehash/template_util.h \
- /usr/include/c++/4.8/tr1/functional /usr/include/c++/4.8/tr1/tuple \
- /usr/include/c++/4.8/tr1/type_traits \
- /usr/include/c++/4.8/tr1/functional_hash.h \
- /usr/include/c++/4.8/unordered_map /usr/include/c++/4.8/bits/hashtable.h \
- /usr/include/c++/4.8/bits/hashtable_policy.h \
- /usr/include/c++/4.8/bits/unordered_map.h \
- fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/load_bar.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binomials.hpp \
- /usr/include/c++/4.8/bitset \
- fqhe_sphere/pseudopotential_model/angular_momentum_constraint.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/matrix_vector_routines.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/spinless_fermion_hamiltonian.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_base.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_data.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/arpack_options.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/arpack_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/crs_sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../algorithms/quick_sort.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/mapped_sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/murmur_hash_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/serialize.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/sparse_linear_algebra.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/dcmplx_type_def.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../data_structures/crs_sparse_matrix.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/timer.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/load_bar.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/lapack_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/template_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/run_script.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/fermions.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/fermion_fock_basis.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/algorithms/binary_search.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binomials.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binary_number_tools.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/two_level_spinless_fermion_hamiltonian.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/two_level_fermion_fock_basis.hpp \
- /usr/local/include/boost/bind.hpp /usr/local/include/boost/bind/bind.hpp \
- /usr/local/include/boost/is_placeholder.hpp \
- /usr/local/include/boost/bind/arg.hpp \
- /usr/local/include/boost/visit_each.hpp \
- /usr/local/include/boost/bind/storage.hpp \
- /usr/local/include/boost/bind/bind_template.hpp \
- /usr/local/include/boost/bind/bind_cc.hpp \
- /usr/local/include/boost/bind/bind_mf_cc.hpp \
- /usr/local/include/boost/bind/bind_mf2_cc.hpp \
- /usr/local/include/boost/bind/placeholders.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/spinless_fermion_hamiltonian.hpp \
- fqhe_sphere/pseudopotential_model/term_tables.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/term_tables_base.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/general/orbital_and_state_defs.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp
+ optical_flux_lattice/interacting_ofl_model/../../program_options/general_options.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../program_options/../utilities/general/orbital_and_state_defs.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../program_options/../utilities/wrappers/mpi_wrapper.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../program_options/../utilities/wrappers/io_wrapper.hpp \
+ optical_flux_lattice/interacting_ofl_model/../program_options/interacting_ofl_model_options.hpp \
+ optical_flux_lattice/interacting_ofl_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp \
+ optical_flux_lattice/interacting_ofl_model/../program_options/../../program_options/general_options.hpp \
+ optical_flux_lattice/interacting_ofl_model/../program_options/../../utilities/wrappers/mpi_wrapper.hpp
 
 /usr/include/stdc-predef.h:
 
-fqhe_sphere/pseudopotential_model/pseudopotential_model.hpp:
+optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.hpp:
 
-fqhe_sphere/pseudopotential_model/pseudopotential_model_base.hpp:
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/io_wrapper.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
+/usr/include/c++/4.8/fstream:
 
-/usr/local/include/boost/program_options.hpp:
+/usr/include/c++/4.8/istream:
 
-/usr/local/include/boost/program_options/options_description.hpp:
+/usr/include/c++/4.8/ios:
 
-/usr/local/include/boost/program_options/config.hpp:
-
-/usr/local/include/boost/config.hpp:
-
-/usr/local/include/boost/config/user.hpp:
-
-/usr/local/include/boost/config/select_compiler_config.hpp:
-
-/usr/local/include/boost/config/compiler/gcc.hpp:
-
-/usr/local/include/boost/config/select_stdlib_config.hpp:
-
-/usr/include/c++/4.8/cstddef:
+/usr/include/c++/4.8/iosfwd:
 
 /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h:
 
@@ -956,127 +845,9 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/x86_64-linux-gnu/c++/4.8/bits/cpu_defines.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h:
-
-/usr/local/include/boost/config/no_tr1/utility.hpp:
-
-/usr/include/c++/4.8/utility:
-
-/usr/include/c++/4.8/bits/stl_relops.h:
-
-/usr/include/c++/4.8/bits/stl_pair.h:
-
-/usr/include/c++/4.8/bits/move.h:
-
-/usr/include/c++/4.8/bits/concept_check.h:
-
-/usr/include/c++/4.8/type_traits:
-
-/usr/include/c++/4.8/initializer_list:
-
-/usr/local/include/boost/config/stdlib/libstdcpp3.hpp:
-
-/usr/include/unistd.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
-
-/usr/include/x86_64-linux-gnu/bits/environments.h:
-
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
-
-/usr/include/x86_64-linux-gnu/bits/confname.h:
-
-/usr/include/getopt.h:
-
-/usr/include/x86_64-linux-gnu/bits/unistd.h:
-
-/usr/local/include/boost/config/select_platform_config.hpp:
-
-/usr/local/include/boost/config/platform/linux.hpp:
-
-/usr/include/c++/4.8/cstdlib:
-
-/usr/include/stdlib.h:
-
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
-
-/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
-
-/usr/include/endian.h:
-
-/usr/include/x86_64-linux-gnu/bits/endian.h:
-
-/usr/include/x86_64-linux-gnu/bits/byteswap.h:
-
-/usr/include/x86_64-linux-gnu/bits/byteswap-16.h:
-
-/usr/include/xlocale.h:
-
-/usr/include/x86_64-linux-gnu/sys/types.h:
-
-/usr/include/time.h:
-
-/usr/include/x86_64-linux-gnu/sys/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigset.h:
-
-/usr/include/x86_64-linux-gnu/bits/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/select2.h:
-
-/usr/include/x86_64-linux-gnu/sys/sysmacros.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
-
-/usr/include/alloca.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib.h:
-
-/usr/local/include/boost/config/posix_features.hpp:
-
-/usr/local/include/boost/config/suffix.hpp:
-
-/usr/local/include/boost/version.hpp:
-
-/usr/local/include/boost/config/auto_link.hpp:
-
-/usr/local/include/boost/program_options/errors.hpp:
-
-/usr/include/c++/4.8/string:
-
 /usr/include/c++/4.8/bits/stringfwd.h:
 
 /usr/include/c++/4.8/bits/memoryfwd.h:
-
-/usr/include/c++/4.8/bits/char_traits.h:
-
-/usr/include/c++/4.8/bits/stl_algobase.h:
-
-/usr/include/c++/4.8/bits/functexcept.h:
-
-/usr/include/c++/4.8/bits/exception_defines.h:
-
-/usr/include/c++/4.8/bits/cpp_type_traits.h:
-
-/usr/include/c++/4.8/ext/type_traits.h:
-
-/usr/include/c++/4.8/ext/numeric_traits.h:
-
-/usr/include/c++/4.8/bits/stl_iterator_base_types.h:
-
-/usr/include/c++/4.8/bits/stl_iterator_base_funcs.h:
-
-/usr/include/c++/4.8/debug/debug.h:
-
-/usr/include/c++/4.8/bits/stl_iterator.h:
 
 /usr/include/c++/4.8/bits/postypes.h:
 
@@ -1090,21 +861,11 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h:
+
+/usr/include/xlocale.h:
+
 /usr/include/x86_64-linux-gnu/bits/wchar2.h:
-
-/usr/include/c++/4.8/cstdint:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h:
-
-/usr/include/stdint.h:
-
-/usr/include/c++/4.8/bits/allocator.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/c++allocator.h:
-
-/usr/include/c++/4.8/ext/new_allocator.h:
-
-/usr/include/c++/4.8/new:
 
 /usr/include/c++/4.8/exception:
 
@@ -1112,7 +873,43 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/c++/4.8/bits/exception_ptr.h:
 
+/usr/include/c++/4.8/bits/exception_defines.h:
+
 /usr/include/c++/4.8/bits/nested_exception.h:
+
+/usr/include/c++/4.8/bits/char_traits.h:
+
+/usr/include/c++/4.8/bits/stl_algobase.h:
+
+/usr/include/c++/4.8/bits/functexcept.h:
+
+/usr/include/c++/4.8/bits/cpp_type_traits.h:
+
+/usr/include/c++/4.8/ext/type_traits.h:
+
+/usr/include/c++/4.8/ext/numeric_traits.h:
+
+/usr/include/c++/4.8/bits/stl_pair.h:
+
+/usr/include/c++/4.8/bits/move.h:
+
+/usr/include/c++/4.8/bits/concept_check.h:
+
+/usr/include/c++/4.8/type_traits:
+
+/usr/include/c++/4.8/bits/stl_iterator_base_types.h:
+
+/usr/include/c++/4.8/bits/stl_iterator_base_funcs.h:
+
+/usr/include/c++/4.8/debug/debug.h:
+
+/usr/include/c++/4.8/bits/stl_iterator.h:
+
+/usr/include/c++/4.8/cstdint:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h:
+
+/usr/include/stdint.h:
 
 /usr/include/c++/4.8/bits/localefwd.h:
 
@@ -1124,11 +921,59 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/locale.h:
 
-/usr/include/c++/4.8/iosfwd:
-
 /usr/include/c++/4.8/cctype:
 
 /usr/include/ctype.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/endian.h:
+
+/usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/usr/include/x86_64-linux-gnu/bits/byteswap.h:
+
+/usr/include/x86_64-linux-gnu/bits/byteswap-16.h:
+
+/usr/include/c++/4.8/bits/ios_base.h:
+
+/usr/include/c++/4.8/ext/atomicity.h:
+
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr.h:
+
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr-default.h:
+
+/usr/include/pthread.h:
+
+/usr/include/sched.h:
+
+/usr/include/time.h:
+
+/usr/include/x86_64-linux-gnu/bits/sched.h:
+
+/usr/include/x86_64-linux-gnu/bits/time.h:
+
+/usr/include/x86_64-linux-gnu/bits/timex.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
+
+/usr/include/x86_64-linux-gnu/bits/setjmp.h:
+
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/atomic_word.h:
+
+/usr/include/c++/4.8/bits/locale_classes.h:
+
+/usr/include/c++/4.8/string:
+
+/usr/include/c++/4.8/bits/allocator.h:
+
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/c++allocator.h:
+
+/usr/include/c++/4.8/ext/new_allocator.h:
+
+/usr/include/c++/4.8/new:
 
 /usr/include/c++/4.8/bits/ostream_insert.h:
 
@@ -1142,25 +987,37 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/c++/4.8/bits/basic_string.h:
 
-/usr/include/c++/4.8/ext/atomicity.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr-default.h:
-
-/usr/include/pthread.h:
-
-/usr/include/sched.h:
-
-/usr/include/x86_64-linux-gnu/bits/sched.h:
-
-/usr/include/x86_64-linux-gnu/bits/timex.h:
-
-/usr/include/x86_64-linux-gnu/bits/setjmp.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/atomic_word.h:
+/usr/include/c++/4.8/initializer_list:
 
 /usr/include/c++/4.8/ext/string_conversions.h:
+
+/usr/include/c++/4.8/cstdlib:
+
+/usr/include/stdlib.h:
+
+/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+
+/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/include/x86_64-linux-gnu/sys/select.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
+
+/usr/include/x86_64-linux-gnu/bits/sigset.h:
+
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
+/usr/include/x86_64-linux-gnu/sys/sysmacros.h:
+
+/usr/include/alloca.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
 
 /usr/include/c++/4.8/cstdio:
 
@@ -1196,55 +1053,67 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/c++/4.8/bits/basic_string.tcc:
 
-/usr/include/c++/4.8/stdexcept:
+/usr/include/c++/4.8/bits/locale_classes.tcc:
 
-/usr/include/c++/4.8/vector:
+/usr/include/c++/4.8/streambuf:
 
-/usr/include/c++/4.8/bits/stl_construct.h:
+/usr/include/c++/4.8/bits/streambuf.tcc:
 
-/usr/include/c++/4.8/ext/alloc_traits.h:
+/usr/include/c++/4.8/bits/basic_ios.h:
 
-/usr/include/c++/4.8/bits/alloc_traits.h:
+/usr/include/c++/4.8/bits/locale_facets.h:
 
-/usr/include/c++/4.8/bits/ptr_traits.h:
+/usr/include/c++/4.8/cwctype:
 
-/usr/include/c++/4.8/bits/stl_uninitialized.h:
+/usr/include/wctype.h:
 
-/usr/include/c++/4.8/bits/stl_vector.h:
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_base.h:
 
-/usr/include/c++/4.8/bits/stl_bvector.h:
+/usr/include/c++/4.8/bits/streambuf_iterator.h:
 
-/usr/include/c++/4.8/bits/vector.tcc:
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_inline.h:
 
-/usr/include/c++/4.8/map:
+/usr/include/c++/4.8/bits/locale_facets.tcc:
 
-/usr/include/c++/4.8/bits/stl_tree.h:
+/usr/include/c++/4.8/bits/basic_ios.tcc:
 
-/usr/include/c++/4.8/bits/stl_map.h:
+/usr/include/c++/4.8/ostream:
 
-/usr/include/c++/4.8/tuple:
+/usr/include/c++/4.8/bits/ostream.tcc:
 
-/usr/include/c++/4.8/array:
+/usr/include/c++/4.8/bits/istream.tcc:
 
-/usr/include/c++/4.8/bits/uses_allocator.h:
+/usr/include/c++/4.8/bits/codecvt.h:
 
-/usr/include/c++/4.8/bits/stl_multimap.h:
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/basic_file.h:
 
-/usr/local/include/boost/program_options/value_semantic.hpp:
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/c++io.h:
 
-/usr/local/include/boost/any.hpp:
+/usr/include/c++/4.8/bits/fstream.tcc:
 
-/usr/include/c++/4.8/algorithm:
+/usr/include/c++/4.8/iostream:
 
-/usr/include/c++/4.8/bits/stl_algo.h:
+/usr/include/c++/4.8/iomanip:
 
-/usr/include/c++/4.8/bits/algorithmfwd.h:
+/usr/include/c++/4.8/locale:
 
-/usr/include/c++/4.8/bits/stl_heap.h:
+/usr/include/c++/4.8/bits/locale_facets_nonio.h:
 
-/usr/include/c++/4.8/bits/stl_tempbuf.h:
+/usr/include/c++/4.8/ctime:
 
-/usr/include/c++/4.8/random:
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/time_members.h:
+
+/usr/include/x86_64-linux-gnu/c++/4.8/bits/messages_members.h:
+
+/usr/include/libintl.h:
+
+/usr/include/c++/4.8/bits/locale_facets_nonio.tcc:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/../general/dcmplx_type_def.hpp:
+
+/usr/include/c++/4.8/complex:
 
 /usr/include/c++/4.8/cmath:
 
@@ -1266,7 +1135,215 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/mathinline.h:
 
+/usr/include/c++/4.8/sstream:
+
+/usr/include/c++/4.8/bits/sstream.tcc:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/../general/cout_tools.hpp:
+
+/usr/lib/openmpi/include/mpi.h:
+
+/usr/lib/openmpi/include/mpi_portable_platform.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/mpicxx.h:
+
+/usr/include/c++/4.8/map:
+
+/usr/include/c++/4.8/bits/stl_tree.h:
+
+/usr/include/c++/4.8/bits/alloc_traits.h:
+
+/usr/include/c++/4.8/bits/ptr_traits.h:
+
+/usr/include/c++/4.8/bits/stl_map.h:
+
+/usr/include/c++/4.8/tuple:
+
+/usr/include/c++/4.8/utility:
+
+/usr/include/c++/4.8/bits/stl_relops.h:
+
+/usr/include/c++/4.8/array:
+
+/usr/include/c++/4.8/stdexcept:
+
+/usr/include/c++/4.8/bits/uses_allocator.h:
+
+/usr/include/c++/4.8/bits/stl_multimap.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/constants.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/exception.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions_inln.h:
+
+/usr/include/string.h:
+
+/usr/include/x86_64-linux-gnu/bits/string3.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win_inln.h:
+
+/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file_inln.h:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../wrappers/../general/template_tools.hpp:
+
+/usr/include/c++/4.8/vector:
+
+/usr/include/c++/4.8/bits/stl_construct.h:
+
+/usr/include/c++/4.8/ext/alloc_traits.h:
+
+/usr/include/c++/4.8/bits/stl_uninitialized.h:
+
+/usr/include/c++/4.8/bits/stl_vector.h:
+
+/usr/include/c++/4.8/bits/stl_bvector.h:
+
+/usr/include/c++/4.8/bits/vector.tcc:
+
+/usr/include/c++/4.8/chrono:
+
+/usr/include/c++/4.8/ratio:
+
 /usr/include/c++/4.8/limits:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../general/template_tools.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../general/dcmplx_type_def.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/general/orbital_and_state_defs.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/general/cout_tools.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/mpi_wrapper.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/sqlite_wrapper.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/../general/cout_tools.hpp:
+
+/usr/local/include/sqlite3.h:
+
+/usr/include/c++/4.8/cassert:
+
+/usr/include/assert.h:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/general/pi_const_def.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/wrappers/program_options_wrapper.hpp:
+
+/usr/local/include/boost/program_options.hpp:
+
+/usr/local/include/boost/program_options/options_description.hpp:
+
+/usr/local/include/boost/program_options/config.hpp:
+
+/usr/local/include/boost/config.hpp:
+
+/usr/local/include/boost/config/user.hpp:
+
+/usr/local/include/boost/config/select_compiler_config.hpp:
+
+/usr/local/include/boost/config/compiler/gcc.hpp:
+
+/usr/local/include/boost/config/select_stdlib_config.hpp:
+
+/usr/include/c++/4.8/cstddef:
+
+/usr/local/include/boost/config/no_tr1/utility.hpp:
+
+/usr/local/include/boost/config/stdlib/libstdcpp3.hpp:
+
+/usr/include/unistd.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
+
+/usr/include/x86_64-linux-gnu/bits/environments.h:
+
+/usr/include/x86_64-linux-gnu/bits/confname.h:
+
+/usr/include/getopt.h:
+
+/usr/include/x86_64-linux-gnu/bits/unistd.h:
+
+/usr/local/include/boost/config/select_platform_config.hpp:
+
+/usr/local/include/boost/config/platform/linux.hpp:
+
+/usr/local/include/boost/config/posix_features.hpp:
+
+/usr/local/include/boost/config/suffix.hpp:
+
+/usr/local/include/boost/version.hpp:
+
+/usr/local/include/boost/config/auto_link.hpp:
+
+/usr/local/include/boost/program_options/errors.hpp:
+
+/usr/local/include/boost/program_options/value_semantic.hpp:
+
+/usr/local/include/boost/any.hpp:
+
+/usr/include/c++/4.8/algorithm:
+
+/usr/include/c++/4.8/bits/stl_algo.h:
+
+/usr/include/c++/4.8/bits/algorithmfwd.h:
+
+/usr/include/c++/4.8/bits/stl_heap.h:
+
+/usr/include/c++/4.8/bits/stl_tempbuf.h:
+
+/usr/include/c++/4.8/random:
 
 /usr/include/c++/4.8/bits/random.h:
 
@@ -1542,10 +1619,6 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/include/c++/4.8/cstring:
 
-/usr/include/string.h:
-
-/usr/include/x86_64-linux-gnu/bits/string3.h:
-
 /usr/local/include/boost/function/function1.hpp:
 
 /usr/local/include/boost/function/detail/maybe_include.hpp:
@@ -1553,10 +1626,6 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 /usr/local/include/boost/function/function_template.hpp:
 
 /usr/local/include/boost/function/detail/prologue.hpp:
-
-/usr/include/c++/4.8/cassert:
-
-/usr/include/assert.h:
 
 /usr/local/include/boost/config/no_tr1/functional.hpp:
 
@@ -1579,46 +1648,6 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 /usr/local/include/boost/detail/sp_typeinfo.hpp:
 
 /usr/local/include/boost/assert.hpp:
-
-/usr/include/c++/4.8/iostream:
-
-/usr/include/c++/4.8/ostream:
-
-/usr/include/c++/4.8/ios:
-
-/usr/include/c++/4.8/bits/ios_base.h:
-
-/usr/include/c++/4.8/bits/locale_classes.h:
-
-/usr/include/c++/4.8/bits/locale_classes.tcc:
-
-/usr/include/c++/4.8/streambuf:
-
-/usr/include/c++/4.8/bits/streambuf.tcc:
-
-/usr/include/c++/4.8/bits/basic_ios.h:
-
-/usr/include/c++/4.8/bits/locale_facets.h:
-
-/usr/include/c++/4.8/cwctype:
-
-/usr/include/wctype.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_base.h:
-
-/usr/include/c++/4.8/bits/streambuf_iterator.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/ctype_inline.h:
-
-/usr/include/c++/4.8/bits/locale_facets.tcc:
-
-/usr/include/c++/4.8/bits/basic_ios.tcc:
-
-/usr/include/c++/4.8/bits/ostream.tcc:
-
-/usr/include/c++/4.8/istream:
-
-/usr/include/c++/4.8/bits/istream.tcc:
 
 /usr/local/include/boost/integer.hpp:
 
@@ -1729,26 +1758,6 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 /usr/local/include/boost/detail/lcast_precision.hpp:
 
 /usr/local/include/boost/type_traits/is_abstract.hpp:
-
-/usr/include/c++/4.8/locale:
-
-/usr/include/c++/4.8/bits/locale_facets_nonio.h:
-
-/usr/include/c++/4.8/ctime:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/time_members.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/messages_members.h:
-
-/usr/include/libintl.h:
-
-/usr/include/c++/4.8/bits/codecvt.h:
-
-/usr/include/c++/4.8/bits/locale_facets_nonio.tcc:
-
-/usr/include/c++/4.8/sstream:
-
-/usr/include/c++/4.8/bits/sstream.tcc:
 
 /usr/local/include/boost/array.hpp:
 
@@ -2300,8 +2309,6 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/local/include/boost/config/no_tr1/complex.hpp:
 
-/usr/include/c++/4.8/complex:
-
 /usr/local/include/boost/math/special_functions/detail/fp_traits.hpp:
 
 /usr/local/include/boost/detail/endian.hpp:
@@ -2534,322 +2541,18 @@ fqhe_sphere/pseudopotential_model/../../program_options/general_options.hpp:
 
 /usr/local/include/boost/program_options/version.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/general/orbital_and_state_defs.hpp:
+optical_flux_lattice/interacting_ofl_model/../../program_options/general_options.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/mpi_wrapper.hpp:
+optical_flux_lattice/interacting_ofl_model/../../program_options/../utilities/general/orbital_and_state_defs.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/dcmplx_type_def.hpp:
+optical_flux_lattice/interacting_ofl_model/../../program_options/../utilities/wrappers/mpi_wrapper.hpp:
 
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/cout_tools.hpp:
+optical_flux_lattice/interacting_ofl_model/../../program_options/../utilities/wrappers/io_wrapper.hpp:
 
-/usr/lib/openmpi/include/mpi.h:
+optical_flux_lattice/interacting_ofl_model/../program_options/interacting_ofl_model_options.hpp:
 
-/usr/lib/openmpi/include/mpi_portable_platform.h:
+optical_flux_lattice/interacting_ofl_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp:
 
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/mpicxx.h:
+optical_flux_lattice/interacting_ofl_model/../program_options/../../program_options/general_options.hpp:
 
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/constants.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/exception.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/datatype_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/functions_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/request_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/comm_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intracomm_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/topology_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/intercomm_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/group_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/op_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/errhandler_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/status_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/info_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/win_inln.h:
-
-/usr/lib/openmpi/include/openmpi/ompi/mpi/cxx/file_inln.h:
-
-/usr/include/c++/4.8/fstream:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/basic_file.h:
-
-/usr/include/x86_64-linux-gnu/c++/4.8/bits/c++io.h:
-
-/usr/include/c++/4.8/bits/fstream.tcc:
-
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../general/template_tools.hpp:
-
-/usr/include/c++/4.8/iomanip:
-
-/usr/include/c++/4.8/chrono:
-
-/usr/include/c++/4.8/ratio:
-
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../program_options/../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../program_options/pseudopotential_model_options.hpp:
-
-fqhe_sphere/pseudopotential_model/../program_options/../../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/pseudopotential_model_data.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/program_options_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/clebsch_gordan_coefficients.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/lapack_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/../wrappers/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/clebsch_gordan_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../mathematics/clebsch_gordan_coefficients.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/multi_key_hash.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/murmur_hash_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../wrappers/../mathematics/murmur_hash2.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/serialize.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/quick_sort.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../data_structures/../../utilities/algorithms/../general/dcmplx_type_def.hpp:
-
-/usr/local/include/sparsehash/dense_hash_map:
-
-/usr/local/include/sparsehash/internal/sparseconfig.h:
-
-/usr/local/include/sparsehash/internal/densehashtable.h:
-
-/usr/local/include/sparsehash/internal/hashtable-common.h:
-
-/usr/local/include/sparsehash/internal/libc_allocator_with_realloc.h:
-
-/usr/local/include/sparsehash/type_traits.h:
-
-/usr/local/include/sparsehash/template_util.h:
-
-/usr/include/c++/4.8/tr1/functional:
-
-/usr/include/c++/4.8/tr1/tuple:
-
-/usr/include/c++/4.8/tr1/type_traits:
-
-/usr/include/c++/4.8/tr1/functional_hash.h:
-
-/usr/include/c++/4.8/unordered_map:
-
-/usr/include/c++/4.8/bits/hashtable.h:
-
-/usr/include/c++/4.8/bits/hashtable_policy.h:
-
-/usr/include/c++/4.8/bits/unordered_map.h:
-
-fqhe_sphere/pseudopotential_model/../../utilities/wrappers/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/load_bar.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../utilities/mathematics/binomials.hpp:
-
-/usr/include/c++/4.8/bitset:
-
-fqhe_sphere/pseudopotential_model/angular_momentum_constraint.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/matrix_vector_routines.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/spinless_fermion_hamiltonian.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_base.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/hamiltonian_data.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/arpack_options.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../program_options/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/arpack_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/crs_sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../algorithms/quick_sort.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/mapped_sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../wrappers/murmur_hash_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/data_structures/../general/serialize.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/sparse_linear_algebra.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/dcmplx_type_def.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../data_structures/crs_sparse_matrix.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/../general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/timer.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/cout_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/load_bar.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/lapack_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/template_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/general/run_script.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/fermions.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/fermion_fock_basis.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/algorithms/binary_search.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binomials.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/../utilities/mathematics/binary_number_tools.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/two_level_spinless_fermion_hamiltonian.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../hamiltonians/../basis/two_level_fermion_fock_basis.hpp:
-
-/usr/local/include/boost/bind.hpp:
-
-/usr/local/include/boost/bind/bind.hpp:
-
-/usr/local/include/boost/is_placeholder.hpp:
-
-/usr/local/include/boost/bind/arg.hpp:
-
-/usr/local/include/boost/visit_each.hpp:
-
-/usr/local/include/boost/bind/storage.hpp:
-
-/usr/local/include/boost/bind/bind_template.hpp:
-
-/usr/local/include/boost/bind/bind_cc.hpp:
-
-/usr/local/include/boost/bind/bind_mf_cc.hpp:
-
-/usr/local/include/boost/bind/bind_mf2_cc.hpp:
-
-/usr/local/include/boost/bind/placeholders.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/spinless_fermion_hamiltonian.hpp:
-
-fqhe_sphere/pseudopotential_model/term_tables.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/term_tables_base.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/general/orbital_and_state_defs.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp:
+optical_flux_lattice/interacting_ofl_model/../program_options/../../utilities/wrappers/mpi_wrapper.hpp:

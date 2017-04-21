@@ -1,7 +1,6 @@
-utilities/mathematics/binary_number_tools.o: \
- utilities/mathematics/binary_number_tools.cpp /usr/include/stdc-predef.h \
- utilities/mathematics/binary_number_tools.hpp \
- utilities/mathematics/binomials.hpp /usr/include/c++/4.8/iostream \
+utilities/mathematics/binomials.o: utilities/mathematics/binomials.cpp \
+ /usr/include/stdc-predef.h utilities/mathematics/binomials.hpp \
+ /usr/include/c++/4.8/iostream \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -142,11 +141,9 @@ utilities/mathematics/binary_number_tools.o: \
  /usr/include/c++/4.8/bits/stl_numeric.h /usr/include/c++/4.8/functional \
  /usr/include/c++/4.8/typeinfo /usr/include/c++/4.8/tuple \
  /usr/include/c++/4.8/array /usr/include/c++/4.8/stdexcept \
- /usr/include/c++/4.8/bits/uses_allocator.h /usr/include/c++/4.8/bitset
+ /usr/include/c++/4.8/bits/uses_allocator.h
 
 /usr/include/stdc-predef.h:
-
-utilities/mathematics/binary_number_tools.hpp:
 
 utilities/mathematics/binomials.hpp:
 
@@ -507,5 +504,3 @@ utilities/mathematics/binomials.hpp:
 /usr/include/c++/4.8/stdexcept:
 
 /usr/include/c++/4.8/bits/uses_allocator.h:
-
-/usr/include/c++/4.8/bitset:

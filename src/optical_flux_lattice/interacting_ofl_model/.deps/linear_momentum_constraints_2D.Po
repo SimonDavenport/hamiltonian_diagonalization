@@ -1,7 +1,9 @@
-utilities/mathematics/binary_number_tools.o: \
- utilities/mathematics/binary_number_tools.cpp /usr/include/stdc-predef.h \
- utilities/mathematics/binary_number_tools.hpp \
- utilities/mathematics/binomials.hpp /usr/include/c++/4.8/iostream \
+optical_flux_lattice/interacting_ofl_model/linear_momentum_constraints_2D.o: \
+ optical_flux_lattice/interacting_ofl_model/linear_momentum_constraints_2D.cpp \
+ /usr/include/stdc-predef.h \
+ optical_flux_lattice/interacting_ofl_model/linear_momentum_constraints_2D.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/mathematics/modulo.hpp \
+ /usr/include/c++/4.8/cmath \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -9,13 +11,29 @@ utilities/mathematics/binary_number_tools.o: \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/cpu_defines.h \
- /usr/include/c++/4.8/ostream /usr/include/c++/4.8/ios \
- /usr/include/c++/4.8/iosfwd /usr/include/c++/4.8/bits/stringfwd.h \
+ /usr/include/c++/4.8/bits/cpp_type_traits.h \
+ /usr/include/c++/4.8/ext/type_traits.h /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
+ /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
+ /usr/include/x86_64-linux-gnu/bits/inf.h \
+ /usr/include/x86_64-linux-gnu/bits/nan.h \
+ /usr/include/x86_64-linux-gnu/bits/mathdef.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /usr/include/x86_64-linux-gnu/bits/mathinline.h \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/general/orbital_and_state_defs.hpp \
+ /usr/include/c++/4.8/cstdint \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h /usr/include/c++/4.8/limits \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/mathematics/binary_number_tools.hpp \
+ optical_flux_lattice/interacting_ofl_model/../../utilities/mathematics/binomials.hpp \
+ /usr/include/c++/4.8/iostream /usr/include/c++/4.8/ostream \
+ /usr/include/c++/4.8/ios /usr/include/c++/4.8/iosfwd \
+ /usr/include/c++/4.8/bits/stringfwd.h \
  /usr/include/c++/4.8/bits/memoryfwd.h \
  /usr/include/c++/4.8/bits/postypes.h /usr/include/c++/4.8/cwchar \
  /usr/include/wchar.h /usr/include/stdio.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
- /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h \
  /usr/include/xlocale.h /usr/include/x86_64-linux-gnu/bits/wchar2.h \
  /usr/include/c++/4.8/exception \
@@ -26,8 +44,6 @@ utilities/mathematics/binary_number_tools.o: \
  /usr/include/c++/4.8/bits/char_traits.h \
  /usr/include/c++/4.8/bits/stl_algobase.h \
  /usr/include/c++/4.8/bits/functexcept.h \
- /usr/include/c++/4.8/bits/cpp_type_traits.h \
- /usr/include/c++/4.8/ext/type_traits.h \
  /usr/include/c++/4.8/ext/numeric_traits.h \
  /usr/include/c++/4.8/bits/stl_pair.h /usr/include/c++/4.8/bits/move.h \
  /usr/include/c++/4.8/bits/concept_check.h \
@@ -35,8 +51,7 @@ utilities/mathematics/binary_number_tools.o: \
  /usr/include/c++/4.8/bits/stl_iterator_base_types.h \
  /usr/include/c++/4.8/bits/stl_iterator_base_funcs.h \
  /usr/include/c++/4.8/debug/debug.h \
- /usr/include/c++/4.8/bits/stl_iterator.h /usr/include/c++/4.8/cstdint \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
+ /usr/include/c++/4.8/bits/stl_iterator.h \
  /usr/include/c++/4.8/bits/localefwd.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++locale.h \
  /usr/include/c++/4.8/clocale /usr/include/locale.h \
@@ -113,17 +128,7 @@ utilities/mathematics/binary_number_tools.o: \
  /usr/include/c++/4.8/ext/alloc_traits.h \
  /usr/include/c++/4.8/bits/alloc_traits.h \
  /usr/include/c++/4.8/bits/ptr_traits.h /usr/include/c++/4.8/random \
- /usr/include/c++/4.8/cmath /usr/include/math.h \
- /usr/include/x86_64-linux-gnu/bits/huge_val.h \
- /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
- /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
- /usr/include/x86_64-linux-gnu/bits/inf.h \
- /usr/include/x86_64-linux-gnu/bits/nan.h \
- /usr/include/x86_64-linux-gnu/bits/mathdef.h \
- /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
- /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- /usr/include/c++/4.8/limits /usr/include/c++/4.8/bits/random.h \
- /usr/include/c++/4.8/vector \
+ /usr/include/c++/4.8/bits/random.h /usr/include/c++/4.8/vector \
  /usr/include/c++/4.8/bits/stl_uninitialized.h \
  /usr/include/c++/4.8/bits/stl_vector.h \
  /usr/include/c++/4.8/bits/stl_bvector.h \
@@ -146,11 +151,11 @@ utilities/mathematics/binary_number_tools.o: \
 
 /usr/include/stdc-predef.h:
 
-utilities/mathematics/binary_number_tools.hpp:
+optical_flux_lattice/interacting_ofl_model/linear_momentum_constraints_2D.hpp:
 
-utilities/mathematics/binomials.hpp:
+optical_flux_lattice/interacting_ofl_model/../../utilities/mathematics/modulo.hpp:
 
-/usr/include/c++/4.8/iostream:
+/usr/include/c++/4.8/cmath:
 
 /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h:
 
@@ -167,6 +172,46 @@ utilities/mathematics/binomials.hpp:
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
 /usr/include/x86_64-linux-gnu/c++/4.8/bits/cpu_defines.h:
+
+/usr/include/c++/4.8/bits/cpp_type_traits.h:
+
+/usr/include/c++/4.8/ext/type_traits.h:
+
+/usr/include/math.h:
+
+/usr/include/x86_64-linux-gnu/bits/huge_val.h:
+
+/usr/include/x86_64-linux-gnu/bits/huge_valf.h:
+
+/usr/include/x86_64-linux-gnu/bits/huge_vall.h:
+
+/usr/include/x86_64-linux-gnu/bits/inf.h:
+
+/usr/include/x86_64-linux-gnu/bits/nan.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathdef.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathinline.h:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/general/orbital_and_state_defs.hpp:
+
+/usr/include/c++/4.8/cstdint:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+/usr/include/c++/4.8/limits:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/mathematics/binary_number_tools.hpp:
+
+optical_flux_lattice/interacting_ofl_model/../../utilities/mathematics/binomials.hpp:
+
+/usr/include/c++/4.8/iostream:
 
 /usr/include/c++/4.8/ostream:
 
@@ -187,8 +232,6 @@ utilities/mathematics/binomials.hpp:
 /usr/include/stdio.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h:
 
@@ -212,10 +255,6 @@ utilities/mathematics/binomials.hpp:
 
 /usr/include/c++/4.8/bits/functexcept.h:
 
-/usr/include/c++/4.8/bits/cpp_type_traits.h:
-
-/usr/include/c++/4.8/ext/type_traits.h:
-
 /usr/include/c++/4.8/ext/numeric_traits.h:
 
 /usr/include/c++/4.8/bits/stl_pair.h:
@@ -233,12 +272,6 @@ utilities/mathematics/binomials.hpp:
 /usr/include/c++/4.8/debug/debug.h:
 
 /usr/include/c++/4.8/bits/stl_iterator.h:
-
-/usr/include/c++/4.8/cstdint:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h:
-
-/usr/include/stdint.h:
 
 /usr/include/c++/4.8/bits/localefwd.h:
 
@@ -435,28 +468,6 @@ utilities/mathematics/binomials.hpp:
 /usr/include/c++/4.8/bits/ptr_traits.h:
 
 /usr/include/c++/4.8/random:
-
-/usr/include/c++/4.8/cmath:
-
-/usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/huge_val.h:
-
-/usr/include/x86_64-linux-gnu/bits/huge_valf.h:
-
-/usr/include/x86_64-linux-gnu/bits/huge_vall.h:
-
-/usr/include/x86_64-linux-gnu/bits/inf.h:
-
-/usr/include/x86_64-linux-gnu/bits/nan.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathdef.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathinline.h:
-
-/usr/include/c++/4.8/limits:
 
 /usr/include/c++/4.8/bits/random.h:
 
