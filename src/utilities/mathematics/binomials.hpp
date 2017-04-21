@@ -38,7 +38,7 @@ namespace utilities
 {
     static const int maxBinomial = 64;      //!<    Maximum argument n or r for 
                                             //!<    Tabulated coefficients n choose r
-    long int BinomialFromTable(const int n, const int k);    
+    double BinomialFromTable(const int n, const int k);    
                                             //!<    Binomial look-up function protorype
     //////////////////////////////////////////////////////////////////////////////////
     //! \brief	This function returns the combinatoric factor input1 Choose input2.

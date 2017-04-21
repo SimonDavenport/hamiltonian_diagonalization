@@ -31,7 +31,7 @@ namespace utilities
     //!
     //! A function to address the binomial table (returns n choose k)
     //!
-    long int BinomialFromTable(
+    double BinomialFromTable(
         const int n,    //!<    First binmoial argument
         const int k)    //!<    Second binomial argument
     {
