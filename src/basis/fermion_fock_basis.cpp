@@ -236,7 +236,7 @@ namespace diagonalization
     //! stored - this is because for binary search of a Hermitian matrix element,
     //! only the upper triangular part of the matrix is required for the search.
     //!
-    //! \return true if the Fock space dimension is 0, false otherwise
+    //! \return true if the Fock space dimension is 0 on at least one node
     ////////////////////////////////////////////////////////////////////////////////
     bool FermionFockBasis::GenerateFockSpace(
         const iSize_t nbrParticles, //!<    Number of particles
@@ -263,7 +263,7 @@ namespace diagonalization
         fock_t sectorTotalDimension = 0;
         {
             //  Generate first state on each node
-            fock_t currState = utilities::binary::GenerateHammingNumber(nbrParticles,mpi.m_firstTask);
+            fock_t currState = utilities::binary::GenerateHammingNumber(nbrParticles, mpi.m_firstTask);
             //  Count the set of states in quantum number sector specified by the Constraint function
             for(fock_t i=0; i<fullNodeDim; ++i)
             {
@@ -281,8 +281,8 @@ namespace diagonalization
             {
                 utilities::cout.SecondaryOutput()<<"\n\t\tFOCK BASIS CONTAINS "<<sectorTotalDimension<<" STATE(S)"<<std::endl;
             }
-            //  Don't proceed if the Fock space dimension is 0
-            if(0 == sectorTotalDimension)
+            //  Don't proceed if the Fock space dimension is 0 on any node
+            if((int)sectorTotalDimension < mpi.m_nbrProcs)
             {
                 return true;
             }

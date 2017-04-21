@@ -302,7 +302,7 @@ namespace diagonalization
     //! stored - this is because for binary search of a Hermitian matrix element,
     //! only the upper triangular part of the matrix is required for the search.
     //!
-    //! \return true if the Fock space dimension is 0, false otherwise
+    //! \return true if the Fock space dimension is 0 on any node
     ////////////////////////////////////////////////////////////////////////////////
     bool TwoLevelFermionFockBasis::GenerateFockSpace(
         const iSize_t nbrParticles, //!<    Number of particles
@@ -364,8 +364,8 @@ namespace diagonalization
         {
             utilities::cout.SecondaryOutput()<<"\n\t\tFOCK BASIS CONTAINS "<<sectorTotalDimension<<" STATE(S)"<<std::endl;
         }
-        //  Don't proceed if the Fock space dimension is 0 
-        if(0 == sectorTotalDimension)
+        //  Don't proceed if the Fock space dimension is 0 on any node
+        if((int)sectorTotalDimension < mpi.m_nbrProcs)
         {
             return true;
         }
