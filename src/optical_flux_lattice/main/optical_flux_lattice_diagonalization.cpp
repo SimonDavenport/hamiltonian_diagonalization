@@ -192,7 +192,6 @@ boost::program_options::variables_map ParseCommandLine(
         diagonalization::myOptions::AddTermOptions(modelOpt);
         diagonalization::myOptions::AddMoreInteractingModelOptions(modelOpt);
         po::options_description sqlOpt(diagonalization::myOptions::GetCommonSqlOptions());
-        diagonalization::myOptions::AddRunSqlOptions(sqlOpt);
         po::options_description allOpt("\n\tThis program generates the interacting Hamiltonian due to k-dependent interactions\n\tin the lowest lying band of an optical flux lattice model.\n\tSee e.g. PRL109,265301 (2013)\n\n\tThe program input options are as follows");
         allOpt.add(diagonalization::myOptions::GetGeneralOptions()).add(diagonalization::myOptions::GetCommonNonInteractingOflModelOptions()).add(modelOpt).add(diagonalization::myOptions::GetInteractingModelPlotOptions()).add(diagonalization::myOptions::GetObservablesOptions()).add(sqlOpt).add(diagonalization::myOptions::GetArpackOptions());
         try

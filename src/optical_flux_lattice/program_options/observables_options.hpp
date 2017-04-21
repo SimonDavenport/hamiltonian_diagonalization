@@ -39,22 +39,22 @@ namespace myOptions
     {
         po::options_description obsOpt("Observables Options");
 	    obsOpt.add_options()
-	    ("calculate-density-density",po::value<bool>()->default_value(0),
-	     "Set to 1 to generate the density-density function and store it in a file.\n")
-	    ("calculate-participation-ratio",po::value<bool>()->default_value(0),
-	     "Set to 1 to generate the participation ratio (1/sum_i |psi_i|^4) and store it in a file.\n")
-	    ("calculate-occupations",po::value<bool>()->default_value(0),
-	     "Set to 1 to generate the probability distribution of interacting orbitals for each eigenvector.\n")
-	    ("calculate-susceptibility",po::value<bool>()->default_value(0),
-	     "Set to 1 to calculate the mean squared magnetization (which gives a measure of the susceptibility).\n")
-	    ("most-probable-list",po::value<bool>()->default_value(false),
-	     "Set to 1 to generate a list of the most probable eigenstates\n")
-	    ("nbr-most-probable",po::value<iSize_t>()->default_value(1),
+	    ("calculate-density-density", po::bool_switch()->default_value(0),
+	     "Set to generate the density-density function and store it in a file.\n")
+	    ("calculate-participation-ratio", po::bool_switch()->default_value(0),
+	     "Set to generate the participation ratio (1/sum_i |psi_i|^4) and store it in a file.\n")
+	    ("calculate-occupations", po::bool_switch()->default_value(0),
+	     "Set to generate the probability distribution of interacting orbitals for each eigenvector.\n")
+	    ("calculate-susceptibility", po::bool_switch()->default_value(0),
+	     "Set to calculate the mean squared magnetization (which gives a measure of the susceptibility).\n")
+	    ("most-probable-list", po::bool_switch()->default_value(false),
+	     "Set to generate a list of the most probable eigenstates\n")
+	    ("nbr-most-probable", po::value<iSize_t>()->default_value(1),
 	     "Set the number of most probable eigenstates to store when the most-probable-list option is enabled.\n")
-	    ("calculate-translational-density-density",po::value<bool>()->default_value(0),
-	     "Set to 1 to calculate the translational density-density function sum_{k1,k2} <c^+_{k2-G}c_k2c^+_{k1+G}c_k1> as a function of G.\n")
-        ("calculate-rotational-density-density",po::value<bool>()->default_value(0),
-	     "Set to 1 to calculate the rotational density-density function sum_{k1,k2} <c^+_{~R60 k2}c_k2c^+_{R60 k1}c_k1> as a function of the 6-fold rotation.\n");
+	    ("calculate-translational-density-density", po::bool_switch()->default_value(0),
+	     "Set to calculate the translational density-density function sum_{k1,k2} <c^+_{k2-G}c_k2c^+_{k1+G}c_k1> as a function of G.\n")
+        ("calculate-rotational-density-density", po::bool_switch()->default_value(0),
+	     "Set to calculate the rotational density-density function sum_{k1,k2} <c^+_{~R60 k2}c_k2c^+_{R60 k1}c_k1> as a function of the 6-fold rotation.\n");
 	    return obsOpt;
     };
     
@@ -62,10 +62,10 @@ namespace myOptions
     {
         po::options_description plotOpt("Plot Options");
 	    plotOpt.add_options()
-	    ("plot-hamiltonian",po::value<bool>()->default_value(0),
-	     "Set to 1 to generate matrix plots of the interacting Hamiltonian (if it has been diagonalized).\n")
-	    ("plot-occupations",po::value<bool>()->default_value(0),
-	     "Set to 1 to generate a plot of the probability of orbital occupations.\n");
+	    ("plot-hamiltonian", po::bool_switch()->default_value(0),
+	     "Set to generate matrix plots of the interacting Hamiltonian (if it has been diagonalized).\n")
+	    ("plot-occupations", po::bool_switch()->default_value(0),
+	     "Set to generate a plot of the probability of orbital occupations.\n");
 	    return plotOpt;
     };
 }   //  End namespace myOptions

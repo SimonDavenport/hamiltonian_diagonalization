@@ -38,13 +38,13 @@ namespace myOptions
     {
         po::options_description sqlOpt("SQLite options");
         sqlOpt.add_options()
-        ("use-sql",po::value<bool>()->default_value(false),
-         "Option to use model parameters stored in an sqllite file\n")
-        ("sql-name",po::value<std::string>()->default_value("resultFileKey"),
+        ("use-sql", po::bool_switch()->default_value(false),
+         "Set to use model parameters stored in an sqllite file\n")
+        ("sql-name", po::value<std::string>()->default_value("resultFileKey"),
          "Specify the name of an sqllite file name where the model data and output file names are stored\n")
-        ("sql-table-name",po::value<std::string>()->default_value("PARAMETERS"),
+        ("sql-table-name", po::value<std::string>()->default_value("PARAMETERS"),
          "Specify the name of an sqllite table where data are stored\n")
-        ("sql-id",po::value<iSize_t>()->default_value(1),
+        ("sql-id", po::value<iSize_t>()->default_value(1),
          "Specify the id of the parameter set extracted form the sqllite file.\n");
          return sqlOpt;
     };
@@ -52,45 +52,38 @@ namespace myOptions
     inline void AddGenSqlOptions(po::options_description& sqlOpt)
     {
         sqlOpt.add_options()
-        ("build-sql-table",po::value<bool>()->default_value(false),
-         "An option to construct a SQL table containing a cut through parameter space\n")
-        ("build-sql-table-offset",po::value<bool>()->default_value(false),
-         "An option to construct a SQL table containing a list of different offsets for a fixed set of system parameters\n")
-        ("build-sql-table-single-particle",po::value<bool>()->default_value(false),
-         "An option to construct a SQL table containing a list of different single-particle model parameters, to produce results related to the single-particle model only.\n")
-        ("sql-v0-min",po::value<double>()->default_value(0.0),
+        ("build-sql-table", po::bool_switch()->default_value(false),
+         "Set to construct a SQL table containing a cut through parameter space\n")
+        ("build-sql-table-offset", po::bool_switch()->default_value(false),
+         "Set to construct a SQL table containing a list of different offsets for a fixed set of system parameters\n")
+        ("build-sql-table-single-particle", po::bool_switch()->default_value(false),
+         "Set to construct a SQL table containing a list of different single-particle model parameters, to produce results related to the single-particle model only.\n")
+        ("sql-v0-min", po::value<double>()->default_value(0.0),
          "Specify the minimum V0 parameter value to put into the SQL table.\n")
-        ("sql-v0-step",po::value<double>()->default_value(0.2),
+        ("sql-v0-step", po::value<double>()->default_value(0.2),
          "Specify the V0 parameter step size to put into the SQL table.\n")
-        ("sql-v0-nbr",po::value<iSize_t>()->default_value(6),
+        ("sql-v0-nbr", po::value<iSize_t>()->default_value(6),
          "Specify the number of V0 parameter values to put in the SQL table (starting from sql-v0-min and increasing in steps of sql-v0-step.\n")
-        ("sql-g-min",po::value<double>()->default_value(0.0),
+        ("sql-g-min", po::value<double>()->default_value(0.0),
          "Specify the minimum g parameter value to put into the SQL table.\n")
-        ("sql-g-step",po::value<double>()->default_value(0.2),
+        ("sql-g-step", po::value<double>()->default_value(0.2),
          "Specify the g parameter step size to put into the SQL table.\n")
-        ("sql-g-nbr",po::value<iSize_t>()->default_value(6),
+        ("sql-g-nbr", po::value<iSize_t>()->default_value(6),
          "Specify the number of g parameter values to put in the SQL table (starting from sql-g-min and increasing in steps of sql-g-step.\n")
-        ("sql-kx-shift-min",po::value<double>()->default_value(0.0),
+        ("sql-kx-shift-min", po::value<double>()->default_value(0.0),
          "Specify the minimum value of the kx offset to put added to the SQL table.\n")
-        ("sql-kx-shift-step",po::value<double>()->default_value(0.2),
+        ("sql-kx-shift-step", po::value<double>()->default_value(0.2),
          "Specify the kx offset step size to put added to the SQL table.\n")
-        ("sql-kx-shift-nbr",po::value<iSize_t>()->default_value(6),
+        ("sql-kx-shift-nbr", po::value<iSize_t>()->default_value(6),
          "Specify the number of kx offset values to put in the SQL table (starting from sql-kx-shift-min and increasing in steps of sql-kx-shift-step.\n")
-        ("sql-ky-shift-min",po::value<double>()->default_value(0.0),
+        ("sql-ky-shift-min", po::value<double>()->default_value(0.0),
          "Specify the minimum value of the ky offset to put added to the SQL table.\n")
-        ("sql-ky-shift-step",po::value<double>()->default_value(0.2),
+        ("sql-ky-shift-step", po::value<double>()->default_value(0.2),
          "Specify the ky offset step size to put added to the SQL table.\n")
-        ("sql-ky-shift-nbr",po::value<iSize_t>()->default_value(6),
+        ("sql-ky-shift-nbr", po::value<iSize_t>()->default_value(6),
          "Specify the number of ky offset values to put in the SQL table (starting from sql-ky-shift-min and increasing in steps of sql-ky-shift-step.\n")
-        ("sql-completed",po::value<bool>()->default_value(false),
-         "Generate a SQLite table with all flags set to a completed calculation. Used for rebuilding corrupted tables. \n");
-    };
-    
-    inline void AddRunSqlOptions(po::options_description& sqlOpt)
-    {
-	    sqlOpt.add_options()
-        ("sort-vectors",po::value<iSize_t>()->default_value(0),
-         "Option to keep a running check for energy level cross overs as a function of model parameters, and to relabel the eigenvalues to keep the labelling consistent. The option value sets the number of eigenvalues to keep for the running check.\n");
+        ("sql-completed", po::bool_switch()->default_value(false),
+         "Set to generate a SQLite table with all flags set to a completed calculation. Used for rebuilding corrupted tables. \n");
     };
 }   //  End namespace myOptions
 }   //  End namespace diagonalization 
