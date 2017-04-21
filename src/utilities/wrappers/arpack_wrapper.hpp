@@ -844,7 +844,10 @@ namespace utilities
                     //  Y = matrix * X
                     MatrixVectorMultiply(WORKD+IPNTR[0]-1, WORKD+IPNTR[1]-1, mpi);
                 }
-                ++iterationCounter;
+                if(0 == mpi.m_id)	// FOR THE MASTER NODE
+                {
+                    ++iterationCounter;
+                }
             }
             while(IDO != 99);
             MPI_Barrier(mpi.m_comm);

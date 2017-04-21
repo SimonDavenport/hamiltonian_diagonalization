@@ -41,7 +41,7 @@ namespace utilities
             m_eigenvalueMagnitude('S'),
             m_whatMagnitude('R'),
             m_upperOrLowerMatrix('U'),
-            m_maxIterations(2000),
+            m_maxIterations(5000),
             m_provideInitial(0),
             m_storeFinalVector(false),
             m_initialVectorFile("initial_vector.bin"),
