@@ -45,26 +45,35 @@
 
 namespace diagonalization
 {
-    //////////////////////////////////////////////////////////////////////////////////
-    //! \brief The SpherePseudopotentialmodel class defines a FQHE
+    //!
+    //! The SpherePseudopotentialmodel class defines a FQHE
     //! Haldane pseudopotential model the sphere geometry
-    //////////////////////////////////////////////////////////////////////////////////
+    //!
     template <class H>
     class SpherePseudopotentialModelBase
     {
+        private:
+        static const kState_t m_stateLabelError = std::numeric_limits<kState_t>::max();
         protected:
         H m_hamiltonian;                    //!<  An object to contain the Hamiltonian
         PseudopotentialModelData m_params;  //!<  Container for model parameters
         //!
         //! Convert signed angular momentum values m into unsigned state
-        //! labels k
+        //! labels k. 
         //!
         kState_t ConvertStateLabel(
             const mState_t m,       //!<    Angular momentum index
             const mState_t maxLz)   //!<   Maximum lz value
             const
         {
-            return (-m+maxLz)/2;
+            if(m>(mState_t)maxLz)
+            {
+                return m_stateLabelError;
+            }
+            else
+            {
+                return (-m+maxLz)/2;
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////
