@@ -607,8 +607,8 @@ namespace diagonalization
             m_quarticHashTables.Clear();
             m_quadraticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
             m_quarticHashTables.Initialize(m_params.m_dimX*m_params.m_dimY);
-            m_quadraticHashTables.SetQuadraticFromArray(&m_quadraticTables);
-            m_quarticHashTables.SetQuarticFromArray(&m_quarticTables);
+            m_quadraticHashTables.SetFromArray(&m_quadraticTables, m_params.m_dimX*m_params.m_dimY);
+            m_quarticHashTables.SetFromArray(&m_quarticTables, m_params.m_dimX*m_params.m_dimY);
             m_quarticTables.Clear();
             m_quadraticTables.Clear();
             m_params.m_tableFormat = _HASH_;

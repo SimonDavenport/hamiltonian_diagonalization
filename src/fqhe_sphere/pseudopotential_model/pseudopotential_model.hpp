@@ -38,6 +38,8 @@
 #include "../../hamiltonians/spinless_fermion_hamiltonian.hpp"
 #include "../../hamiltonians/quadratic_term_tables_base.hpp"
 #include "../../hamiltonians/quartic_term_tables_base.hpp"
+#include "../../hamiltonians/quadratic_term_hash_tables_base.hpp"
+#include "../../hamiltonians/quartic_term_hash_tables_base.hpp"
 #include "angular_momentum_constraint.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
@@ -58,7 +60,10 @@ namespace diagonalization
                                             //!<  Class container for regular array term tables
         QuarticTermTablesBase<double> m_quarticTables;  
                                             //!<  Class container for regular array term tables
-
+        QuadraticTermHashTablesBase<double> m_quadraticHashTables;
+                                            //!<  Class container for multi-hash map term tables
+        QuarticTermHashTablesBase<double> m_quarticHashTables;
+                                            //!<  Class container for multi-hash maps term tables
         public:
         SpherePseudopotentialModel(const iSize_t nbrParticles, const iSize_t nbrOrbitals,
                                    const std::vector<double>& pseudopotentials);
@@ -66,7 +71,8 @@ namespace diagonalization
                                    utilities::MpiWrapper& mpi);
         ~SpherePseudopotentialModel();
         void BuildTermTables(const utilities::MpiWrapper& mpi);
-        void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi) const;
+        void ConvertTableFormat(const utilities::MpiWrapper& mpi);
+        void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi);
         void TermsFromFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi);
         void SetOccupationEnergies(std::vector<double>& energyLevels, const utilities::MpiWrapper& mpi);
         void BuildFockBasis(utilities::MpiWrapper& mpi);

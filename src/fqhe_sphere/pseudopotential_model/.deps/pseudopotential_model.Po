@@ -915,7 +915,10 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/general/orbital_and_state_defs.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_tables_base.hpp
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_tables_base.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/quadratic_term_hash_tables_base.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/data_structures/multi_key_hash.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_hash_tables_base.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -2862,3 +2865,9 @@ fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wr
 fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp:
 
 fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_tables_base.hpp:
+
+fqhe_sphere/pseudopotential_model/../../hamiltonians/quadratic_term_hash_tables_base.hpp:
+
+fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/data_structures/multi_key_hash.hpp:
+
+fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_hash_tables_base.hpp:

@@ -925,8 +925,15 @@ namespace utilities
         }
 
         //!
-        //! \brief Function to count the number of entries for a given map key
+        //! Function to return the number of set elements
         //!
+        uint64_t Size() const
+        {
+            return m_map.size();
+        }
+
+        //!
+        //! Function to count the number of entries for a given map key
         //!
         uint32_t Count(
             const uint64_t key)     //!<  Map key

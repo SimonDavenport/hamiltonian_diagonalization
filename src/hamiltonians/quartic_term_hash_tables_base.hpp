@@ -126,6 +126,14 @@ namespace diagonalization
         {
             return m_kTable.GetMaxCount();
         }
+        
+        //!
+        //! Get the dimension of the look-up table
+        //!
+        iSize_t GetDimension() const
+        {
+            return m_vTable.Size();
+        }
 
         //!
         //! Get the k1 value for a given k2,k3,k4 with a 4 momentum conservation 
@@ -170,8 +178,9 @@ namespace diagonalization
         //! Returns a single Vkkkk coefficient for a given k1,k2,k3,k4 set of momenta
         ////////////////////////////////////////////////////////////////////////////////
         template <class C>
-        void SetQuarticFromArray(
-            C* quarticArray)    //!<    Class container for quartic term array
+        void SetFromArray(
+            C* quarticArray,        //!<    Class container for quartic term array
+            const kState_t filter)  //!<    Upper limit filter on k1
         {
             for(kState_t k2=0; k2<m_kMax; ++k2)
             {
@@ -182,8 +191,11 @@ namespace diagonalization
                         kState_t k1;
                         iSize_t nbrK1;
                         quarticArray->GetK1(&k1, nbrK1, k2, k3, k4);
-                        m_kTable.Insert(k1, utilities::Key(k2, k3, k4));
-                        m_vTable.Insert(utilities::Key(k1, k2, k3, k4)) = quarticArray->GetVkkkk(k1, k2, k3, k4);
+                        if(k1 <= filter)
+                        {
+                            m_kTable.Insert(k1, utilities::Key(k2, k3, k4));
+                            m_vTable.Insert(utilities::Key(k1, k2, k3, k4)) = quarticArray->GetVkkkk(k1, k2, k3, k4);
+                        }
                     }
                 }
             }

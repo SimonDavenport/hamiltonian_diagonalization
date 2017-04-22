@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //!                                                                             
-//!                        \author Simon C. Davenport                                                  
+//!                        \author Simon C. Davenport
 //!                                                                             
 //!	 \file
 //!     This file contains the base class implementation for term tables
@@ -133,6 +133,14 @@ namespace diagonalization
         }
 
         //!
+        //! Get the dimension of the look up table
+        //!
+        iSize_t GetDimension() const
+        {
+            return m_vTable.Size();
+        }
+
+        //!
         //! Get the k1 value for a given k2, with a 2 value conservation law
         //!
         void GetK1(
@@ -170,16 +178,20 @@ namespace diagonalization
         //! Returns a single Vkkkk coefficient for a given k1,k2 set of momenta
         ////////////////////////////////////////////////////////////////////////////////
         template <class C>
-        void SetQuadraticFromArray(
-            C* quadraticArray)    //!<    Class container for quadratic term array
+        void SetFromArray(
+            C* quadraticArray,      //!<    Class container for quadratic term array
+            const kState_t filter)  //!<    Upper limit filter on k1
         {
             for(kState_t k2=0; k2<m_kMax; ++k2)
             {
                 kState_t k1;
                 iSize_t nbrK1;
                 quadraticArray->GetK1(&k1, nbrK1, k2);
-                m_kTable.Insert(k1, k2);
-                m_vTable.Insert(utilities::Key(k1, k2)) = quadraticArray->GetEkk(k1, k2);
+                if(k1 <= filter)
+                {
+                    m_kTable.Insert(k1, k2);
+                    m_vTable.Insert(utilities::Key(k1, k2)) = quadraticArray->GetEkk(k1, k2);
+                }
             }
         }
         

@@ -119,7 +119,6 @@ am_optical_flux_lattice_diagonalization_OBJECTS = optical_flux_lattice/main/opti
 	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.$(OBJEXT) \
 	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.$(OBJEXT) \
 	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.$(OBJEXT) \
-	optical_flux_lattice/interacting_ofl_model/term_hash_tables.$(OBJEXT) \
 	optical_flux_lattice/program_options/interacting_ofl_model_options.$(OBJEXT) \
 	hamiltonians/hamiltonian_data.$(OBJEXT) \
 	basis/fermion_fock_basis.$(OBJEXT) \
@@ -314,7 +313,6 @@ optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
-optical_flux_lattice/interacting_ofl_model/term_hash_tables.cpp \
 optical_flux_lattice/program_options/interacting_ofl_model_options.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp  \
@@ -580,9 +578,6 @@ optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.$(OB
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.$(OBJEXT):  \
 	optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp) \
 	optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/interacting_ofl_model/term_hash_tables.$(OBJEXT):  \
-	optical_flux_lattice/interacting_ofl_model/$(am__dirstamp) \
-	optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
 optical_flux_lattice/program_options/$(am__dirstamp):
 	@$(MKDIR_P) optical_flux_lattice/program_options
 	@: > optical_flux_lattice/program_options/$(am__dirstamp)
@@ -647,7 +642,6 @@ include hamiltonians/$(DEPDIR)/hamiltonian_data.Po
 include optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/interacting_ofl_model.Po
 include optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/interacting_ofl_model_data.Po
 include optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/linear_momentum_constraints_2D.Po
-include optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/term_hash_tables.Po
 include optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_diagonalization.Po
 include optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_noninteracting_model.Po
 include optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_sql_gen.Po

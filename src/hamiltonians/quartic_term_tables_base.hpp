@@ -49,7 +49,7 @@ namespace diagonalization
         std::string m_fileHeader;           //!<    Text description at file head
         
         //!
-        //! Update the stored dimension of the quadratic term look-up table
+        //! Compute dimension of the look-up table
         //!
         virtual iSize_t CalculateDim(
             const kState_t kMax)    //!<    Number of k states
@@ -89,7 +89,7 @@ namespace diagonalization
             { 
                 utilities::cout.AdditionalInfo()<<"\n\t- INITIALIZING QUARTIC TERM TABLE "<<std::endl;
                 utilities::cout.DebuggingInfo()<<"\n\t- ALLOCATING "<<2*sizeof(T)*dim/(1024.0*1024.0)
-                         <<" mb to store look-up table of "<<dim<<" lookup terms."<<std::endl;
+                         <<" mb to store look-up table of "<<dim<<" terms."<<std::endl;
             }
             m_kTable.resize(dim);
             m_vTable.resize(dim);
@@ -113,7 +113,7 @@ namespace diagonalization
         }
 
         //!
-        //! Get the dimension of the quartic term array
+        //! Get the dimension of the look-up table
         //!
         iSize_t GetDimension() const
         {

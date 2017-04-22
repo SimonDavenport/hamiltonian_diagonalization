@@ -44,9 +44,11 @@ namespace diagonalization
         m_outFileName("out"),
         m_nbrEigenvaluesToFind(4),
 	    m_blockDiagonalize(false),
-        m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
+        m_tableFormat(_ARRAY_),
+        m_setTableFormat(_ARRAY_),
+        m_method(_FULL_),
         m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
@@ -71,9 +73,11 @@ namespace diagonalization
         m_outFileName("out"),
         m_nbrEigenvaluesToFind(4),
 	    m_blockDiagonalize(false),
-        m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
+        m_tableFormat(_ARRAY_),
+        m_setTableFormat(_ARRAY_),
+        m_method(_FULL_),
         m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
@@ -102,15 +106,17 @@ namespace diagonalization
         m_outFileName("out"),
         m_nbrEigenvaluesToFind(4),
 	    m_blockDiagonalize(false),
-        m_method(_FULL_),
         m_initialVectorFile("initVector.bin"),
         m_finalVectorFile("finalVector.bin"),
+        m_tableFormat(_ARRAY_),
+        m_setTableFormat(_ARRAY_),
+        m_method(_FULL_),
         m_termTablesBuilt(false),
         m_fockBasisBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
     {
-        this->SetMaxLz(m_nbrOrbitals,m_nbrLevels);
+        this->SetMaxLz(m_nbrOrbitals, m_nbrLevels);
     }
 
     //!
@@ -138,9 +144,11 @@ namespace diagonalization
         m_outFileName(other.m_outFileName),
         m_nbrEigenvaluesToFind(other.m_nbrEigenvaluesToFind),
 	    m_blockDiagonalize(other.m_blockDiagonalize),
-        m_method(other.m_method),
-        m_initialVectorFile(other.m_initialVectorFile),
+	    m_initialVectorFile(other.m_initialVectorFile),
         m_finalVectorFile(other.m_finalVectorFile),
+	    m_tableFormat(other.m_tableFormat),
+        m_setTableFormat(other.m_setTableFormat),
+        m_method(other.m_method),
         m_termTablesBuilt(other.m_termTablesBuilt),
         m_fockBasisBuilt(other.m_fockBasisBuilt),
         m_hamiltonianBuilt(other.m_hamiltonianBuilt),
@@ -167,6 +175,8 @@ namespace diagonalization
         m_outFileName = other.m_outFileName;
         m_nbrEigenvaluesToFind = other.m_nbrEigenvaluesToFind;
 	    m_blockDiagonalize = other.m_blockDiagonalize;
+        m_tableFormat = other.m_tableFormat;
+        m_setTableFormat = other.m_setTableFormat;
         m_method = other.m_method;
         m_initialVectorFile = other.m_initialVectorFile;
         m_finalVectorFile = other.m_finalVectorFile;
@@ -198,6 +208,18 @@ namespace diagonalization
         mpi.Sync(m_outFileName, nodeId);
         mpi.Sync(&m_nbrEigenvaluesToFind, 1, nodeId);
         mpi.Sync(&m_blockDiagonalize, 1, nodeId);
+        mpi.Sync(m_initialVectorFile, nodeId);
+        mpi.Sync(m_finalVectorFile, nodeId);
+        int useHash = m_setTableFormat;
+        mpi.Sync(&useHash, 1, nodeId);
+        if(useHash)
+        {
+            m_setTableFormat = _HASH_;
+        }
+        else
+        {
+            m_setTableFormat = _ARRAY_;
+        }
         int method = 0 ;
         if(_FULL_ == m_method)
         {
@@ -207,7 +229,7 @@ namespace diagonalization
         {
             method = 1;
         }
-        mpi.Sync(&method, 1, nodeId);  
+        mpi.Sync(&method, 1, nodeId);
         if(0 == method)
         {
             m_method = _FULL_;
@@ -216,13 +238,10 @@ namespace diagonalization
         {
             m_method = _LANCZOS_;
         }
-        mpi.Sync(m_initialVectorFile, nodeId);
-        mpi.Sync(m_finalVectorFile, nodeId);
         mpi.Sync(&m_termTablesBuilt, 1, nodeId);
         mpi.Sync(&m_fockBasisBuilt, 1, nodeId);
         mpi.Sync(&m_hamiltonianBuilt, 1, nodeId);
         mpi.Sync(&m_hamiltonianDiagonalized, 1, nodeId);
-        //	Barrier waits for all nodes to catch up to this point
 	    MPI_Barrier(mpi.m_comm);
     }
 
@@ -236,6 +255,8 @@ namespace diagonalization
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
         :
         m_totalLz(0),
+        m_tableFormat(_ARRAY_),
+        m_setTableFormat(_ARRAY_),
 	    m_termTablesBuilt(false),
         m_hamiltonianBuilt(false),
         m_hamiltonianDiagonalized(false)
@@ -252,6 +273,9 @@ namespace diagonalization
 	        GetOption(optionList, m_finalVectorFile, "final-file", _LINE_, mpi);
 	        GetOption(optionList, m_blockDiagonalize, "block-diagonalize", _LINE_, mpi);
 	        GetOption(optionList, m_nbrLevels, "nbr-levels", _LINE_, mpi);
+	        bool useHash;
+            GetOption(optionList, useHash, "use-hash", _LINE_, mpi);
+            m_setTableFormat = myOptions::GetTermStorageType(useHash, mpi);
 	        bool coulombInteraction;
 	        GetOption(optionList, coulombInteraction, "coulomb-interaction", _LINE_, mpi);
 	        this->SetMaxLz(m_nbrOrbitals, m_nbrLevels);

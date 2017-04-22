@@ -187,7 +187,6 @@ namespace diagonalization
                     utilities::cout.AdditionalInfo()<<"\n\tERROR in GetTermsFromPseudopotentials: "
                         << "Invalid ll index "<<llIndex<<std::endl;
                 }
-                
                 exit(EXIT_FAILURE);
             }
             auto it_table = listOfQuarticTerms->begin();
@@ -225,7 +224,7 @@ namespace diagonalization
                                         //  Add terms of the form
                                         //  <L,M||m1>|m2> <m4|<m3||L,M>
                                         temp += clebschGordan.Value(maxLz,m1,maxLz,m2,Lact,M)
-                                                *clebschGordan.Value(maxLz,m3,maxLz,m4,Lact,M); 
+                                                *clebschGordan.Value(maxLz,m3,maxLz,m4,Lact,M);
                                     }
                                     if(L/2<pseudopotentials.size())
                                     {
@@ -343,7 +342,8 @@ namespace diagonalization
         }
 
         virtual void BuildTermTables(const utilities::MpiWrapper& mpi)=0;
-        virtual void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi) const=0;
+        virtual void ConvertTableFormat(const utilities::MpiWrapper& mpi)=0;
+        virtual void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi)=0;
         virtual void TermsFromFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi)=0;
         virtual void BuildFockBasis(utilities::MpiWrapper& mpi)=0;
         virtual void BuildHamiltonian(utilities::MpiWrapper& mpi)=0;

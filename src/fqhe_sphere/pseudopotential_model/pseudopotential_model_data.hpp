@@ -66,9 +66,12 @@ namespace diagonalization
 	                                        //!     lowest eigenvalues to find
 	    bool m_blockDiagonalize;            //!<    Set to true to diagonalize the Hamiltonian in 
                                             //!<    separate block-diagonal total angular momentum sectors
-        diagonalizationMethod_t m_method;   //!<    Store the diagonalization method
         std::string m_initialVectorFile;    //!<    Name of ARPACK initial vector file
         std::string m_finalVectorFile;      //!<    Name of ARPACK final vector file  
+        tableFormat_t m_tableFormat;        //!<    A flag to keep track of the current table storage format
+        tableFormat_t m_setTableFormat;     //!<    Set the table format for storing Vkkkk, Ekk and
+                                            //!     momentum conserving tables
+        diagonalizationMethod_t m_method;   //!<    Store the diagonalization method
         bool m_termTablesBuilt;             //!<    Set to true once the look-up tables are built
         bool m_fockBasisBuilt;              //!<    Set to true once the Fock basis has been constructed
         bool m_hamiltonianBuilt;            //!<    Set to true once the Hamiltonian is built

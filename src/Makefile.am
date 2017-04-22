@@ -15,7 +15,6 @@ optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
-optical_flux_lattice/interacting_ofl_model/term_hash_tables.cpp \
 optical_flux_lattice/program_options/interacting_ofl_model_options.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp  \

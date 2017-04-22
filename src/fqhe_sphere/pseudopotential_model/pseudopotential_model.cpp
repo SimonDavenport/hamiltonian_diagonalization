@@ -96,7 +96,40 @@ namespace diagonalization
             utilities::cout.AdditionalInfo()<<"\n\t- MPI SYNC TERM TABLES"<<std::endl;
         }
         m_quarticTables.MpiSynchronize(0, mpi);
+        if(_HASH_ == m_params.m_setTableFormat)
+        {
+            this->ConvertTableFormat(mpi);
+        }
         m_params.m_termTablesBuilt = true;
+        return;
+    }
+    
+    //!
+    //! This function converts the table format for storing Vkkkk, Ekk and 
+    //! the momentum conserving tables from a regular array format to a multi
+    //! key hash table format, if not done so already
+    //!
+    void SpherePseudopotentialModel::ConvertTableFormat(
+        const utilities::MpiWrapper& mpi)       //!<    Instance of the mpi wrapper class 
+    {
+        if(_ARRAY_ == m_params.m_tableFormat)
+        {
+            if(0 == mpi.m_id)	// FOR THE MASTER NODE
+            {
+                utilities::cout.SecondaryOutput()<<"\n\t- CONVERTING LOOK-UP ARRAYS TO HASH TABLES"<<std::endl;
+            }
+            m_quadraticHashTables.Clear();
+            m_quarticHashTables.Clear();
+            m_quadraticHashTables.Initialize(m_params.m_nbrOrbitals);
+            m_quarticHashTables.Initialize(m_params.m_nbrOrbitals);
+            m_quadraticHashTables.SetFromArray(&m_quadraticTables, m_params.m_nbrOrbitals);
+            m_quarticHashTables.SetFromArray(&m_quarticTables, m_params.m_nbrOrbitals);
+            m_quarticTables.Clear();
+            m_quadraticTables.Clear();
+            m_params.m_tableFormat = _HASH_;
+            m_quadraticHashTables.MpiSynchronize(0, mpi);
+            m_quarticHashTables.MpiSynchronize(0, mpi);
+        }
         return;
     }
     
@@ -106,7 +139,6 @@ namespace diagonalization
     void SpherePseudopotentialModel::TermsToFile(
         const io::fileFormat_t format,      //!<    Format of file
         utilities::MpiWrapper& mpi)         //!<    Instance of the mpi wrapper class
-        const
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    { 
@@ -117,8 +149,16 @@ namespace diagonalization
         filenameQuartic.str("");
         fileNameQuadratic << m_params.m_outPath << "/quadratic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
         filenameQuartic << m_params.m_outPath << "/quartic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
-        m_quadraticTables.ToFile(fileNameQuadratic.str(), format, mpi);
-        m_quarticTables.ToFile(filenameQuartic.str(), format, mpi);
+        if(_ARRAY_ == m_params.m_tableFormat)
+        {
+            m_quadraticTables.ToFile(fileNameQuadratic.str(), format, mpi);
+            m_quarticTables.ToFile(filenameQuartic.str(), format, mpi);
+        }
+        else
+        {
+            m_quadraticHashTables.ToFile(fileNameQuadratic.str(), format, mpi);
+            m_quarticHashTables.ToFile(filenameQuartic.str(), format, mpi);
+        }
         return;
     }
     
@@ -138,8 +178,23 @@ namespace diagonalization
         filenameQuartic.str("");
         fileNameQuadratic << m_params.m_outPath << "/quadratic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
         filenameQuartic << m_params.m_outPath << "/quartic_coefficient_table_L_" << m_params.m_nbrOrbitals << ".dat";
-        m_quadraticTables.FromFile(fileNameQuadratic.str(), format, mpi);
-        m_quarticTables.FromFile(filenameQuartic.str(), format, mpi);
+        if(_ARRAY_ == m_params.m_setTableFormat)
+        {
+            m_quarticTables.FromFile(filenameQuartic.str(), format, mpi);
+            m_quadraticTables.FromFile(fileNameQuadratic.str(), format, mpi);
+        }
+        else
+        {
+            m_quarticHashTables.FromFile(filenameQuartic.str(), format, mpi);
+            m_quadraticHashTables.FromFile(fileNameQuadratic.str(), format, mpi);
+        }
+        MPI_Barrier(mpi.m_comm);
+        m_params.m_termTablesBuilt = true;
+        m_params.m_tableFormat = m_params.m_setTableFormat;
+        if(0 == mpi.m_id)	// FOR THE MASTER NODE
+        {
+            utilities::cout.SecondaryOutput()<<" - DONE"<<std::endl;
+        }
         return;
     }
     
@@ -157,6 +212,13 @@ namespace diagonalization
         }
         m_quadraticTables.Initialize(m_params.m_nbrOrbitals, mpi);
         memcpy(m_quadraticTables.GetVTable()->data(), energyLevels.data(), sizeof(double)*m_params.m_nbrOrbitals);
+        if(_HASH_ == m_params.m_tableFormat)
+        {
+            m_quadraticHashTables.Initialize(m_params.m_nbrOrbitals);
+            m_quadraticHashTables.SetFromArray(&m_quadraticTables, m_params.m_nbrOrbitals);
+            m_quadraticTables.Clear();
+            m_params.m_tableFormat = _HASH_;
+        }
     }
 
     //!
@@ -248,11 +310,22 @@ namespace diagonalization
             m_hamiltonian.Initialize(m_params.m_nbrParticles, m_params.m_nbrOrbitals, utilities::_SPARSE_MAPPED_, mpi);
             MPI_Barrier(mpi.m_comm);
             //////      Build the Hamiltonian
-            if(m_quadraticTables.GetDimension())
+            if(_ARRAY_ == m_params.m_tableFormat)
             {
-                m_hamiltonian.Add_CdC_Terms(&m_quadraticTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
+                if(m_quadraticTables.GetDimension())
+                {
+                    m_hamiltonian.Add_CdC_Terms(&m_quadraticTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
+                }
+                m_hamiltonian.Add_CdCdCC_Terms(&m_quarticTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
             }
-            m_hamiltonian.Add_CdCdCC_Terms(&m_quarticTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
+            else
+            {
+                if(m_quadraticHashTables.GetDimension())
+                {
+                    m_hamiltonian.Add_CdC_Terms(&m_quadraticHashTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
+                }
+                m_hamiltonian.Add_CdCdCC_Terms(&m_quarticHashTables, 0, m_hamiltonian.m_data.m_fockSpaceDim, mpi);
+            }
             m_hamiltonian.PrintMemoryAllocation(mpi);
             //m_hamiltonian.PrintHamiltonian(0, mpi);
             m_params.m_hamiltonianBuilt = true;
@@ -269,6 +342,13 @@ namespace diagonalization
     void SpherePseudopotentialModel::Diagonalize(
         utilities::MpiWrapper& mpi) //!<    Instance of the mpi wrapper class
     {
-        this->BaseDiagonalize(&m_quadraticTables, &m_quarticTables, mpi);
+        if(_ARRAY_ == m_params.m_tableFormat)
+        {
+            this->BaseDiagonalize(&m_quadraticTables, &m_quarticTables, mpi);
+        }
+        else
+        {
+            this->BaseDiagonalize(&m_quadraticHashTables, &m_quarticHashTables, mpi);
+        }
     }
 }   //  End namespace diagonalization

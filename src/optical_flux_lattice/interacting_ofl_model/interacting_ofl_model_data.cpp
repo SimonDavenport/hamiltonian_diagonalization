@@ -126,11 +126,11 @@ namespace diagonalization
         m_sqlId = other.m_sqlId;
         m_sqlName = other.m_sqlName;
         m_sqlTableName = other.m_sqlTableName;
-        m_initialVectorFile = other.m_initialVectorFile;
-        m_finalVectorFile = other.m_finalVectorFile;
         m_tableFormat = other.m_tableFormat;
         m_setTableFormat = other.m_setTableFormat;
         m_method = other.m_method;
+        m_initialVectorFile = other.m_initialVectorFile;
+        m_finalVectorFile = other.m_finalVectorFile;
         m_useWannierBasis = other.m_useWannierBasis;
         m_termTablesBuilt = other.m_termTablesBuilt;
         m_fockBasisBuilt = other.m_fockBasisBuilt;

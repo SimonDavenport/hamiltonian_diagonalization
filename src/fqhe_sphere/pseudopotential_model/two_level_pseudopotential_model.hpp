@@ -31,6 +31,8 @@
 #include "../../hamiltonians/two_level_spinless_fermion_hamiltonian.hpp"
 #include "../../hamiltonians/quadratic_term_tables_base.hpp"
 #include "../../hamiltonians/quartic_term_tables_base.hpp"
+#include "../../hamiltonians/quadratic_term_hash_tables_base.hpp"
+#include "../../hamiltonians/quartic_term_hash_tables_base.hpp"
 #include "two_level_angular_momentum_constraint.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
@@ -51,11 +53,21 @@ namespace diagonalization
                                             //!<  Class container for regular array term tables
         QuarticTermTablesBase<double> m_quarticTables;  
                                             //!<  Class container for regular array term tables
+        QuadraticTermHashTablesBase<double> m_quadraticHashTables;
+                                            //!<  Class container for multi-hash map term tables
+        QuarticTermHashTablesBase<double> m_quarticHashTables;
+                                            //!<  Class container for multi-hash maps term tables
         QuadraticTermTablesBase<double> m_quadraticTables2LL;
                                             //!<  Class container for regular array term tables
                                             //!   for 2nd LL interactions
         QuarticTermTablesBase<double> m_quarticTables2LL;
                                             //!<  Class container for regular array term tables
+                                            //!   for 2nd LL interactions
+        QuadraticTermHashTablesBase<double> m_quadraticHashTables2LL;
+                                            //!<  Class container for multi-hash map term tables
+                                            //!   for 2nd LL interactions
+        QuarticTermHashTablesBase<double> m_quarticHashTables2LL;
+                                            //!<  Class container for multi-hash maps term tables
                                             //!   for 2nd LL interactions
         public:
         SphereTwoLevelPseudopotentialModel(const iSize_t nbrParticles,
@@ -64,7 +76,8 @@ namespace diagonalization
         SphereTwoLevelPseudopotentialModel(boost::program_options::variables_map* optionList, 
                                            utilities::MpiWrapper& mpi);
         void BuildTermTables(const utilities::MpiWrapper& mpi);
-        void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi) const;
+        void ConvertTableFormat(const utilities::MpiWrapper& mpi);
+        void TermsToFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi);
         void TermsFromFile(const io::fileFormat_t format, utilities::MpiWrapper& mpi);
         void SetOccupationEnergies(std::vector<double>& energyLevels, const utilities::MpiWrapper& mpi);
         void BuildFockBasis(utilities::MpiWrapper& mpi);

@@ -78,6 +78,8 @@ namespace diagonalization
 	         "Set to additionally store/retrieve eigenvectors in/from a file (eigenvalues also stored/retrieved if this option is set)\n")
             ("hamiltonian-file", po::bool_switch()->default_value(false),
              "Set to store Hamiltonian matrix in a data file\n")
+            ("use-hash", po::bool_switch()->default_value(false),
+	         "Set to use multi-key hash tables to store Hamiltonian coefficient tables Vkkkk, Ekk and momentum conserving lists\n")
             ("store-terms", po::bool_switch()->default_value(false),
              "Set to generate and store Hamiltonian terms in a file")
             ("retrieve-terms", po::bool_switch()->default_value(false),

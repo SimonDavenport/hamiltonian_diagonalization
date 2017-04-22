@@ -916,6 +916,9 @@ fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.o: \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_tables_base.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/quadratic_term_hash_tables_base.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/data_structures/multi_key_hash.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_hash_tables_base.hpp \
  fqhe_sphere/pseudopotential_model/two_level_angular_momentum_constraint.hpp \
  fqhe_sphere/pseudopotential_model/../../basis/two_level_fermion_fock_basis.hpp
 
@@ -2864,6 +2867,12 @@ fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wr
 fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp:
 
 fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_tables_base.hpp:
+
+fqhe_sphere/pseudopotential_model/../../hamiltonians/quadratic_term_hash_tables_base.hpp:
+
+fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/data_structures/multi_key_hash.hpp:
+
+fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_hash_tables_base.hpp:
 
 fqhe_sphere/pseudopotential_model/two_level_angular_momentum_constraint.hpp:
 
