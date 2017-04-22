@@ -925,11 +925,10 @@ optical_flux_lattice/main/optical_flux_lattice_diagonalization.o: \
  optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/quadratic_term_tables_base.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/../program_options/general_options.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/quartic_term_tables_base.hpp \
- optical_flux_lattice/main/../interacting_ofl_model/quartic_term_tables.hpp \
- optical_flux_lattice/main/../interacting_ofl_model/term_hash_tables.hpp \
- optical_flux_lattice/main/../interacting_ofl_model/../../utilities/general/dcmplx_type_def.hpp \
- optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/term_hash_tables_base.hpp \
+ optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/quadratic_term_hash_tables_base.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/../utilities/data_structures/multi_key_hash.hpp \
+ optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/quartic_term_hash_tables_base.hpp \
+ optical_flux_lattice/main/../interacting_ofl_model/quartic_term_tables.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/linear_momentum_constraints_2D.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/modulo.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/binary_number_tools.hpp \
@@ -956,6 +955,7 @@ optical_flux_lattice/main/optical_flux_lattice_diagonalization.o: \
  /usr/local/include/boost/bind/bind_mf2_cc.hpp \
  /usr/local/include/boost/bind/placeholders.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/lattice_vector.hpp \
+ optical_flux_lattice/main/../interacting_ofl_model/../../utilities/general/dcmplx_type_def.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/array_convolution.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/kahan_arithmetic.hpp \
  optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/../general/template_tools.hpp \
@@ -2940,15 +2940,13 @@ optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/../program
 
 optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/quartic_term_tables_base.hpp:
 
-optical_flux_lattice/main/../interacting_ofl_model/quartic_term_tables.hpp:
-
-optical_flux_lattice/main/../interacting_ofl_model/term_hash_tables.hpp:
-
-optical_flux_lattice/main/../interacting_ofl_model/../../utilities/general/dcmplx_type_def.hpp:
-
-optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/term_hash_tables_base.hpp:
+optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/quadratic_term_hash_tables_base.hpp:
 
 optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/../utilities/data_structures/multi_key_hash.hpp:
+
+optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/quartic_term_hash_tables_base.hpp:
+
+optical_flux_lattice/main/../interacting_ofl_model/quartic_term_tables.hpp:
 
 optical_flux_lattice/main/../interacting_ofl_model/linear_momentum_constraints_2D.hpp:
 
@@ -3003,6 +3001,8 @@ optical_flux_lattice/main/../interacting_ofl_model/../../hamiltonians/../hamilto
 /usr/local/include/boost/bind/placeholders.hpp:
 
 optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/lattice_vector.hpp:
+
+optical_flux_lattice/main/../interacting_ofl_model/../../utilities/general/dcmplx_type_def.hpp:
 
 optical_flux_lattice/main/../interacting_ofl_model/../../utilities/mathematics/array_convolution.hpp:
 

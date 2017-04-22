@@ -180,7 +180,7 @@ namespace diagonalization
                     {
                         fock_t k2Occupied = tempK2 & -tempK2; 
                         kState_t k2 = utilities::binary::HammingWeight64(k2Occupied-1);
-                        iSize_t nbrK1;
+                        iSize_t nbrK1=0;
                         termTables->GetK1(kRetrieveBuffer, nbrK1, k2);             
                         //  Loop over the possible k1 values
                         for(iSize_t j=0; j<nbrK1; ++j)
@@ -335,7 +335,7 @@ namespace diagonalization
                                     fock_t k2Occupied = tempK2 & -tempK2;      //  Isolate the right-most bit
                                     kState_t k2 = utilities::binary::HammingWeight64(k2Occupied-1);
                                     //  Get the corresponding list of k1 values
-                                    iSize_t nbrK1;
+                                    iSize_t nbrK1=0;
                                     termTables->GetK1(kRetrieveBuffer, nbrK1, k2, k3, k4);
                                     //  Loop over the possible k1 values
                                     for(iSize_t j=0; j<nbrK1; ++j)

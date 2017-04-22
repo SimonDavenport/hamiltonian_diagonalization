@@ -1129,7 +1129,7 @@ namespace diagonalization
                 }
                 else
                 {
-                    MatrixVectorFunction<dcmplx, QuadraticTermHashTables, QuarticTermHashTables> mv(m_hamiltonian, mpi);
+                    MatrixVectorFunction<dcmplx, QuadraticTermHashTablesBase<dcmplx>, QuarticTermHashTablesBase<dcmplx>> mv(m_hamiltonian, mpi);
                     m_params.m_hamiltonianDiagonalized = m_hamiltonian.LanczosDiagonalize(
                     &m_quadraticHashTables, &m_quarticHashTables, mv, m_params.m_nbrEigenvaluesToFind, mpi);
                 }

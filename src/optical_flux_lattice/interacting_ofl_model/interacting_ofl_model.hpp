@@ -41,8 +41,9 @@
 #include "../../observables/fermion_observables.hpp"
 #include "../../hamiltonians/quadratic_term_tables_base.hpp"
 #include "../../hamiltonians/quartic_term_tables_base.hpp"
+#include "../../hamiltonians/quadratic_term_hash_tables_base.hpp"
+#include "../../hamiltonians/quartic_term_hash_tables_base.hpp"
 #include "quartic_term_tables.hpp"
-#include "term_hash_tables.hpp"
 #include "linear_momentum_constraints_2D.hpp"
 #include "../../utilities/general/orbital_and_state_defs.hpp"
 #include "../../hamiltonians/matrix_vector_routines.hpp"
@@ -87,10 +88,10 @@ namespace diagonalization
         QuarticTermTables<dcmplx> m_quarticTables;        
                                             //!<  Class container for regular array look-up tables
                                             //!   used in the case where we have full 2D momentum conservation 
-        QuadraticTermHashTables m_quadraticHashTables;
+        QuadraticTermHashTablesBase<dcmplx> m_quadraticHashTables;
                                             //!<  Class container for multi-hash maps:
                                             //!   used when we have only ky-momentum conservation
-        QuarticTermHashTables m_quarticHashTables;
+        QuarticTermHashTablesBase<dcmplx> m_quarticHashTables;
                                             //!<  Class container for multi-hash maps:
                                             //!   used when we have only ky-momentum conservation
         std::vector<dcmplx> m_basisChangeMatrix;        
