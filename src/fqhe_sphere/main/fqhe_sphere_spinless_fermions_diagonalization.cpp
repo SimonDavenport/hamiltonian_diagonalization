@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            utilities::cout.MainOutput() << "\n\tDIAGONALIZATION\n" << std::endl;
+            utilities::cout.MainOutput() << "\n\t============ DIAGONALIZATION ============" << std::endl;
         }
         std::vector<diagonalization::iSize_t> sectorList = GenerateSectorList(&optionList, mpi);
         if(nbrLevels==1)
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            utilities::cout.MainOutput() << "\n\tCOMPUTE TERMS FOR STORAGE\n" << std::endl;
+            utilities::cout.MainOutput() << "\n\t============ COMPUTE TERMS FOR STORAGE ============" << std::endl;
         }
         if(nbrLevels==1)
         {

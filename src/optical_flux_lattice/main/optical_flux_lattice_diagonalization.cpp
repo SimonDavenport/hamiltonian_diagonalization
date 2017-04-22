@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            utilities::cout.MainOutput() << "\n\tDIAGONALIZATION\n" << std::endl;
+            utilities::cout.MainOutput() << "\n\t============ DIAGONALIZATION ============" << std::endl;
         }
         std::vector<std::complex<diagonalization::iSize_t> > sectorList = GenerateSectorList(&optionList, mpi);
         diagonalization::InteractingOflModel model(&optionList, mpi);
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-	        utilities::cout.MainOutput() << "\n\tCOMPUTE OBSERVABLES\n" << std::endl;
+	        utilities::cout.MainOutput() << "\n\t============ COMPUTE OBSERVABLES ============" << std::endl;
             utilities::cout.MainOutput()<<"\n\tLooking for existing eigensystem data to analyse."<<std::endl;
         }
         std::vector<std::complex<diagonalization::iSize_t> > sectorList = GenerateSectorList(&optionList, mpi);
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
     {
         if(0 == mpi.m_id)	// FOR THE MASTER NODE
 	    {
-            utilities::cout.MainOutput() << "\n\tCOMPUTE TERMS FOR STORAGE\n" << std::endl;
+            utilities::cout.MainOutput() << "\n\t============ COMPUTE TERMS FOR STORAGE ============" << std::endl;
         }
         diagonalization::InteractingOflModel model(&optionList, mpi);
         model.BuildTermTables(&optionList, mpi);
