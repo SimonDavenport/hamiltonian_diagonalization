@@ -29,7 +29,8 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "pseudopotential_model_base.hpp"
 #include "../../hamiltonians/two_level_spinless_fermion_hamiltonian.hpp"
-#include "term_tables.hpp"
+#include "../../hamiltonians/quadratic_term_tables_base.hpp"
+#include "../../hamiltonians/quartic_term_tables_base.hpp"
 #include "two_level_angular_momentum_constraint.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
@@ -46,13 +47,14 @@ namespace diagonalization
     public SpherePseudopotentialModelBase<TwoLevelSpinlessFermionHamiltonian<double> >
     {
         private:
-        QuadraticTermTables m_quadraticTables;
+        QuadraticTermTablesBase<double> m_quadraticTables;
                                             //!<  Class container for regular array term tables
-        QuarticTermTables m_quarticTables;  //!<  Class container for regular array term tables
-        QuadraticTermTables m_quadraticTables2LL;
+        QuarticTermTablesBase<double> m_quarticTables;  
+                                            //!<  Class container for regular array term tables
+        QuadraticTermTablesBase<double> m_quadraticTables2LL;
                                             //!<  Class container for regular array term tables
                                             //!   for 2nd LL interactions
-        QuarticTermTables m_quarticTables2LL;
+        QuarticTermTablesBase<double> m_quarticTables2LL;
                                             //!<  Class container for regular array term tables
                                             //!   for 2nd LL interactions
         public:

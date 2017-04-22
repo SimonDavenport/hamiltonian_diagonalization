@@ -15,7 +15,6 @@ optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
-optical_flux_lattice/interacting_ofl_model/term_tables.cpp \
 optical_flux_lattice/interacting_ofl_model/term_hash_tables.cpp \
 optical_flux_lattice/program_options/interacting_ofl_model_options.cpp \
 hamiltonians/hamiltonian_data.cpp \
@@ -59,7 +58,6 @@ fqhe_sphere/main/fqhe_sphere_spinless_fermions_diagonalization.cpp \
 fqhe_sphere/pseudopotential_model/pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/pseudopotential_model_data.cpp \
-fqhe_sphere/pseudopotential_model/term_tables.cpp \
 fqhe_sphere/interaction_pseudopotentials/coulomb_pseudopotentials.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp \

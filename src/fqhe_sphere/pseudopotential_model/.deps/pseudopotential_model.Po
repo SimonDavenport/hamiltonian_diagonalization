@@ -911,11 +911,11 @@ fqhe_sphere/pseudopotential_model/pseudopotential_model.o: \
  /usr/local/include/boost/bind/placeholders.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/mpi_wrapper.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/spinless_fermion_hamiltonian.hpp \
- fqhe_sphere/pseudopotential_model/term_tables.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/term_tables_base.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/quadratic_term_tables_base.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/general/orbital_and_state_defs.hpp \
  fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp \
- fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp \
+ fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_tables_base.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -2853,12 +2853,12 @@ fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/mpi_w
 
 fqhe_sphere/pseudopotential_model/../../hamiltonians/spinless_fermion_hamiltonian.hpp:
 
-fqhe_sphere/pseudopotential_model/term_tables.hpp:
-
-fqhe_sphere/pseudopotential_model/../../hamiltonians/term_tables_base.hpp:
+fqhe_sphere/pseudopotential_model/../../hamiltonians/quadratic_term_tables_base.hpp:
 
 fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/general/orbital_and_state_defs.hpp:
 
 fqhe_sphere/pseudopotential_model/../../hamiltonians/../utilities/wrappers/io_wrapper.hpp:
 
 fqhe_sphere/pseudopotential_model/../../hamiltonians/../program_options/general_options.hpp:
+
+fqhe_sphere/pseudopotential_model/../../hamiltonians/quartic_term_tables_base.hpp:

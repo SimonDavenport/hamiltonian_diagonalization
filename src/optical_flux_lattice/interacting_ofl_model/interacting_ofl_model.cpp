@@ -1123,7 +1123,7 @@ namespace diagonalization
                 m_hamiltonian.UpdateArpackFileNames(inFileName.str(),outFileName.str(),mpi);
                 if(_ARRAY_ == m_params.m_tableFormat)
                 {
-                    MatrixVectorFunction<dcmplx, QuadraticTermTables, QuarticTermTables> mv(m_hamiltonian, mpi);
+                    MatrixVectorFunction<dcmplx, QuadraticTermTablesBase<dcmplx>, QuarticTermTables<dcmplx>> mv(m_hamiltonian, mpi);
                     m_params.m_hamiltonianDiagonalized = m_hamiltonian.LanczosDiagonalize(
                     &m_quadraticTables, &m_quarticTables, mv, m_params.m_nbrEigenvaluesToFind, mpi);
                 }

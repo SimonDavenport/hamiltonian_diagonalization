@@ -97,7 +97,6 @@ am_fqhe_sphere_spinless_fermions_diagonalization_OBJECTS = fqhe_sphere/main/fqhe
 	fqhe_sphere/pseudopotential_model/pseudopotential_model.$(OBJEXT) \
 	fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.$(OBJEXT) \
 	fqhe_sphere/pseudopotential_model/pseudopotential_model_data.$(OBJEXT) \
-	fqhe_sphere/pseudopotential_model/term_tables.$(OBJEXT) \
 	fqhe_sphere/interaction_pseudopotentials/coulomb_pseudopotentials.$(OBJEXT) \
 	hamiltonians/hamiltonian_data.$(OBJEXT) \
 	basis/fermion_fock_basis.$(OBJEXT) \
@@ -120,7 +119,6 @@ am_optical_flux_lattice_diagonalization_OBJECTS = optical_flux_lattice/main/opti
 	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.$(OBJEXT) \
 	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.$(OBJEXT) \
 	optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.$(OBJEXT) \
-	optical_flux_lattice/interacting_ofl_model/term_tables.$(OBJEXT) \
 	optical_flux_lattice/interacting_ofl_model/term_hash_tables.$(OBJEXT) \
 	optical_flux_lattice/program_options/interacting_ofl_model_options.$(OBJEXT) \
 	hamiltonians/hamiltonian_data.$(OBJEXT) \
@@ -316,7 +314,6 @@ optical_flux_lattice/interacting_ofl_model/interacting_ofl_model_data.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.cpp \
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.cpp \
-optical_flux_lattice/interacting_ofl_model/term_tables.cpp \
 optical_flux_lattice/interacting_ofl_model/term_hash_tables.cpp \
 optical_flux_lattice/program_options/interacting_ofl_model_options.cpp \
 hamiltonians/hamiltonian_data.cpp \
@@ -352,7 +349,6 @@ fqhe_sphere/main/fqhe_sphere_spinless_fermions_diagonalization.cpp \
 fqhe_sphere/pseudopotential_model/pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.cpp \
 fqhe_sphere/pseudopotential_model/pseudopotential_model_data.cpp \
-fqhe_sphere/pseudopotential_model/term_tables.cpp \
 fqhe_sphere/interaction_pseudopotentials/coulomb_pseudopotentials.cpp \
 hamiltonians/hamiltonian_data.cpp \
 basis/fermion_fock_basis.cpp \
@@ -464,9 +460,6 @@ fqhe_sphere/pseudopotential_model/two_level_pseudopotential_model.$(OBJEXT):  \
 	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
 	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
 fqhe_sphere/pseudopotential_model/pseudopotential_model_data.$(OBJEXT):  \
-	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
-	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
-fqhe_sphere/pseudopotential_model/term_tables.$(OBJEXT):  \
 	fqhe_sphere/pseudopotential_model/$(am__dirstamp) \
 	fqhe_sphere/pseudopotential_model/$(DEPDIR)/$(am__dirstamp)
 fqhe_sphere/interaction_pseudopotentials/$(am__dirstamp):
@@ -587,9 +580,6 @@ optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_grid.$(OB
 optical_flux_lattice/noninteracting_ofl_model/noninteracting_ofl_model_data.$(OBJEXT):  \
 	optical_flux_lattice/noninteracting_ofl_model/$(am__dirstamp) \
 	optical_flux_lattice/noninteracting_ofl_model/$(DEPDIR)/$(am__dirstamp)
-optical_flux_lattice/interacting_ofl_model/term_tables.$(OBJEXT):  \
-	optical_flux_lattice/interacting_ofl_model/$(am__dirstamp) \
-	optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
 optical_flux_lattice/interacting_ofl_model/term_hash_tables.$(OBJEXT):  \
 	optical_flux_lattice/interacting_ofl_model/$(am__dirstamp) \
 	optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/$(am__dirstamp)
@@ -652,14 +642,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/main/$(DEPDIR)/fqhe_sphere_spinless_fermions_diagonalization.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/pseudopotential_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/pseudopotential_model_data.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/term_tables.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@fqhe_sphere/pseudopotential_model/$(DEPDIR)/two_level_pseudopotential_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@hamiltonians/$(DEPDIR)/hamiltonian_data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/interacting_ofl_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/interacting_ofl_model_data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/linear_momentum_constraints_2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/term_hash_tables.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/interacting_ofl_model/$(DEPDIR)/term_tables.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_diagonalization.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_noninteracting_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optical_flux_lattice/main/$(DEPDIR)/optical_flux_lattice_sql_gen.Po@am__quote@

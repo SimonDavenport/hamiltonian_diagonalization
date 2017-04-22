@@ -36,7 +36,8 @@
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "pseudopotential_model_base.hpp"
 #include "../../hamiltonians/spinless_fermion_hamiltonian.hpp"
-#include "term_tables.hpp"
+#include "../../hamiltonians/quadratic_term_tables_base.hpp"
+#include "../../hamiltonians/quartic_term_tables_base.hpp"
 #include "angular_momentum_constraint.hpp"
 #if _DEBUG_
 #include "../../utilities/general/debug.hpp"
@@ -53,9 +54,10 @@ namespace diagonalization
     public SpherePseudopotentialModelBase<SpinlessFermionHamiltonian<double> >
     {
         private:
-        QuadraticTermTables m_quadraticTables;
+        QuadraticTermTablesBase<double> m_quadraticTables;
                                             //!<  Class container for regular array term tables
-        QuarticTermTables m_quarticTables;  //!<  Class container for regular array term tables
+        QuarticTermTablesBase<double> m_quarticTables;  
+                                            //!<  Class container for regular array term tables
 
         public:
         SpherePseudopotentialModel(const iSize_t nbrParticles, const iSize_t nbrOrbitals,

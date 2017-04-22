@@ -1,10 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 //!                                                                             
-//!                        \author Simon C. Davenport                                                  
+//!                        \author Simon C. Davenport
 //!                                                                             
 //!	 \file
-//!     This file contains the base class implementation for term tables
-//!                                                  
+//!     This file defines a class to store data structures describing 
+//!     quadratic terms in a Hamiltonian
+//!                                                        
 //!                    Copyright (C) Simon C Davenport
 //!                                                                             
 //!     This program is free software: you can redistribute it and/or modify
@@ -22,8 +23,8 @@
 //!                                                                             
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TERM_TABLES_BASE_HPP_INCLUDED_
-#define _TERM_TABLES_BASE_HPP_INCLUDED_
+#ifndef _QUADRATIC_TERM_TABLES_BASE_HPP_INCLUDED_
+#define _QUADRATIC_TERM_TABLES_BASE_HPP_INCLUDED_
 
 ///////     LIBRARY INCLUSIONS     /////////////////////////////////////////////
 #include "../utilities/general/orbital_and_state_defs.hpp"
@@ -32,17 +33,13 @@
 #include "../program_options/general_options.hpp"
 #include <vector>
 #if _DEBUG_
-#include "../utilities/general/debug.hpp"
+#include "../../utilities/general/debug.hpp"
 #endif
 
 namespace diagonalization
 {
-    //!
-    //! A class to contain look-up table values and their associated
-    //! momentum conservation laws
-    //!
-    template <typename T>
-    class TermTables
+    template<typename T>
+    class QuadraticTermTablesBase
     {
         protected:
         std::vector<T> m_vTable;            //!<    Look-up table data 
@@ -50,14 +47,22 @@ namespace diagonalization
                                             //!     satisfying a conservation law
         kState_t m_kMax;                    //!<    Maximum k-value
         std::string m_fileHeader;           //!<    Text description at file head
-        virtual iSize_t CalculateDim(const kState_t kMax) const=0;   
+        
+        //!
+        //! Update the stored dimension of the quadratic term look-up table
+        //!
+        iSize_t CalculateDim(
+            const kState_t kMax)    //!<    Number of k states
+            const
+        {
+            return kMax;
+        }
         
         public:
-
         //!
         //! Default constructor
         //!
-        TermTables()
+        QuadraticTermTablesBase()
         :
             m_kMax(0),
             m_fileHeader("# File contains term table data in array format")
@@ -66,7 +71,7 @@ namespace diagonalization
         //!
         //! Destructor
         //!
-        ~TermTables()
+        ~QuadraticTermTablesBase()
         {
             this->Clear();
         }
@@ -82,7 +87,7 @@ namespace diagonalization
             iSize_t dim = this->CalculateDim(m_kMax);
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             { 
-                utilities::cout.AdditionalInfo()<<"\n\t- INITIALIZING TERM TABLE "<<std::endl;
+                utilities::cout.AdditionalInfo()<<"\n\t- INITIALIZING QUADRATIC TERM TABLE "<<std::endl;
                 utilities::cout.DebuggingInfo()<<"\n\t- ALLOCATING "<<2*sizeof(T)*dim/(1024.0*1024.0)
                          <<" mb to store look-up table of "<<dim<<" lookup terms."<<std::endl;
             }
@@ -98,22 +103,7 @@ namespace diagonalization
             m_kTable.clear();
             m_vTable.clear();
         }
-
-        virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2, 
-                           const kState_t k3, const kState_t k4) const{};
-        virtual void SetK1(const kState_t k1, const kState_t k2, 
-                           const kState_t k3, const kState_t k4){};
-        virtual T GetVkkkk(const kState_t k1, const kState_t k2, const kState_t k3, 
-                           const kState_t k4) const{ return 0.0;};
-        virtual void SetVkkkk(const T Vkkkk, const kState_t k1, const kState_t k2, const kState_t k3, 
-                              const kState_t k4){};
-        virtual void GetK1(kState_t* kRetrieveBuffer, iSize_t& nbrK1, const kState_t k2) const{};
-        virtual T GetEkk(const kState_t k1, const kState_t k2) const{ return 0.0;};
-        virtual void ToFile(const std::string fileName, const io::fileFormat_t format, 
-                            utilities::MpiWrapper& mpi) const=0;
-        virtual void FromFile(const std::string fileName, const io::fileFormat_t format,
-                              utilities::MpiWrapper& mpi)=0;
-
+        
         //!
         //! Only allow for a single k value to be returned
         //!
@@ -174,17 +164,42 @@ namespace diagonalization
         }
         
         //!
-        //! Output the table to a file
+        //! Find the k1 value corresponding to a given k2.
         //!
-        void ToFileBase(
-            const std::string fileName,         //!<    File name
-            const io::fileFormat_t format,      //!<    Format of file
-            const iSize_t nbrLabels,            //!<    Number of quantum number labels
-            utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
+        void GetK1(
+            kState_t* kRetrieveBuffer,  //!<    Buffer to store retrieved k values
+            iSize_t& nbrK1,             //!<    Set the number of returned values 
+            const kState_t k2)          //!<    k2 index
+            const
+        {
+            nbrK1 = 1;
+            //  In this case the quadratic terms are diagonal
+            kRetrieveBuffer[0] =  k2;
+        }
+        
+        //!
+        //! Return a quadratic term coefficient for a given k1,k2
+        //!
+        T GetEkk(
+            const kState_t k1,         //!<    k1 index
+            const kState_t k2)         //!<    k2 index
+            const
+        {
+            return this->m_vTable[k1];
+        }
+        
+        //!
+        //! Write quadratic terms to a file
+        //!
+        void ToFile(
+            const std::string fileName,     //!<    Name of file
+            const io::fileFormat_t format,  //!<    Format of file
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
             const
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
+                int nbrLabels = 2;
                 std::ofstream f_out;
                 utilities::GenFileStream(f_out, fileName, format, mpi);
                 if(!mpi.m_exitFlag)
@@ -196,46 +211,17 @@ namespace diagonalization
                         f_out.write(m_fileHeader.c_str(), strSize);
                         f_out.write((char*)&nbrLabels, sizeof(iSize_t));
                         f_out.write((char*)&m_kMax, sizeof(iSize_t));
-                        if(2 == nbrLabels)
-                        {
-                            f_out.write((char*)m_vTable.data(), m_vTable.size()*sizeof(T));
-                        }
-                        else if(4 == nbrLabels)
-                        {
-                            f_out.write((char*)m_kTable.data(), m_kTable.size()*sizeof(kState_t));
-                            f_out.write((char*)m_vTable.data(), m_vTable.size()*sizeof(T));
-                        }
+                        f_out.write((char*)m_vTable.data(), m_vTable.size()*sizeof(T));
                     }
                     else if(io::_TEXT_ == format)
                     {
                         f_out << m_fileHeader << "\n";
                         f_out << nbrLabels << "\n";
                         f_out << m_kMax << "\n";
-                        if(2 == nbrLabels)
+                        for(kState_t k1=0; k1<m_kMax; ++k1)
                         {
-                            for(kState_t k1=0; k1<m_kMax; ++k1)
-                            {
-                                std::string streamData = utilities::ToStream(m_vTable[k1]);
-                                f_out << k1 << "\t" << k1 << "\t" << streamData <<"\n";
-                            }
-                        }
-                        else if(4 == nbrLabels)
-                        {
-                            kState_t k1;
-                            for(kState_t k4=0; k4<m_kMax; ++k4)
-                            {
-                                for(kState_t k3=0; k3<m_kMax; ++k3)
-                                {
-                                    for(kState_t k2=0; k2<m_kMax; ++k2)
-                                    {
-                                        iSize_t dummy;
-                                        this->GetK1(&k1, dummy, k2, k3, k4);
-                                        f_out << k1 << "\t" << k2 << "\t" << k3 << "\t" << k4;
-                                        std::string streamData = utilities::ToStream(this->GetVkkkk(k1, k2, k3, k4));
-                                        f_out << "\t" << streamData <<"\n";
-                                    }
-                                }
-                            }
+                            std::string streamData = utilities::ToStream(m_vTable[k1]);
+                            f_out << k1 << "\t" << k1 << "\t" << streamData <<"\n";
                         }
                     }
                     f_out.close();
@@ -244,14 +230,14 @@ namespace diagonalization
             MPI_Barrier(mpi.m_comm);
             mpi.ExitFlagTest();
         }
-
+        
         //!
-        //! Import the term table from a file
+        //! Read quadratic terms from a file
         //!
-        void FromFileBase(
-            const std::string fileName,         //!<    File name
-            const io::fileFormat_t format,      //!<    Format of file
-            utilities::MpiWrapper& mpi)         //!<    Instance of the MPI wrapper class
+        void FromFile(
+            const std::string fileName,     //!<    Name of file
+            const io::fileFormat_t format,  //!<    Format of file
+            utilities::MpiWrapper& mpi)     //!<    Instance of the mpi wrapper class 
         {
             if(0 == mpi.m_id)	// FOR THE MASTER NODE
             {
@@ -277,15 +263,7 @@ namespace diagonalization
                         f_in.read(reinterpret_cast<char*>(&nbrLabels), sizeof(iSize_t));
                         f_in.read(reinterpret_cast<char*>(&m_kMax), sizeof(iSize_t));
                         this->Initialize(m_kMax, mpi);
-                        if(2 == nbrLabels)
-                        {
-                            f_in.read(reinterpret_cast<char*>(m_vTable.data()), m_vTable.size()*sizeof(T));
-                        }
-                        else if(4 == nbrLabels)
-                        {
-                            f_in.read(reinterpret_cast<char*>(m_kTable.data()), m_kTable.size()*sizeof(kState_t));
-                            f_in.read(reinterpret_cast<char*>(m_vTable.data()), m_vTable.size()*sizeof(T));
-                        }
+                        f_in.read(reinterpret_cast<char*>(m_vTable.data()), m_vTable.size()*sizeof(T));
                     }
                     else if(io::_TEXT_ == format)
                     {
@@ -300,33 +278,12 @@ namespace diagonalization
                         f_in >> nbrLabels;
                         f_in >> m_kMax;
                         this->Initialize(m_kMax, mpi);
-                        if(2 == nbrLabels)
+                        kState_t k1;
+                        kState_t k2;
+                        for(iSize_t i=0; i<m_vTable.size(); ++i)
                         {
-                            kState_t k1;
-                            kState_t k2;
-                            for(iSize_t i=0; i<m_vTable.size(); ++i)
-                            {
-                                f_in >> k1 >> k2;
-                                utilities::FromStream(f_in, m_vTable[i]);
-                            }
-                        }
-                        else if(4 == nbrLabels)
-                        {
-                            for(kState_t k4=0; k4<m_kMax; ++k4)
-                            {
-                                for(kState_t k3=0; k3<m_kMax; ++k3)
-                                {
-                                    for(kState_t k2=0; k2<m_kMax; ++k2)
-                                    {
-                                        kState_t k1, dummy;
-                                        f_in >> k1 >> dummy >> dummy >> dummy;
-                                        T Vkkkk;
-                                        utilities::FromStream(f_in, Vkkkk);
-                                        this->SetK1(k1, k2, k3, k4);
-                                        this->SetVkkkk(Vkkkk, k1, k2, k3, k4);
-                                    }
-                                }
-                            }
+                            f_in >> k1 >> k2;
+                            utilities::FromStream(f_in, m_vTable[i]);
                         }
                     }
                     f_in.close();
@@ -344,5 +301,5 @@ namespace diagonalization
             this->MpiSynchronize(0, mpi);
         }
     };
-}   //  End diagonalization namespace
+}   //  End namespace diagonalization
 #endif

@@ -39,7 +39,9 @@
 #include "interacting_ofl_model_data.hpp"
 #include "../../hamiltonians/spinless_fermion_hamiltonian.hpp"
 #include "../../observables/fermion_observables.hpp"
-#include "term_tables.hpp"
+#include "../../hamiltonians/quadratic_term_tables_base.hpp"
+#include "../../hamiltonians/quartic_term_tables_base.hpp"
+#include "quartic_term_tables.hpp"
 #include "term_hash_tables.hpp"
 #include "linear_momentum_constraints_2D.hpp"
 #include "../../utilities/general/orbital_and_state_defs.hpp"
@@ -79,10 +81,10 @@ namespace diagonalization
         NonInteractingOflModelData m_oflParameters;
                                             //!<  Instance of the non-interacting 
                                             //!   ofl parameters class
-        QuadraticTermTables m_quadraticTables;
+        QuadraticTermTablesBase<dcmplx> m_quadraticTables;
                                             //!<  Class container for regular array look-up tables
                                             //!   used in the case where we have full 2D momentum conservation 
-        QuarticTermTables m_quarticTables;        
+        QuarticTermTables<dcmplx> m_quarticTables;        
                                             //!<  Class container for regular array look-up tables
                                             //!   used in the case where we have full 2D momentum conservation 
         QuadraticTermHashTables m_quadraticHashTables;
